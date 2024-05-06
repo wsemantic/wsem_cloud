@@ -1,5 +1,15 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-  <!--  <record id="view_crm_lead_form_inherit" model="ir.ui.view">
-    </record>-->
+    <template id="extend_auth_signup_fields" inherit_id="auth_signup.fields">
+        <xpath expr="//div[@class='mb-3 field-name']" position="after">
+            <div class="mb-3 field-price">
+                <label for="price">Select Price</label>
+                <select name="price" class="form-control form-control-sm">
+                    <option value="community">Community</option>
+                    <option value="standard">Standard</option>
+                    <option value="custom">Custom</option>
+                </select>
+            </div>
+        </xpath>
+    </template>
 </odoo>
