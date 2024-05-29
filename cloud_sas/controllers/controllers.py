@@ -1,21 +1,26 @@
-# -*- coding: utf-8 -*-
-# from odoo import http
+# /var/misAddons/wsem_verifactu_cloud/models/res_partner_endpoint.py
+from odoo import http
+from odoo.http import request
 
+class ResPartnerEndpoint(http.Controller):
 
-# class Wsem(http.Controller):
-#     @http.route('/wsem/wsem', auth='public')
-#     def index(self, **kw):
-#         return "Hello, world"
+    @http.route('/api/create_partner', auth='api_key', methods=['POST'], csrf=False)
+    def create_partner(self, **post):
+        # Verificar la API key
+        api_key = post.get('api_key')
+        if api_key != 'f27b3a499870852a4b21f77b8065a01cbf740f78':
+            return {'error': 'Invalid API key'}
 
-#     @http.route('/wsem/wsem/objects', auth='public')
-#     def list(self, **kw):
-#         return http.request.render('wsem.listing', {
-#             'root': '/wsem/wsem',
-#             'objects': http.request.env['wsem.wsem'].search([]),
-#         })
+        # Procesar la solicitud de creación de socio
+        name = post.get('name')
+        email = post.get('email')
+        # Otros campos
 
-#     @http.route('/wsem/wsem/objects/<model("wsem.wsem"):obj>', auth='public')
-#     def object(self, obj, **kw):
-#         return http.request.render('wsem.object', {
-#             'object': obj
-#         })
+        # Crear el socio en la base de datos
+        partner = request.env['res.partner'].sudo().create({
+            'name': name,
+            'email': email,
+            # Otros campos
+        })
+
+        return {'partner_id': partner.id}
