@@ -6,21 +6,21 @@ class ResPartnerEndpoint(http.Controller):
 
     @http.route('/api/create_partner', auth='api_key', methods=['POST'], csrf=False)
     def create_partner(self, **post):
-        # Verificar la API key
+        
         api_key = post.get('api_key')
         if api_key != 'f27b3a499870852a4b21f77b8065a01cbf740f78':
             return {'error': 'Invalid API key'}
 
-        # Procesar la solicitud de creación de socio
+        
         name = post.get('name')
         email = post.get('email')
-        # Otros campos
+        
 
-        # Crear el socio en la base de datos
+        
         partner = request.env['res.partner'].sudo().create({
             'name': name,
             'email': email,
-            # Otros campos
+            
         })
 
         return {'partner_id': partner.id}
