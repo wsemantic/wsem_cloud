@@ -1,11 +1,13 @@
 from odoo import models, fields
 
-#     @api.depends('value')
-#     def _value_pc(self):
-#         for record in self:
-#             record.value2 = float(record.value) / 100
+class ResPartner(models.Model):
+    _inherit = 'res.partner'
 
-
-#class AccountMove(models.Model):
-#    _inherit = 'account.move'
-
+    dni = fields.Char(string='DNI')
+    phone = fields.Char(string='Phone')
+    address = fields.Char(string='Address')
+    price = fields.Selection([
+        ('community', 'Community'),
+        ('standard', 'Standard'),
+        ('custom', 'Custom')
+    ], string='Plan')

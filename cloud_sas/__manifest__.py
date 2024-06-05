@@ -2,7 +2,7 @@
     'name': "wsem_cloud_sas",
     'version': '1.0',
     'category': 'API',
-    'depends': ['base', 'contacts', 'sale'],
+    'depends': ['base', 'auth_signup'],
     'data': [],
     'installable': True,
     'application': False,
