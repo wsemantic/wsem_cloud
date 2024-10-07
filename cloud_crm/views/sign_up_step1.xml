@@ -47,7 +47,7 @@
                     <!-- Campo Subdominio (Calculado) -->
                     <div class="mb-3 field-subdomain">
                         <label for="subdomain_url">URL de la Base de Datos</label>
-                        <input type="text" name="subdomain" id="subdomain_url" readonly="readonly" class="form-control form-control-sm" t-att-value="company_name and company_name.lower().replace(' ', '') + '.factuoo.com' or ''"/>
+                        <input type="text" name="subdomain" id="subdomain_url"  class="form-control form-control-sm" t-att-value="company_name and company_name.lower().replace(' ', '') + '.factuoo.com' or ''"/>
                         <!-- Mostrar mensaje de error específico si existe -->
                         <t t-if="error">
                             <small class="text-danger"><t t-esc="error"/></small>

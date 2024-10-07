@@ -28,8 +28,8 @@ class CustomSignupController(http.Controller):
             phone = kwargs.get('phone')
 
             # Generar el subdominio
-            subdomain = self.generate_subdomain(company_name)
-            if not subdomain:
+            cloud_url = kwargs.get('subdomain_url')
+            if not cloud_url:
                 error = 'El subdominio generado no es válido.'
                 return request.render('cloud_crm.signup_step1', {
                     'error': error,
@@ -41,7 +41,6 @@ class CustomSignupController(http.Controller):
                     'phone': phone,
                 })
 
-            cloud_url = f"{subdomain}.factuoo.com"
 
             # Validar campos obligatorios
             if not all([name, email, company_name, dni, address, phone]):
@@ -147,25 +146,6 @@ class CustomSignupController(http.Controller):
 
             # Renderizar el formulario del segundo paso con esta lista fija de módulos
             return request.render('cloud_crm.signup_step2', {'modules': modules})
-
-    def generate_subdomain(self, company_name):
-        """
-        Genera un subdominio válido basado en el nombre de la empresa.
-        """
-        company_name = company_name.strip()
-        subdomain = ''
-        words = company_name.split()
-
-        if len(words) >= 2 and len(words[0]) >= 5:
-            subdomain = words[0]
-        else:
-            subdomain = company_name.replace(' ', '')[:7]
-
-        subdomain = subdomain.lower()
-        subdomain = subdomain.encode('ascii', 'ignore').decode('ascii')
-        subdomain = re.sub(r'[^a-z0-9\-]', '', subdomain)
-
-        return subdomain if subdomain else None
 
     def partner_exists(self, cloud_url):
         """
