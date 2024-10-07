@@ -27,3 +27,13 @@
         width: 30%;
     }
 }
+
+.subdomain-group {
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: 0;
+}
+
+.subdomain-group .form-control {
+    text-align: right;
+}
