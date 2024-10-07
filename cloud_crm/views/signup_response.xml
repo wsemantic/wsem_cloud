@@ -1,0 +1,12 @@
+<template id="signup_success_page" name="Signup Success Page">
+    <t t-call="website.layout">
+        <div class="container">
+            <h1>¡Registro exitoso!</h1>
+            <p>Gracias por registrarte, <t t-esc="name"/>.</p>
+            <p>Tu nueva base de datos ha sido creada con éxito.</p>
+            <p>Puedes acceder a tu base de datos en la siguiente URL:</p>
+            <a href="db_url"><t t-esc="db_url"/></a>
+            <p>Se ha enviado un correo a <t t-esc="email"/> con instrucciones para establecer tu contraseña.</p>
+        </div>
+    </t>
+</template>
