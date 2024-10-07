@@ -27,6 +27,8 @@
         # 'security/ir.model.access.csv',
         'views/views.xml',
         'views/templates.xml',
+        'views/sign_up_step1.xml',
+        'views/sign_up_step2.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
