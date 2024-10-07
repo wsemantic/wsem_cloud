@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var companyField = document.getElementById('company_name');
         var subdomainField = document.getElementById('subdomain_input');
 
+
         if (companyField && subdomainField) {
             // Obtener el nombre de la empresa y eliminar espacios al inicio y final
             var companyName = companyField.value.trim();
