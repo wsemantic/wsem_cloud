@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="extend_auth_signup_fields" inherit_id="auth_signup.fields">
+    <template id="auth_signup_step1" inherit_id="auth_signup.fields">
         <!-- Extender la vista auth_signup.fields para añadir campos personalizados -->
         <xpath expr="//div[@class='mb-3 field-name']" position="after">
             <!-- Campo Empresa -->
