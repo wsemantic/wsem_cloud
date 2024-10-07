@@ -28,7 +28,7 @@ class CustomSignupController(http.Controller):
             phone = kwargs.get('phone')
 
             # Generar el subdominio
-            cloud_url = kwargs.get('subdomain_url')
+            cloud_url = kwargs.get('subdomain')
             if not cloud_url:
                 error = 'El subdominio generado no es válido.'
                 return request.render('cloud_crm.signup_step1', {
