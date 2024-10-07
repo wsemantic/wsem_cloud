@@ -27,7 +27,7 @@ class CustomSignupController(http.Controller):
 
             # Validar campos obligatorios
             if not all([name, email, company_name, dni, address, phone]):
-                return request.render('wsem_cloud.signup_error', {'error': 'Todos los campos son obligatorios.'})
+                return request.render('cloud_crm.signup_error', {'error': 'Todos los campos son obligatorios.'})
 
             # Guardar los datos en la sesión
             request.session['signup_data'] = {
@@ -44,7 +44,7 @@ class CustomSignupController(http.Controller):
 
         else:
             # Renderizar el formulario del primer paso
-            return request.render('wsem_cloud.auth_signup_step1')
+            return request.render('cloud_crm.signup_step1')
 
     @http.route('/signup_step2', type='http', auth='public', website=True, csrf=True)
     def signup_step2(self, **kwargs):
@@ -63,7 +63,7 @@ class CustomSignupController(http.Controller):
             company_name = signup_data.get('company_name')
             subdomain = self.generate_subdomain(company_name)
             if not subdomain:
-                return request.render('wsem_cloud.signup_error', {'error': 'El subdominio generado no es válido.'})
+                return request.render('cloud_crm.signup_error', {'error': 'El subdominio generado no es válido.'})
 
             signup_data['subdomain'] = subdomain
 
@@ -72,14 +72,14 @@ class CustomSignupController(http.Controller):
                 self.create_user_and_db(signup_data, selected_modules)
             except Exception as e:
                 _logger.error(f"Error al crear la base de datos y el usuario: {e}")
-                return request.render('wsem_cloud.signup_error', {'error': 'Hubo un error al crear la base de datos. Por favor, inténtalo de nuevo.'})
+                return request.render('cloud_crm.signup_error', {'error': 'Hubo un error al crear la base de datos. Por favor, inténtalo de nuevo.'})
 
             # Limpiar la sesión
             request.session.pop('signup_data', None)
 
             # Redirigir a la página de éxito
             db_url = f"https://{subdomain}.factuoo.com/web/login"
-            return request.render('wsem_cloud.signup_success_page', {
+            return request.render('cloud_crm.signup_success_page', {
                 'email': signup_data.get('email'),
                 'subdomain': subdomain,
                 'db_url': db_url
@@ -95,7 +95,7 @@ class CustomSignupController(http.Controller):
             ]
 
             # Renderizar el formulario del segundo paso con esta lista fija de módulos
-            return request.render('wsem_cloud.signup_step1', {'modules': modules})
+            return request.render('cloud_crm.signup_step2', {'modules': modules})
 
     def create_user_and_db(self, signup_data, selected_modules):
         """

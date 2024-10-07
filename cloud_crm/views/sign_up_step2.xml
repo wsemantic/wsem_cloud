@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="custom_signup_step2" name="Custom Signup Step 2">
+    <template id="signup_step2" name="Custom Signup Step 2">
         <t t-call="website.layout">
             <div class="container">
                 <h1>Registro de Usuario - Paso 2</h1>
