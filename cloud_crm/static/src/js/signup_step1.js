@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Función para actualizar el subdominio dinámicamente
     function updateSubdomain() {
         var companyField = document.getElementById('company_name');
-        var subdomainField = document.getElementById('subdomain_url');
+        var subdomainField = document.getElementById('subdomain_input');
 
         if (companyField && subdomainField) {
             // Obtener el nombre de la empresa y eliminar espacios al inicio y final
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			subdomain = subdomain.replace(/[^a-z0-9\-]/g, '');
 
             // Establecer el valor del campo subdominio
-            subdomainField.value = subdomain ? subdomain + '.factuoo.com' : '';
+            subdomainField.value = subdomain ;
         }
     }
 

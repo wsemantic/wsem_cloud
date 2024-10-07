@@ -44,9 +44,9 @@
                         <label for="phone">Teléfono</label>
                         <input type="tel" name="phone" id="phone" required="required" class="form-control form-control-sm" t-att-value="phone or ''"/>
                     </div>
-					<div class="mb-3 field-subdomain">
+					<div class="mb-3 field-subdomain ">
                         <label for="subdomain_input">URL de la Base de Datos</label>
-                        <div class="input-group" style="max-width: 400px; margin-left: auto; margin-right: 0;">
+                        <div class="input-group subdomain-group" style="max-width: 400px; margin-left: auto; margin-right: 0;">
                             <input type="text" name="subdomain" id="subdomain_input" required="required" class="form-control form-control-sm text-end" placeholder="subdominio" t-att-value="subdomain or ''"/>
                             <span class="input-group-text" id="subdomain_suffix">.factuoo.com</span>
                         </div>

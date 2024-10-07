@@ -28,8 +28,8 @@ class CustomSignupController(http.Controller):
             phone = kwargs.get('phone')
 
             # Generar el subdominio
-            cloud_url = kwargs.get('subdomain')
-            if not cloud_url:
+            subdomain = kwargs.get('subdomain')
+            if not subdomain:
                 error = 'El subdominio generado no es válido.'
                 return request.render('cloud_crm.signup_step1', {
                     'error': error,
@@ -54,8 +54,10 @@ class CustomSignupController(http.Controller):
                     'address': address,
                     'phone': phone,
                 })
+                
+            cloud_url = f"{subdomain}.factuoo.com"
 
-            # Verificar si existe un res.partner con el mismo cloud_url
+            # Verificar si existe un res.partner con el mismo subdomain
             if self.partner_exists(cloud_url):
                 error = 'La URL de la base de datos ya está en uso. Por favor, elige otro nombre de empresa.'
                 return request.render('cloud_crm.signup_step1', {
