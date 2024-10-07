@@ -1,46 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="signup_step1" name="Custom Signup Step 1">
+    <template id="signup_step1" name="Signup Step 1">
         <t t-call="website.layout">
             <div class="container mt16 mb16">
                 <h1>Registro - Paso 1</h1>
                 <form id="signup_step1_form" method="post">
                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                     
+                    <!-- Mostrar mensaje de error general -->
+                    <t t-if="error">
+                        <div class="alert alert-danger">
+                            <t t-esc="error"/>
+                        </div>
+                    </t>
+
                     <!-- Campo Nombre -->
                     <div class="mb-3 field-name">
                         <label for="name">Nombre Completo</label>
-                        <input type="text" name="name" id="name" required="required" class="form-control form-control-sm" />
+                        <input type="text" name="name" id="name" required="required" class="form-control form-control-sm" t-att-value="name or ''"/>
                     </div>
                     <!-- Campo Email -->
                     <div class="mb-3 field-email">
                         <label for="email">Correo Electrónico</label>
-                        <input type="email" name="email" id="email" required="required" class="form-control form-control-sm" />
+                        <input type="email" name="email" id="email" required="required" class="form-control form-control-sm" t-att-value="email or ''"/>
                     </div>
                     <!-- Campo Empresa -->
                     <div class="mb-3 field-company_name">
                         <label for="company_name">Empresa</label>
-                        <input type="text" name="company_name" id="company_name" required="required" class="form-control form-control-sm" />
+                        <input type="text" name="company_name" id="company_name" required="required" class="form-control form-control-sm" t-att-value="company_name or ''"/>
                     </div>
                     <!-- Campo DNI -->
                     <div class="mb-3 field-dni">
                         <label for="dni">DNI</label>
-                        <input type="text" name="dni" id="dni" required="required" class="form-control form-control-sm" placeholder="00000000A" />
+                        <input type="text" name="dni" id="dni" required="required" class="form-control form-control-sm" placeholder="00000000A" t-att-value="dni or ''"/>
                     </div>
                     <!-- Campo Dirección -->
                     <div class="mb-3 field-address">
                         <label for="address">Dirección</label>
-                        <input type="text" name="address" id="address" required="required" class="form-control form-control-sm" />
+                        <input type="text" name="address" id="address" required="required" class="form-control form-control-sm" t-att-value="address or ''"/>
                     </div>
                     <!-- Campo Teléfono -->
                     <div class="mb-3 field-phone">
                         <label for="phone">Teléfono</label>
-                        <input type="tel" name="phone" id="phone" required="required" class="form-control form-control-sm" />
+                        <input type="tel" name="phone" id="phone" required="required" class="form-control form-control-sm" t-att-value="phone or ''"/>
                     </div>
                     <!-- Campo Subdominio (Calculado) -->
                     <div class="mb-3 field-subdomain">
                         <label for="subdomain_url">URL de la Base de Datos</label>
-                        <input type="text" name="subdomain" id="subdomain_url" readonly="readonly" class="form-control form-control-sm" />
+                        <input type="text" name="subdomain" id="subdomain_url" readonly="readonly" class="form-control form-control-sm" t-att-value="company_name and company_name.lower().replace(' ', '') + '.factuoo.com' or ''"/>
+                        <!-- Mostrar mensaje de error específico si existe -->
+                        <t t-if="error">
+                            <small class="text-danger"><t t-esc="error"/></small>
+                        </t>
                     </div>
 
                     <!-- Botón Enviar -->
@@ -55,5 +66,3 @@
         </t>
     </template>
 </odoo>
-
-
