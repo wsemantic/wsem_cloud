@@ -31,7 +31,7 @@
         'views/sign_up_step2.xml',
     ],
     "assets":{       
-        'web.assets_qweb':[
+        'web.assets_frontend':[
             'cloud_crm/static/src/js/signup_step1.js',
             'cloud_crm/static/src/css/factuoo.css',
         ], 
