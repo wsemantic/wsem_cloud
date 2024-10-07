@@ -9,11 +9,22 @@ document.addEventListener('DOMContentLoaded', function () {
             // Obtener el nombre de la empresa y eliminar espacios al inicio y final
             var companyName = companyField.value.trim();
 
-            // Reemplazar espacios, eliminar caracteres especiales y convertir a minúsculas
-            var subdomain = companyName
-                .replace(/\s+/g, '')             // Eliminar espacios
-                .replace(/[^a-zA-Z0-9\-]/g, '') // Eliminar caracteres especiales
-                .toLowerCase();
+			// Dividir el nombre de la empresa en palabras
+			var words = companyName.split(/\s+/);
+
+			if (words.length >= 2 && words[0].length >= 5) {
+				// Usar la primera palabra como subdominio
+				subdomain = words[0];
+			} else {
+				// Eliminar espacios y limitar a 7 caracteres
+				subdomain = companyName.replace(/\s+/g, '').substring(0, 7);
+			}
+
+			// Convertir a minúsculas
+			subdomain = subdomain.toLowerCase();
+
+			// Eliminar caracteres no alfanuméricos ni guiones
+			subdomain = subdomain.replace(/[^a-z0-9\-]/g, '');
 
             // Establecer el valor del campo subdominio
             subdomainField.value = subdomain ? subdomain + '.factuoo.com' : '';
