@@ -30,6 +30,12 @@
         'views/sign_up_step1.xml',
         'views/sign_up_step2.xml',
     ],
+    "assets":{       
+        'web.assets_qweb':[
+            'cloud_crm/static/src/js/signup_step1.js',
+            'cloud_crm/static/src/css/factuoo.css',
+        ], 
+    }, 
     # only loaded in demonstration mode
     'demo': [
         'demo/demo.xml',
