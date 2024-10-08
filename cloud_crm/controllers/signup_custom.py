@@ -179,6 +179,7 @@ class CustomSignupController(http.Controller):
         """
         env = request.env
         partner = env['res.partner'].sudo().search([('email', '=', email)], limit=1)
+        _logger.info(f"WSEM busca partner {email} respuesta '{partner}'")
         return partner
 
     def create_partner_in_db(self, name, email, company_name, dni, address, phone, cloud_url):
