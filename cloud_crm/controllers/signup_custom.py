@@ -108,70 +108,70 @@ class CustomSignupController(http.Controller):
             # Renderizar el formulario del primer paso
             return request.render('cloud_crm.signup_step1')
 
-@http.route('/signup_step2', type='http', auth='public', website=True, csrf=True)
-def signup_step2(self, **kwargs):
-    """
-    Maneja el segundo paso del registro de usuario.
-    """
-    _logger.info("Entrando en el método signup_step2")
+    @http.route('/signup_step2', type='http', auth='public', website=True, csrf=True)
+    def signup_step2(self, **kwargs):
+        """
+        Maneja el segundo paso del registro de usuario.
+        """
+        _logger.info("Entrando en el método signup_step2")
 
-    if request.httprequest.method == 'POST':
-        _logger.info("Método POST detectado en signup_step2")
+        if request.httprequest.method == 'POST':
+            _logger.info("Método POST detectado en signup_step2")
 
-        # Obtener los módulos seleccionados
-        selected_modules = request.httprequest.form.getlist('modules')
-        _logger.debug(f"Módulos seleccionados: {selected_modules}")
+            # Obtener los módulos seleccionados
+            selected_modules = request.httprequest.form.getlist('modules')
+            _logger.debug(f"Módulos seleccionados: {selected_modules}")
 
-        # Obtener los datos de registro de la sesión
-        signup_data = request.session.get('signup_data')
-        _logger.debug(f"Datos de registro obtenidos de la sesión: {signup_data}")
+            # Obtener los datos de registro de la sesión
+            signup_data = request.session.get('signup_data')
+            _logger.debug(f"Datos de registro obtenidos de la sesión: {signup_data}")
 
-        if not signup_data:
-            _logger.warning("No se encontraron datos de registro en la sesión. Redirigiendo a signup_step1")
-            return request.redirect('/signup_step1')
+            if not signup_data:
+                _logger.warning("No se encontraron datos de registro en la sesión. Redirigiendo a signup_step1")
+                return request.redirect('/signup_step1')
 
-        # Iniciar el proceso de creación de usuario y base de datos
-        try:
-            _logger.info("Iniciando creación de usuario y base de datos")
-            self.create_user_and_db(signup_data, selected_modules)
-            _logger.info("Creación de usuario y base de datos completada exitosamente")
-        except Exception as e:
-            _logger.error(f"Error al crear la base de datos y el usuario: {e}")
-            return request.render('cloud_crm.signup_error', {
-                'error': 'Hubo un error al crear la base de datos. Por favor, inténtalo de nuevo.'
+            # Iniciar el proceso de creación de usuario y base de datos
+            try:
+                _logger.info("Iniciando creación de usuario y base de datos")
+                self.create_user_and_db(signup_data, selected_modules)
+                _logger.info("Creación de usuario y base de datos completada exitosamente")
+            except Exception as e:
+                _logger.error(f"Error al crear la base de datos y el usuario: {e}")
+                return request.render('cloud_crm.signup_error', {
+                    'error': 'Hubo un error al crear la base de datos. Por favor, inténtalo de nuevo.'
+                })
+
+            # Limpiar la sesión
+            _logger.info("Limpiando los datos de la sesión")
+            request.session.pop('signup_data', None)
+
+            # Preparar los datos para la página de éxito
+            subdomain = signup_data.get('subdomain')
+            db_url = f"https://{subdomain}.factuoo.com/web/login"
+            _logger.info(f"Redirigiendo a la página de éxito con URL: {db_url}")
+
+            # Renderizar la página de éxito
+            return request.render('cloud_crm.signup_success_page', {
+                'email': signup_data.get('email'),
+                'subdomain': subdomain,
+                'db_url': db_url
             })
 
-        # Limpiar la sesión
-        _logger.info("Limpiando los datos de la sesión")
-        request.session.pop('signup_data', None)
+        else:
+            _logger.info("Método GET detectado en signup_step2")
 
-        # Preparar los datos para la página de éxito
-        subdomain = signup_data.get('subdomain')
-        db_url = f"https://{subdomain}.factuoo.com/web/login"
-        _logger.info(f"Redirigiendo a la página de éxito con URL: {db_url}")
+            # Definir una lista fija de módulos específicos
+            modules = [
+                {'name': 'Ventas', 'technical_name': 'sale_management', 'icon': '/path/to/sale_icon.png'},
+                {'name': 'Contabilidad', 'technical_name': 'account', 'icon': '/path/to/account_icon.png'},
+                {'name': 'Inventario', 'technical_name': 'stock', 'icon': '/path/to/stock_icon.png'},
+                {'name': 'Compras', 'technical_name': 'purchase', 'icon': '/path/to/purchase_icon.png'}
+            ]
+            _logger.debug(f"Módulos disponibles para selección: {modules}")
 
-        # Renderizar la página de éxito
-        return request.render('cloud_crm.signup_success_page', {
-            'email': signup_data.get('email'),
-            'subdomain': subdomain,
-            'db_url': db_url
-        })
-
-    else:
-        _logger.info("Método GET detectado en signup_step2")
-
-        # Definir una lista fija de módulos específicos
-        modules = [
-            {'name': 'Ventas', 'technical_name': 'sale_management', 'icon': '/path/to/sale_icon.png'},
-            {'name': 'Contabilidad', 'technical_name': 'account', 'icon': '/path/to/account_icon.png'},
-            {'name': 'Inventario', 'technical_name': 'stock', 'icon': '/path/to/stock_icon.png'},
-            {'name': 'Compras', 'technical_name': 'purchase', 'icon': '/path/to/purchase_icon.png'}
-        ]
-        _logger.debug(f"Módulos disponibles para selección: {modules}")
-
-        # Renderizar el formulario del segundo paso con esta lista de módulos
-        _logger.info("Renderizando el formulario del segundo paso")
-        return request.render('cloud_crm.signup_step2', {'modules': modules})
+            # Renderizar el formulario del segundo paso con esta lista de módulos
+            _logger.info("Renderizando el formulario del segundo paso")
+            return request.render('cloud_crm.signup_step2', {'modules': modules})
 
     def find_partner_by_email(self, email):
         """
