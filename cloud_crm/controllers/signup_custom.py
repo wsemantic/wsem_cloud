@@ -13,7 +13,7 @@ _logger = logging.getLogger(__name__)
 
 class CustomSignupController(http.Controller):
 
-    @http.route('/signup_step1', type='http', auth='public', website=True, csrf=True)
+    @http.route('/signup_step1', type='http', auth='public', website=True, csrf=True, lang=False)
     def signup_step1(self, **kwargs):
         """
         Maneja el primer paso del registro de usuario.
