@@ -227,6 +227,14 @@ class CustomSignupController(http.Controller):
             _logger.error(f"Error al instalar los módulos en la base de datos '{target_db}': {e}")
             raise
 
+        # Crear el subdominio en OVH
+        try:
+            self.create_subdomain_in_ovh(subdomain)
+            _logger.info(f"Subdominio '{subdomain}.factuoo.com' creado en OVH")
+        except Exception as e:
+            _logger.error(f"Error al crear el subdominio '{subdomain}.factuoo.com' en OVH: {e}")
+            raise
+            
         # Crear el usuario en la nueva base de datos
         try:
             self.create_user_in_db(target_db, email, name)
@@ -235,13 +243,6 @@ class CustomSignupController(http.Controller):
             _logger.error(f"Error al crear el usuario en la base de datos '{target_db}': {e}")
             raise
 
-        # Crear el subdominio en OVH
-        try:
-            self.create_subdomain_in_ovh(subdomain)
-            _logger.info(f"Subdominio '{subdomain}.factuoo.com' creado en OVH")
-        except Exception as e:
-            _logger.error(f"Error al crear el subdominio '{subdomain}.factuoo.com' en OVH: {e}")
-            raise
 
 
     def install_modules_in_db(self, db_name, modules_list):
@@ -282,22 +283,25 @@ class CustomSignupController(http.Controller):
             # Enviar correo para establecer contraseña
             new_user.with_context(create_user=True).action_reset_password()
 
-    def create_subdomain_in_ovh(self, subdomain):
-        """
-        Crea el subdominio en OVH usando la API, leyendo las claves desde un archivo de configuración.
-        """
-        # Ruta del archivo de configuración
-        config_file = '/etc/letsencrypt/ovh.ini'
+    def create_subdomain_in_ovh(subdomain):
+        config_file = '/etc/letsencrypt/ovh.ini'  # Asegúrate de que esta ruta es correcta
 
-        # Leer la configuración
         config = configparser.ConfigParser()
-        config.read(config_file)
+        if not config.read(config_file):
+            _logger.error(f"No se pudo leer el archivo de configuración: {config_file}")
+            raise Exception("Archivo de configuración de OVH no encontrado o inaccesible.")
 
-        # Obtener las credenciales de la sección 'ovh_api'
-        endpoint = config.get('ovh_api', 'endpoint')
-        application_key = config.get('ovh_api', 'application_key')
-        application_secret = config.get('ovh_api', 'application_secret')
-        consumer_key = config.get('ovh_api', 'consumer_key')
+        try:
+            endpoint = config.get('ovh_api', 'endpoint')
+            application_key = config.get('ovh_api', 'application_key')
+            application_secret = config.get('ovh_api', 'application_secret')
+            consumer_key = config.get('ovh_api', 'consumer_key')
+        except configparser.NoSectionError:
+            _logger.error("No section: 'ovh_api' en el archivo de configuración.")
+            raise Exception("Sección 'ovh_api' no encontrada en el archivo de configuración.")
+        except configparser.NoOptionError as e:
+            _logger.error(f"Falta la opción en la configuración: {e}")
+            raise Exception(f"Opción faltante en la configuración: {e}")
 
         client = ovh.Client(
             endpoint=endpoint,
@@ -307,20 +311,18 @@ class CustomSignupController(http.Controller):
         )
 
         domain = "factuoo.com"
+        ip_servidor_odoo = "IP_DE_TU_SERVIDOR_ODDOO"  # Reemplaza con la IP real de tu servidor Odoo
 
-        # Crear un nuevo registro DNS tipo A
         try:
             response = client.post(
                 f"/domain/zone/{domain}/record",
                 fieldType="A",
                 subDomain=subdomain,
-                target="IP_DEL_SERVIDOR",  # Reemplaza con la IP de tu servidor
+                target=ip_servidor_odoo,
                 ttl=3600
             )
-
-            # Aplicar los cambios
             client.post(f"/domain/zone/{domain}/refresh")
-
+            _logger.info(f"Subdominio '{subdomain}.{domain}' creado exitosamente en OVH apuntando a {ip_servidor_odoo}.")
         except ovh.exceptions.APIError as e:
             _logger.error(f"Error al crear el subdominio en OVH: {e}")
             raise
