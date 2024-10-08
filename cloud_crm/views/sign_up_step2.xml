@@ -5,7 +5,7 @@
             <div class="container">
                 <h1>Registro de Usuario - Paso 2</h1>
                 <p>Selecciona los módulos que deseas instalar en tu base de datos.</p>
-                <form action="/custom/signup_step2" method="post" id="signup_step2_form">
+                <form t-att-action="request.httprequest.path" method="post" id="signup_step2_form">
                     <div class="row">
                         <!-- Iterar sobre la lista fija de módulos -->
                         <t t-foreach="modules" t-as="module">
@@ -24,7 +24,7 @@
                 </form>
             </div>
             <!-- Incluir el archivo JavaScript para la selección de módulos -->
-            <script src="/path/to/signup_step2.js"></script>
+            <script src="/cloud_crm/static/src/js/signup_step2.js"></script>
         </t>
     </template>
 </odoo>
