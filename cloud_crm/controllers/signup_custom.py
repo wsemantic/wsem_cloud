@@ -214,6 +214,7 @@ class CustomSignupController(http.Controller):
 
         # Clonar la base de datos
         try:
+            _logger.info(f"clonando com '{target_db}'.")
             db.exp_duplicate_database(master_password, source_db, target_db)
             _logger.info(f"Base de datos '{source_db}' clonada como '{target_db}'.")
         except Exception as e:
