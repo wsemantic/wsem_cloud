@@ -120,11 +120,11 @@ class CustomSignupController(http.Controller):
 
             # Obtener los módulos seleccionados
             selected_modules = request.httprequest.form.getlist('modules')
-            _logger.debug(f"Módulos seleccionados: {selected_modules}")
+            _logger.info(f"Módulos seleccionados: {selected_modules}")
 
             # Obtener los datos de registro de la sesión
             signup_data = request.session.get('signup_data')
-            _logger.debug(f"Datos de registro obtenidos de la sesión: {signup_data}")
+            _logger.info(f"Datos de registro obtenidos de la sesión: {signup_data}")
 
             if not signup_data:
                 _logger.warning("No se encontraron datos de registro en la sesión. Redirigiendo a signup_step1")
