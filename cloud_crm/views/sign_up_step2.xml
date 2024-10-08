@@ -6,6 +6,7 @@
                 <h1>Registro de Usuario - Paso 2</h1>
                 <p>Selecciona los módulos que deseas instalar en tu base de datos.</p>
                 <form t-att-action="request.httprequest.path" method="post" id="signup_step2_form">
+					<input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                     <div class="row">
                         <!-- Iterar sobre la lista fija de módulos -->
                         <t t-foreach="modules" t-as="module">
