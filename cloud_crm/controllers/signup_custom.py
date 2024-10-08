@@ -283,7 +283,7 @@ class CustomSignupController(http.Controller):
             # Enviar correo para establecer contraseña
             new_user.with_context(create_user=True).action_reset_password()
 
-    def create_subdomain_in_ovh(subdomain):
+    def create_subdomain_in_ovh(self,subdomain):
         config_file = '/etc/letsencrypt/ovh.ini'  # Asegúrate de que esta ruta es correcta
 
         config = configparser.ConfigParser()
@@ -293,6 +293,7 @@ class CustomSignupController(http.Controller):
 
         try:
             endpoint = config.get('ovh_api', 'endpoint')
+            _logger.error(f"Endpoint de configuración: {endpoint}")
             application_key = config.get('ovh_api', 'application_key')
             application_secret = config.get('ovh_api', 'application_secret')
             consumer_key = config.get('ovh_api', 'consumer_key')
@@ -311,7 +312,7 @@ class CustomSignupController(http.Controller):
         )
 
         domain = "factuoo.com"
-        ip_servidor_odoo = "IP_DE_TU_SERVIDOR_ODDOO"  # Reemplaza con la IP real de tu servidor Odoo
+        ip_servidor_odoo = "79.143.93.12"  # Reemplaza con la IP real de tu servidor Odoo
 
         try:
             response = client.post(
