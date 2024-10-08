@@ -211,6 +211,14 @@ class CustomSignupController(http.Controller):
 
         _logger.info(f"Clonando la base de datos '{source_db}' a '{target_db}'")
 
+        # Crear el subdominio en OVH
+        try:
+            self.create_subdomain_in_ovh(subdomain)
+            _logger.info(f"Subdominio '{subdomain}.factuoo.com' creado en OVH")
+        except Exception as e:
+            _logger.error(f"Error al crear el subdominio '{subdomain}.factuoo.com' en OVH: {e}")
+            raise
+            
         # Clonar la base de datos
         try:
             db.exp_duplicate_database(source_db, target_db, neutralize_database=False)
@@ -225,14 +233,6 @@ class CustomSignupController(http.Controller):
             _logger.info(f"Módulos {selected_modules} instalados en la base de datos '{target_db}'")
         except Exception as e:
             _logger.error(f"Error al instalar los módulos en la base de datos '{target_db}': {e}")
-            raise
-
-        # Crear el subdominio en OVH
-        try:
-            self.create_subdomain_in_ovh(subdomain)
-            _logger.info(f"Subdominio '{subdomain}.factuoo.com' creado en OVH")
-        except Exception as e:
-            _logger.error(f"Error al crear el subdominio '{subdomain}.factuoo.com' en OVH: {e}")
             raise
             
         # Crear el usuario en la nueva base de datos
