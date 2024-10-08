@@ -109,7 +109,7 @@ class CustomSignupController(http.Controller):
             with request.env.cr.savepoint():
                 request.env.context = dict(request.env.context, lang='es_ES')
                 # Tu lógica aquí
-                return request.render('/signup_step1', {})
+                return request.render('cloud_crm.signup_step1', {})
 
     @http.route('/signup_step2', type='http', auth='public', website=True, csrf=True)
     def signup_step2(self, **kwargs):
