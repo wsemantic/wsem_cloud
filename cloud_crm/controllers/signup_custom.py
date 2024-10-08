@@ -26,24 +26,10 @@ class CustomSignupController(http.Controller):
             dni = kwargs.get('dni')
             address = kwargs.get('address')
             phone = kwargs.get('phone')
-
-            # Generar el subdominio
             subdomain = kwargs.get('subdomain')
-            if not subdomain:
-                error = 'El subdominio generado no es válido.'
-                return request.render('cloud_crm.signup_step1', {
-                    'error': error,
-                    'name': name,
-                    'email': email,
-                    'company_name': company_name,
-                    'dni': dni,
-                    'address': address,
-                    'phone': phone,
-                })
-
 
             # Validar campos obligatorios
-            if not all([name, email, company_name, dni, address, phone]):
+            if not all([name, email, company_name, dni, address, phone, subdomain]):
                 error = 'Todos los campos son obligatorios.'
                 return request.render('cloud_crm.signup_step1', {
                     'error': error,
@@ -53,38 +39,55 @@ class CustomSignupController(http.Controller):
                     'dni': dni,
                     'address': address,
                     'phone': phone,
+                    'subdomain': subdomain,
                 })
-                
+
+            # Generar el cloud_url
             cloud_url = f"{subdomain}.factuoo.com"
 
-            # Verificar si existe un res.partner con el mismo subdomain
-            if self.partner_exists(cloud_url):
-                error = 'La URL de la base de datos ya está en uso. Por favor, elige otro nombre de empresa.'
-                return request.render('cloud_crm.signup_step1', {
-                    'error': error,
-                    'name': name,
-                    'email': email,
-                    'company_name': company_name,
-                    'dni': dni,
-                    'address': address,
-                    'phone': phone,
-                })
-
-            # Crear el res.partner en la base de datos actual
-            try:
-                self.create_partner_in_db(name, email, company_name, dni, address, phone, cloud_url)
-            except Exception as e:
-                _logger.error(f"Error al crear el res.partner: {e}")
-                error = 'Hubo un error al procesar tu solicitud. Por favor, inténtalo de nuevo.'
-                return request.render('cloud_crm.signup_step1', {
-                    'error': error,
-                    'name': name,
-                    'email': email,
-                    'company_name': company_name,
-                    'dni': dni,
-                    'address': address,
-                    'phone': phone,
-                })
+            # Buscar si existe un res.partner con el mismo email
+            partner = self.find_partner_by_email(email)
+            if partner:
+                # Si el partner existe, actualizar su cloud_url
+                try:
+                    partner.sudo().write({
+                        'name': name,
+                        'company_name': company_name,
+                        'vat': dni,
+                        'street': address,
+                        'phone': phone,
+                        'cloud_url': cloud_url,
+                    })
+                except Exception as e:
+                    _logger.error(f"Error al actualizar el res.partner: {e}")
+                    error = 'Hubo un error al actualizar tu información. Por favor, inténtalo de nuevo.'
+                    return request.render('cloud_crm.signup_step1', {
+                        'error': error,
+                        'name': name,
+                        'email': email,
+                        'company_name': company_name,
+                        'dni': dni,
+                        'address': address,
+                        'phone': phone,
+                        'subdomain': subdomain,
+                    })
+            else:
+                # Si no existe, crear un nuevo res.partner
+                try:
+                    self.create_partner_in_db(name, email, company_name, dni, address, phone, cloud_url)
+                except Exception as e:
+                    _logger.error(f"Error al crear el res.partner: {e}")
+                    error = 'Hubo un error al procesar tu solicitud. Por favor, inténtalo de nuevo.'
+                    return request.render('cloud_crm.signup_step1', {
+                        'error': error,
+                        'name': name,
+                        'email': email,
+                        'company_name': company_name,
+                        'dni': dni,
+                        'address': address,
+                        'phone': phone,
+                        'subdomain': subdomain,
+                    })
 
             # Guardar los datos en la sesión
             request.session['signup_data'] = {
@@ -105,57 +108,78 @@ class CustomSignupController(http.Controller):
             # Renderizar el formulario del primer paso
             return request.render('cloud_crm.signup_step1')
 
-    @http.route('/signup_step2', type='http', auth='public', website=True, csrf=True)
-    def signup_step2(self, **kwargs):
-        """
-        Maneja el segundo paso del registro de usuario.
-        """
-        if request.httprequest.method == 'POST':
-            # Obtener los módulos seleccionados
-            selected_modules = request.httprequest.form.getlist('modules')
-            signup_data = request.session.get('signup_data')
+@http.route('/signup_step2', type='http', auth='public', website=True, csrf=True)
+def signup_step2(self, **kwargs):
+    """
+    Maneja el segundo paso del registro de usuario.
+    """
+    _logger.info("Entrando en el método signup_step2")
 
-            if not signup_data:
-                return request.redirect('/signup_step1')
+    if request.httprequest.method == 'POST':
+        _logger.info("Método POST detectado en signup_step2")
 
-            # Clonar la base de datos y crear el usuario
-            try:
-                self.create_user_and_db(signup_data, selected_modules)
-            except Exception as e:
-                _logger.error(f"Error al crear la base de datos y el usuario: {e}")
-                return request.render('cloud_crm.signup_error', {'error': 'Hubo un error al crear la base de datos. Por favor, inténtalo de nuevo.'})
+        # Obtener los módulos seleccionados
+        selected_modules = request.httprequest.form.getlist('modules')
+        _logger.debug(f"Módulos seleccionados: {selected_modules}")
 
-            # Limpiar la sesión
-            request.session.pop('signup_data', None)
+        # Obtener los datos de registro de la sesión
+        signup_data = request.session.get('signup_data')
+        _logger.debug(f"Datos de registro obtenidos de la sesión: {signup_data}")
 
-            # Redirigir a la página de éxito
-            subdomain = signup_data.get('subdomain')
-            db_url = f"https://{subdomain}.factuoo.com/web/login"
-            return request.render('cloud_crm.signup_success_page', {
-                'email': signup_data.get('email'),
-                'subdomain': subdomain,
-                'db_url': db_url
+        if not signup_data:
+            _logger.warning("No se encontraron datos de registro en la sesión. Redirigiendo a signup_step1")
+            return request.redirect('/signup_step1')
+
+        # Iniciar el proceso de creación de usuario y base de datos
+        try:
+            _logger.info("Iniciando creación de usuario y base de datos")
+            self.create_user_and_db(signup_data, selected_modules)
+            _logger.info("Creación de usuario y base de datos completada exitosamente")
+        except Exception as e:
+            _logger.error(f"Error al crear la base de datos y el usuario: {e}")
+            return request.render('cloud_crm.signup_error', {
+                'error': 'Hubo un error al crear la base de datos. Por favor, inténtalo de nuevo.'
             })
 
-        else:
-            # Definir una lista fija de módulos específicos
-            modules = [
-                {'name': 'Ventas', 'technical_name': 'sale_management', 'icon': '/path/to/sale_icon.png'},
-                {'name': 'Contabilidad', 'technical_name': 'account', 'icon': '/path/to/account_icon.png'},
-                {'name': 'Inventario', 'technical_name': 'stock', 'icon': '/path/to/stock_icon.png'},
-                {'name': 'Compras', 'technical_name': 'purchase', 'icon': '/path/to/purchase_icon.png'}
-            ]
+        # Limpiar la sesión
+        _logger.info("Limpiando los datos de la sesión")
+        request.session.pop('signup_data', None)
 
-            # Renderizar el formulario del segundo paso con esta lista fija de módulos
-            return request.render('cloud_crm.signup_step2', {'modules': modules})
+        # Preparar los datos para la página de éxito
+        subdomain = signup_data.get('subdomain')
+        db_url = f"https://{subdomain}.factuoo.com/web/login"
+        _logger.info(f"Redirigiendo a la página de éxito con URL: {db_url}")
 
-    def partner_exists(self, cloud_url):
+        # Renderizar la página de éxito
+        return request.render('cloud_crm.signup_success_page', {
+            'email': signup_data.get('email'),
+            'subdomain': subdomain,
+            'db_url': db_url
+        })
+
+    else:
+        _logger.info("Método GET detectado en signup_step2")
+
+        # Definir una lista fija de módulos específicos
+        modules = [
+            {'name': 'Ventas', 'technical_name': 'sale_management', 'icon': '/path/to/sale_icon.png'},
+            {'name': 'Contabilidad', 'technical_name': 'account', 'icon': '/path/to/account_icon.png'},
+            {'name': 'Inventario', 'technical_name': 'stock', 'icon': '/path/to/stock_icon.png'},
+            {'name': 'Compras', 'technical_name': 'purchase', 'icon': '/path/to/purchase_icon.png'}
+        ]
+        _logger.debug(f"Módulos disponibles para selección: {modules}")
+
+        # Renderizar el formulario del segundo paso con esta lista de módulos
+        _logger.info("Renderizando el formulario del segundo paso")
+        return request.render('cloud_crm.signup_step2', {'modules': modules})
+
+    def find_partner_by_email(self, email):
         """
-        Verifica si existe un res.partner con el mismo cloud_url en la base de datos actual.
+        Busca un res.partner por email en la base de datos actual.
         """
         env = request.env
-        partner = env['res.partner'].sudo().search([('cloud_url', '=', cloud_url)], limit=1)
-        return bool(partner)
+        partner = env['res.partner'].sudo().search([('email', '=', email)], limit=1)
+        return partner
 
     def create_partner_in_db(self, name, email, company_name, dni, address, phone, cloud_url):
         """
