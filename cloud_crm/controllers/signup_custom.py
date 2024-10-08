@@ -209,14 +209,12 @@ class CustomSignupController(http.Controller):
         target_db = subdomain  # Usamos el subdominio como nombre de la base de datos
         source_db = 'verifactu'  # Nombre de la base de datos predefinida a clonar
 
-        # Leer la contraseña maestra desde el archivo de configuración de Odoo
-        master_password = self.get_odoo_master_password()
+        _logger.info(f"Clonando la base de datos '{source_db}' a '{target_db}'")
 
         # Clonar la base de datos
         try:
-            _logger.info(f"clonando com '{target_db}'.")
-            db.exp_duplicate_database(master_password, source_db, target_db)
-            _logger.info(f"Base de datos '{source_db}' clonada como '{target_db}'.")
+            db.exp_duplicate_database(source_db, target_db, neutralize_database=False)
+            _logger.info(f"Base de datos '{source_db}' clonada exitosamente como '{target_db}'")
         except Exception as e:
             _logger.error(f"Error al clonar la base de datos: {e}")
             raise
@@ -224,7 +222,7 @@ class CustomSignupController(http.Controller):
         # Instalar los módulos seleccionados en la nueva base de datos
         try:
             self.install_modules_in_db(target_db, selected_modules)
-            _logger.info(f"Módulos {selected_modules} instalados en la base de datos '{target_db}'.")
+            _logger.info(f"Módulos {selected_modules} instalados en la base de datos '{target_db}'")
         except Exception as e:
             _logger.error(f"Error al instalar los módulos en la base de datos '{target_db}': {e}")
             raise
@@ -232,7 +230,7 @@ class CustomSignupController(http.Controller):
         # Crear el usuario en la nueva base de datos
         try:
             self.create_user_in_db(target_db, email, name)
-            _logger.info(f"Usuario '{email}' creado en la base de datos '{target_db}'.")
+            _logger.info(f"Usuario '{email}' creado en la base de datos '{target_db}'")
         except Exception as e:
             _logger.error(f"Error al crear el usuario en la base de datos '{target_db}': {e}")
             raise
@@ -240,10 +238,11 @@ class CustomSignupController(http.Controller):
         # Crear el subdominio en OVH
         try:
             self.create_subdomain_in_ovh(subdomain)
-            _logger.info(f"Subdominio '{subdomain}.factuoo.com' creado en OVH.")
+            _logger.info(f"Subdominio '{subdomain}.factuoo.com' creado en OVH")
         except Exception as e:
             _logger.error(f"Error al crear el subdominio '{subdomain}.factuoo.com' en OVH: {e}")
             raise
+
 
     def install_modules_in_db(self, db_name, modules_list):
         """
