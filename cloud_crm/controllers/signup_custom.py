@@ -330,7 +330,7 @@ class CustomSignupController(http.Controller):
             })
 
             # Enviar el correo de invitación utilizando el método estándar con permisos elevados
-            result = new_user.sudo().with_context(create_user=True).action_reset_password()
+            #result = new_user.sudo().with_context(create_user=True).action_reset_password()
             
             # Registrar el resultado
-            _logger.info(f"Resultado de action_reset_password para {new_user.email}: {result}")
+            #_logger.info(f"Resultado de action_reset_password para {new_user.email}: {result}")
