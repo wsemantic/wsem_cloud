@@ -315,22 +315,33 @@ class CustomSignupController(http.Controller):
         """
         Crea un usuario en la base de datos clonada y envía el correo para establecer contraseña.
         """
-        # Cambiar el contexto a la nueva base de datos
         registry = odoo.registry(db_name)
         with registry.cursor() as cr:
             env = api.Environment(cr, SUPERUSER_ID, {})
             user_obj = env['res.users']
-
-            # Crear el nuevo usuario
-            new_user = user_obj.create({
+            
+            # Crear el nuevo usuario con un contexto que fuerce el envío del correo
+            ctx = {
+                'create_user': True,
+                'no_reset_password': False,  # Asegura que se llame a action_reset_password
+                'force_send': True,  # Fuerza el envío inmediato del correo
+                'import_file': False,  # Asegura que force_send no se desactive
+            }
+            
+            new_user = user_obj.with_context(ctx).create({
                 'name': name,
                 'login': email,
                 'email': email,
                 'notification_type': 'email',
             })
-
-            # Enviar el correo de invitación utilizando el método estándar con permisos elevados
-            #result = new_user.sudo().with_context(create_user=True).action_reset_password()
             
-            # Registrar el resultado
-            #_logger.info(f"Resultado de action_reset_password para {new_user.email}: {result}")
+            # Forzar explícitamente el envío del correo de restablecimiento
+            try:
+                new_user.with_context(ctx).action_reset_password()
+                _logger.info(f"WSEM Correo de restablecimiento enviado para el usuario {new_user.name} ({new_user.email})")
+            except Exception as e:
+                _logger.error(f"WSEM Error al enviar el correo de restablecimiento: {str(e)}")
+            
+            cr.commit()
+            
+        return new_user.id
