@@ -15,6 +15,5 @@
     
     'data': [
         # 'security/ir.model.access.csv',
-        'views/success_register.xml',
     ],
 }
