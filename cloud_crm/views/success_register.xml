@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="signup_success_page" name="Página de Éxito de Registro">
+        <t t-call="website.layout">
+            <div class="container mt-5">
+                <h2>¡Registro Exitoso!</h2>
+                <p>Gracias por registrarte, <strong><t t-esc="email"/></strong>.</p>
+                <p>Tu subdominio es: <strong><t t-esc="subdomain"/>.factuoo.com</strong></p>
+                <p>Inicia sesión en tu cuenta:</p>
+                <a t-att-href="db_url" class="btn btn-primary">Iniciar Sesión</a>
+            </div>
+        </t>
+    </template>
+</odoo>
