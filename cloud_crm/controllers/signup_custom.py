@@ -175,7 +175,7 @@ class CustomSignupController(http.Controller):
         subdomain = signup_data.get('subdomain')
 
         target_db = subdomain  # Usamos el subdominio como nombre de la base de datos
-        source_db = 'base_predefinida'  # Nombre de la base de datos predefinida a clonar
+        source_db = 'verifactu'  # Nombre de la base de datos predefinida a clonar
 
         _logger.info(f"Clonando la base de datos '{source_db}' a '{target_db}'")
 
