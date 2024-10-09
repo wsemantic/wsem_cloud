@@ -8,6 +8,7 @@ import logging
 import re
 import configparser
 import os
+import time
 
 _logger = logging.getLogger(__name__)
 
@@ -170,19 +171,29 @@ class CustomSignupController(http.Controller):
         """
         Clona la base de datos, crea el usuario, instala los módulos seleccionados y crea el subdominio.
         """
+                   
         name = signup_data.get('name')
         email = signup_data.get('email')
         subdomain = signup_data.get('subdomain')
 
         target_db = subdomain  # Usamos el subdominio como nombre de la base de datos
         source_db = 'verifactu'  # Nombre de la base de datos predefinida a clonar
+        
+        # Crear el subdominio en OVH
+        try:
+            self.create_subdomain_in_ovh(subdomain)
+            _logger.info(f"Subdominio '{subdomain}.factuoo.com' creado en OVH")
+        except Exception as e:
+            _logger.error(f"Error al crear el subdominio '{subdomain}.factuoo.com' en OVH: {e}")
+            raise
 
-        _logger.info(f"Clonando la base de datos '{source_db}' a '{target_db}'")
-
+        _logger.info(f"WSEM Clonando la base de datos '{source_db}' a '{target_db}'")
+        time.sleep(10)
+        _logger.info(f"WSEM sleep")
         # Clonar la base de datos
         try:
             db.exp_duplicate_database(source_db, target_db, neutralize_database=False)
-            _logger.info(f"Base de datos '{source_db}' clonada exitosamente como '{target_db}'")
+            _logger.info(f"WSEM Base de datos '{source_db}' clonada exitosamente como '{target_db}'")
         except Exception as e:
             _logger.error(f"Error al clonar la base de datos: {e}")
             raise
@@ -194,11 +205,11 @@ class CustomSignupController(http.Controller):
         except Exception as e:
             _logger.error(f"Error al instalar los módulos en la base de datos '{target_db}': {e}")
             raise
-
+            
         # Crear el usuario en la nueva base de datos
         try:
             self.create_user_in_db(target_db, email, name)
-            _logger.info(f"Usuario '{email}' creado en la base de datos '{target_db}'")
+            _logger.info(f"WSEM Usuario '{email}' creado en la base de datos '{target_db}'")
         except Exception as e:
             _logger.error(f"Error al crear el usuario en la base de datos '{target_db}': {e}")
             raise
