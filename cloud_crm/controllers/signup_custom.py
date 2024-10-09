@@ -208,19 +208,12 @@ class CustomSignupController(http.Controller):
             
         # Crear el usuario en la nueva base de datos
         try:
-            self.create_user_in_db(target_db, email, name)
+            self.create_user_in_db(target_db, email, name, subdomain)
             _logger.info(f"WSEM Usuario '{email}' creado en la base de datos '{target_db}'")
         except Exception as e:
             _logger.error(f"Error al crear el usuario en la base de datos '{target_db}': {e}")
             raise
 
-        # Crear el subdominio en OVH
-        try:
-            self.create_subdomain_in_ovh(subdomain)
-            _logger.info(f"Subdominio '{subdomain}.factuoo.com' creado en OVH")
-        except Exception as e:
-            _logger.error(f"Error al crear el subdominio '{subdomain}.factuoo.com' en OVH: {e}")
-            raise
             
     def find_partner_by_email(self, email):
         """
@@ -322,7 +315,7 @@ class CustomSignupController(http.Controller):
             if modules_to_install:
                 modules_to_install.button_immediate_install()
 
-    def create_user_in_db(self, db_name, email, name):
+    def create_user_in_db(self, db_name, email, name, subdomain):
         registry = odoo.registry(db_name)
         with registry.cursor() as cr:
             env = api.Environment(cr, SUPERUSER_ID, {})
@@ -334,6 +327,11 @@ class CustomSignupController(http.Controller):
             
             _logger.info(f"Usando servidor de correo: {mail_server.name}")
             
+            # Actualizar el parámetro `web.base.url` en la nueva base de datos
+            base_url = f"https://{subdomain}.factuoo.com"
+            env['ir.config_parameter'].sudo().set_param('web.base.url', base_url)
+            _logger.info(f"Parámetro 'web.base.url' configurado como: {base_url}")
+        
             # Crear el nuevo usuario
             user_obj = env['res.users']
             new_user = user_obj.create({
