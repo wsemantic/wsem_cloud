@@ -323,31 +323,27 @@ class CustomSignupController(http.Controller):
                 modules_to_install.button_immediate_install()
 
     def create_user_in_db(self, db_name, email, name):
-        with api.Environment.manage():
-            registry = odoo.registry(db_name)
-            with registry.cursor() as cr:
-                env = api.Environment(cr, SUPERUSER_ID, {})
-                
-                # Verificar y cargar la configuración del servidor de correo
-                mail_server = env['ir.mail_server'].search([], limit=1)
-                if not mail_server:
-                    raise UserError("No se encontró configuración de servidor de correo en la base de datos de destino.")
-                
-                _logger.info(f"Usando servidor de correo: {mail_server.name}")
-                
-                user_obj = env['res.users']
-                
-                # Crear el nuevo usuario
-                new_user = user_obj.create({
-                    'name': name,
-                    'login': email,
-                    'email': email,
-                    'notification_type': 'email',
-                })
-                
-                _logger.info(f"Usuario creado: {new_user.name} (ID: {new_user.id})")
-              
-                
-                cr.commit()
-        
-        return new_user.id
+        registry = odoo.registry(db_name)
+        with registry.cursor() as cr:
+            env = api.Environment(cr, SUPERUSER_ID, {})
+            
+            # Verificar y cargar la configuración del servidor de correo
+            mail_server = env['ir.mail_server'].search([], limit=1)
+            if not mail_server:
+                raise UserError("No se encontró configuración de servidor de correo en la base de datos de destino.")
+            
+            _logger.info(f"Usando servidor de correo: {mail_server.name}")
+            
+            # Crear el nuevo usuario
+            user_obj = env['res.users']
+            new_user = user_obj.create({
+                'name': name,
+                'login': email,
+                'email': email,
+                'notification_type': 'email',
+            })
+            
+            _logger.info(f"Usuario creado: {new_user.name} (ID: {new_user.id})")
+            
+            # Confirmar la transacción
+            cr.commit()
