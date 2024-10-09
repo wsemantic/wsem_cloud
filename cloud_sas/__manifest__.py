@@ -1,5 +1,5 @@
 {
-    'name': "wsem_cloud_sas",
+    'name': "cloud_sas",
     'version': '1.0',
     'category': 'API',
     'depends': ['base', 'auth_signup'],
@@ -7,9 +7,14 @@
     'installable': True,
     'application': False,
     'auto_install': False,
-    'summary': "Short summary of the module's purpose",
-    'description': "Long description of module's purpose",
+    'summary': "Facuoo clientes",
+    'description': "Facuoo clientes",
     'author': "Semantic Web Software SL",
     'website': "https://wsemantic.com",
     'license': "AGPL-3",
+    
+    'data': [
+        # 'security/ir.model.access.csv',
+        'views/success_register.xml',
+    ],
 }
