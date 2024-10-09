@@ -29,6 +29,7 @@
         'views/templates.xml',
         'views/sign_up_step1.xml',
         'views/sign_up_step2.xml',
+        'views/signup_success_page.xml',
     ],
     "assets":{       
         'web.assets_frontend':[
