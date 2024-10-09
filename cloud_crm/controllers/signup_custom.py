@@ -213,7 +213,14 @@ class CustomSignupController(http.Controller):
         except Exception as e:
             _logger.error(f"Error al crear el usuario en la base de datos '{target_db}': {e}")
             raise
-
+            
+        # Limpiar el servidor de correo y el email de la compañía en la nueva base de datos
+        try:
+            self.clean_mail_server_and_company_email(target_db)
+            _logger.info(f"Servidor de correo y email de la compañía limpiados en la base de datos '{target_db}'")
+        except Exception as e:
+            _logger.error(f"Error al limpiar el servidor de correo o el email de la compañía: {e}")
+            raise
             
     def find_partner_by_email(self, email):
         """
@@ -317,6 +324,10 @@ class CustomSignupController(http.Controller):
 
     def create_user_in_db(self, db_name, email, name, subdomain):
         registry = odoo.registry(db_name)
+        #REQUISITOS
+        # la bd a clonar debe incluir la configuracion de correo (factuo por ejemplo)
+        # El mail de la compañia se usara como remitente para el envio automatico de invitacion, debe ser del mismo dominio que la bd (registro@factuoo.com)
+        #Ambas cosas se limpian al final con el metodo clean
         with registry.cursor() as cr:
             env = api.Environment(cr, SUPERUSER_ID, {})
             
@@ -345,3 +356,25 @@ class CustomSignupController(http.Controller):
             
             # Confirmar la transacción
             cr.commit()
+            
+    def clean_mail_server_and_company_email(self, db_name):
+        """
+        Elimina la configuración de servidor de correo y limpia el email de la compañía.
+        """
+        registry = odoo.registry(db_name)
+        with registry.cursor() as cr:
+            env = api.Environment(cr, SUPERUSER_ID, {})
+            
+            # Limpiar el servidor de correo saliente
+            mail_server = env['ir.mail_server'].search([], limit=1)
+            if mail_server:
+                mail_server.sudo().unlink()
+                _logger.info(f"Servidor de correo eliminado en la base de datos '{db_name}'")
+
+            # Limpiar el email de la compañía
+            company = env['res.company'].search([], limit=1)
+            if company:
+                company.sudo().write({'email': False})
+                _logger.info(f"Email de la compañía eliminado en la base de datos '{db_name}'")
+
+            cr.commit()            
