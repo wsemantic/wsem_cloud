@@ -5,7 +5,7 @@
             <div class="container mt-5">
                 <h2>¡Registro Exitoso!</h2>
                 <p>Gracias por registrarte, <strong><t t-esc="email"/></strong>.</p>
-                <p>Tu subdominio es: <strong><t t-esc="subdomain"/>.factuoo.com</strong></p>
+                <p>Tu base de datos es: <strong><t t-esc="subdomain"/>.factuoo.com</strong></p>
                 <p>Inicia sesión en tu cuenta:</p>
                 <a t-att-href="db_url" class="btn btn-primary">Iniciar Sesión</a>
             </div>

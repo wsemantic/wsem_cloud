@@ -2,7 +2,7 @@
     'name': "cloud_sas",
     'version': '1.0',
     'category': 'API',
-    'depends': ['base', 'auth_signup'],
+    'depends': ['base'],
     'data': [],
     'installable': True,
     'application': False,
