@@ -312,36 +312,31 @@ class CustomSignupController(http.Controller):
                 modules_to_install.button_immediate_install()
 
     def create_user_in_db(self, db_name, email, name):
-        """
-        Crea un usuario en la base de datos clonada y envía el correo para establecer contraseña.
-        """
-        registry = odoo.registry(db_name)
-        with registry.cursor() as cr:
-            env = api.Environment(cr, SUPERUSER_ID, {})
-            user_obj = env['res.users']
-            
-            # Crear el nuevo usuario con un contexto que fuerce el envío del correo
-            ctx = {
-                'create_user': True,
-                'no_reset_password': False,  # Asegura que se llame a action_reset_password
-                'force_send': True,  # Fuerza el envío inmediato del correo
-                'import_file': False,  # Asegura que force_send no se desactive
-            }
-            
-            new_user = user_obj.with_context(ctx).create({
-                'name': name,
-                'login': email,
-                'email': email,
-                'notification_type': 'email',
-            })
-            
-            # Forzar explícitamente el envío del correo de restablecimiento
-            try:
-                new_user.with_context(ctx).action_reset_password()
-                _logger.info(f"WSEM Correo de restablecimiento enviado para el usuario {new_user.name} ({new_user.email})")
-            except Exception as e:
-                _logger.error(f"WSEM Error al enviar el correo de restablecimiento: {str(e)}")
-            
-            cr.commit()
-            
+        with api.Environment.manage():
+            registry = odoo.registry(db_name)
+            with registry.cursor() as cr:
+                env = api.Environment(cr, SUPERUSER_ID, {})
+                
+                # Verificar y cargar la configuración del servidor de correo
+                mail_server = env['ir.mail_server'].search([], limit=1)
+                if not mail_server:
+                    raise UserError("No se encontró configuración de servidor de correo en la base de datos de destino.")
+                
+                _logger.info(f"Usando servidor de correo: {mail_server.name}")
+                
+                user_obj = env['res.users']
+                
+                # Crear el nuevo usuario
+                new_user = user_obj.create({
+                    'name': name,
+                    'login': email,
+                    'email': email,
+                    'notification_type': 'email',
+                })
+                
+                _logger.info(f"Usuario creado: {new_user.name} (ID: {new_user.id})")
+              
+                
+                cr.commit()
+        
         return new_user.id
