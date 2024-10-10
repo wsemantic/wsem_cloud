@@ -1,3 +1,4 @@
+/* Módulo Box */
 .module-box {
     border: 1px solid #ccc;
     padding: 10px;
@@ -16,9 +17,28 @@
     background-color: #f1f8ff;
 }
 
+/* Subdomain Group con Flexbox */
+.subdomain-group {
+    display: flex; /* Activar flexbox */
+    align-items: center; /* Alinear verticalmente en el centro */
+    justify-content: flex-start; /* Alinear el grupo a la izquierda */
+    max-width: 400px; /* Limitar el ancho máximo */
+    margin-left: 0; /* Alinear el grupo a la izquierda */
+    margin-right: auto; /* Mantener auto-margin en el lado derecho */
+}
+
+.subdomain-group .form-control {
+    text-align: right; /* Mantener la alineación del texto a la derecha */
+    flex-grow: 1; /* Hacer que el input ocupe el máximo espacio disponible */
+}
+
+/* Agrupación de media queries */
 @media (max-width: 768px) {
     .module-box {
         width: 100%;
+    }
+    .subdomain-group {
+        width: 100%; /* Asegurar que el grupo tome el 100% del ancho en pantallas pequeñas */
     }
 }
 
@@ -26,14 +46,4 @@
     .module-box {
         width: 30%;
     }
-}
-
-.subdomain-group {
-    max-width: 400px;
-    margin-left: auto;
-    margin-right: 0;
-}
-
-.subdomain-group .form-control {
-    text-align: right;
 }
