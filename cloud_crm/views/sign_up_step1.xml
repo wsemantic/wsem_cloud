@@ -46,7 +46,7 @@
                     </div>
 					<div class="mb-3 field-subdomain ">
                         <label for="subdomain_input">URL de la Base de Datos</label>
-                        <div class="input-group subdomain-group" style="max-width: 400px; margin-left: auto; margin-right: 0;">
+                        <div class="input-group subdomain-group">
                             <input type="text" name="subdomain" id="subdomain_input" required="required" class="form-control form-control-sm text-end" placeholder="subdominio" t-att-value="subdomain or ''"/>
                             <span class="input-group-text" id="subdomain_suffix">.factuoo.com</span>
                         </div>
