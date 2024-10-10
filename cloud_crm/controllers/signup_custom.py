@@ -47,8 +47,8 @@ class CustomSignupController(http.Controller):
             cloud_url = f"{subdomain}.factuoo.com"
             
             # Verificar si existe un res.partner con el mismo cloud_url
-            if self.url_exists(cloud_url):
-                error_subdomain = 'La URL de la base de datos ya está en uso. Por favor modifica el subdominio o primera parte de la URL de tu base de datos.'
+            if self.url_conflict(cloud_url, email):
+                error_subdomain = f"'{subdomain}' ya está en uso. Por favor modificalo e intenta de nuevo (modificar el subdominio o primera casilla de la URL)."
                 return request.render('cloud_crm.signup_step1', {
                     'error_subdomain': error_subdomain,
                     'name': name,
@@ -175,6 +175,7 @@ class CustomSignupController(http.Controller):
         name = signup_data.get('name')
         email = signup_data.get('email')
         subdomain = signup_data.get('subdomain')
+        company_name= signup_data.get('company_name')
 
         target_db = subdomain  # Usamos el subdominio como nombre de la base de datos
         source_db = 'verifactu'  # Nombre de la base de datos predefinida a clonar
@@ -208,7 +209,7 @@ class CustomSignupController(http.Controller):
             
         # Crear el usuario en la nueva base de datos
         try:
-            self.create_user_in_db(target_db, email, name, subdomain)
+            self.create_user_in_db(target_db, email, name, subdomain, company_name)
             _logger.info(f"WSEM Usuario '{email}' creado en la base de datos '{target_db}'")
         except Exception as e:
             _logger.error(f"Error al crear el usuario en la base de datos '{target_db}': {e}")
@@ -230,13 +231,19 @@ class CustomSignupController(http.Controller):
         partner = env['res.partner'].sudo().search([('email', '=', email)], limit=1)
         return partner
         
-    def url_exists(self, cloud_url):
+    def url_conflict(self, cloud_url, email):
         """
-        Verifica si existe un res.partner con el mismo cloud_url.
+        Verifica si existe un res.partner con el mismo cloud_url pero diferente email.
         """
         env = request.env
+        # Buscar un partner que tenga el mismo cloud_url
         partner = env['res.partner'].sudo().search([('cloud_url', '=', cloud_url)], limit=1)
-        return bool(partner)
+        
+        # Verificar si el partner existe y si el email es diferente
+        if partner and partner.email != email:
+            return True
+        return False
+
 
     def create_partner_in_db(self, name, email, company_name, dni, address, phone, cloud_url):
         """
@@ -322,15 +329,23 @@ class CustomSignupController(http.Controller):
             if modules_to_install:
                 modules_to_install.button_immediate_install()
 
-    def create_user_in_db(self, db_name, email, name, subdomain):
+    def create_user_in_db(self, db_name, email, name, subdomain, company_name):
         registry = odoo.registry(db_name)
         #REQUISITOS
-        # la bd a clonar debe incluir la configuracion de correo (factuo por ejemplo)
-        # El mail de la compañia se usara como remitente para el envio automatico de invitacion, debe ser del mismo dominio que la bd (registro@factuoo.com)
-        #Ambas cosas se limpian al final con el metodo clean
+        # La base de datos a clonar debe incluir la configuración de correo (por ejemplo, factuoo)
+        # El mail de la compañía se usará como remitente para el envío automático de la invitación, debe ser del mismo dominio que la base de datos (registro@factuoo.com)
+        # Ambas configuraciones se limpian al final con el método clean
         with registry.cursor() as cr:
             env = api.Environment(cr, SUPERUSER_ID, {})
             
+            # Actualizar el nombre de la única compañía existente
+            company = env['res.company'].search([], limit=1)
+            if company:
+                company.sudo().write({'name': company_name})
+                _logger.info(f"Nombre de la compañía actualizado a: {company_name}")
+            else:
+                raise UserError("No se encontró ninguna compañía en la base de datos.")
+                
             # Verificar y cargar la configuración del servidor de correo
             mail_server = env['ir.mail_server'].search([], limit=1)
             if not mail_server:
@@ -354,8 +369,10 @@ class CustomSignupController(http.Controller):
             
             _logger.info(f"Usuario creado: {new_user.name} (ID: {new_user.id})")
             
+            
             # Confirmar la transacción
             cr.commit()
+
             
     def clean_mail_server_and_company_email(self, db_name):
         """
