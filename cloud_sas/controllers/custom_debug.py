@@ -1,8 +1,8 @@
 import logging
 from odoo import http
 from odoo.addons.web.controllers.home import Home
-from odoo.http import request
-from odoo.exceptions import AccessError, SessionExpiredException
+from odoo.http import request, SessionExpiredException
+from odoo.exceptions import AccessError
 from odoo.addons.web.controllers.main import ensure_db, is_user_internal, security
 
 _logger = logging.getLogger(__name__)
