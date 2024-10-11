@@ -3,7 +3,6 @@ from odoo import http
 from odoo.addons.web.controllers.home import Home
 from odoo.http import request, SessionExpiredException
 from odoo.exceptions import AccessError
-from odoo.addons.web.controllers.main import ensure_db, security
 
 _logger = logging.getLogger(__name__)
 
@@ -14,15 +13,19 @@ class CustomHome(Home):
         _logger.info("WSEM - Accediendo a la ruta /web con session uid: %s", request.session.uid)
 
         # Asegurar que tenemos una base de datos y un usuario
-        ensure_db()
+        if not request.session.db:
+            return request.redirect('/web/database/selector')
+
         if not request.session.uid:
             return request.redirect('/web/login', 303)
+
         if kw.get('redirect'):
             return request.redirect(kw.get('redirect'), 303)
-        if not security.check_session(request.session, request.env):
+
+        # Verificar si la sesión es válida
+        if not self._validate_session():
             raise SessionExpiredException("Session expired")
 
-        # Reemplazamos is_user_internal por una verificación directa
         if not self.is_user_internal(request.session.uid):
             return request.redirect('/web/login_successful', 303)
 
@@ -62,3 +65,9 @@ class CustomHome(Home):
         """Determina si un usuario es interno (no es usuario portal ni público)"""
         user = request.env['res.users'].sudo().browse(uid)
         return not user._is_public() and not user.share
+
+    def _validate_session(self):
+        """Valida la sesión del usuario."""
+        # En Odoo 16, podemos validar la sesión comprobando si el usuario está activo
+        user = request.env['res.users'].sudo().browse(request.session.uid)
+        return user.exists() and user.active
