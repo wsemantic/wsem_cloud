@@ -3,7 +3,7 @@ from odoo import http
 from odoo.addons.web.controllers.home import Home
 from odoo.http import request, SessionExpiredException
 from odoo.exceptions import AccessError
-from odoo.addons.web.controllers.main import ensure_db, is_user_internal, security
+from odoo.addons.web.controllers.main import ensure_db, security
 
 _logger = logging.getLogger(__name__)
 
@@ -21,7 +21,9 @@ class CustomHome(Home):
             return request.redirect(kw.get('redirect'), 303)
         if not security.check_session(request.session, request.env):
             raise SessionExpiredException("Session expired")
-        if not is_user_internal(request.session.uid):
+
+        # Reemplazamos is_user_internal por una verificación directa
+        if not self.is_user_internal(request.session.uid):
             return request.redirect('/web/login_successful', 303)
 
         # Refrescar el tiempo de vida de la sesión
@@ -55,3 +57,8 @@ class CustomHome(Home):
             return response
         except AccessError:
             return request.redirect('/web/login?error=access')
+
+    def is_user_internal(self, uid):
+        """Determina si un usuario es interno (no es usuario portal ni público)"""
+        user = request.env['res.users'].sudo().browse(uid)
+        return not user._is_public() and not user.share
