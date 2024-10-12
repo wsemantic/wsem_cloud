@@ -6,7 +6,7 @@
         <record id="user_factuoo_data" model="ir.model.data">
             <field name="name">user_factuoo</field>
             <field name="model">res.users</field>
-            <field name="module">tu_modulo</field>
+            <field name="module">cloud_saas</field>
             <field name="res_id">factuoo_res_id</field>
             <field name="noupdate" eval="True"/>
         </record>
