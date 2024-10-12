@@ -1,0 +1,19 @@
+<odoo>
+    <data noupdate="1">
+
+        <record id="rule_hide_factuoo_admin" model="ir.rule">
+            <field name="name">Denegar acceso al módulo 'cloud_saas'</field>
+            <field name="model_id" ref="base.model_ir_module_module"/>
+            <field name="domain_force">[('name', '!=', 'cloud_saas')]<!-- Excluye el módulo --></field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+            <field name="perm_read" eval="True"/>
+        </record>
+		<record id="rule_access_mi_modulo" model="ir.rule">
+            <field name="name">Permitir acceso al módulo 'cloud_saas'</field>
+            <field name="model_id" ref="base.model_ir_module_module"/>
+            <field name="domain_force">[('name', '=', 'cloud_saas')]<!-- Incluye el módulo --></field>
+            <field name="groups" eval="[(4, ref('cloud_saas.factuoo_admin'))]"/>
+            <field name="perm_read" eval="True"/>
+        </record>
+    </data>
+</odoo>

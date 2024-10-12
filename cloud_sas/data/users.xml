@@ -1,0 +1,8 @@
+<odoo>
+    <data noupdate="1">
+        <record id="user_factuoo" model="res.users">
+            <field name="login">factuoo</field>
+            <!-- No incluyas otros campos para evitar sobrescribir datos -->
+        </record>
+    </data>
+</odoo>
