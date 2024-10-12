@@ -12,7 +12,7 @@
             <field name="name">Permitir acceso al módulo 'cloud_saas'</field>
             <field name="model_id" ref="base.model_ir_module_module"/>
             <field name="domain_force">[('name', '=', 'cloud_sas')]<!-- Incluye el módulo --></field>
-            <field name="groups" eval="[(4, ref('cloud_saas.factuoo_admin'))]"/>
+            <field name="groups" eval="[(4, ref('cloud_sas.factuoo_admin'))]"/>
             <field name="perm_read" eval="True"/>
         </record>
     </data>
