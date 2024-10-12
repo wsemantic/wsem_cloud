@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <!-- Modificar la vista de lista de usuarios -->
+        <record id="view_users_tree_inherit_hide_admin" model="ir.ui.view">
+            <field name="name">res.users.tree.hide.admin</field>
+            <field name="model">res.users</field>
+            <field name="inherit_id" ref="base.view_users_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="domain">[('login', '!=', 'factuoo')]</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Modificar la vista de búsqueda de usuarios -->
+        <record id="view_users_search_inherit_hide_admin" model="ir.ui.view">
+            <field name="name">res.users.search.hide.admin</field>
+            <field name="model">res.users</field>
+            <field name="inherit_id" ref="base.view_users_search"/>
+            <field name="arch" type="xml">
+                <xpath expr="//search" position="inside">
+                    <filter string="No Admin" domain="[('login', '!=', 'factuoo')]" context="{'group_by': 'login'}"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

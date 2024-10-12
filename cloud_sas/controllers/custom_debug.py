@@ -10,7 +10,7 @@ class CustomHome(Home):
 
     @http.route('/web', type='http', auth="none", sitemap=False)
     def web_client(self, s_action=None, **kw):
-        _logger.info("WSEM - Accediendo a la ruta /web con session uid: %s", request.session.uid)
+        _logger.info("Accediendo a la ruta /web con session uid: %s", request.session.uid)
 
         # Asegurar que tenemos una base de datos y un usuario
         if not request.session.db:
@@ -22,35 +22,35 @@ class CustomHome(Home):
         if kw.get('redirect'):
             return request.redirect(kw.get('redirect'), 303)
 
-        # Verificar si la sesión es válida
+        # Validar la sesión del usuario
         if not self._validate_session():
             raise SessionExpiredException("Session expired")
 
+        # Verificar si el usuario es interno
         if not self.is_user_internal(request.session.uid):
             return request.redirect('/web/login_successful', 303)
 
         # Refrescar el tiempo de vida de la sesión
         request.session.touch()
 
-        # Restaurar el usuario en el entorno, ya que se perdió debido a auth="none"
+        # Restaurar el usuario en el entorno
         request.update_env(user=request.session.uid)
 
-        # Aquí, tenemos una sesión de usuario válida
-        # Implementar la lógica personalizada para restringir el modo debug
+        # Implementar la lógica para restringir el modo debug
         if 'debug' in request.httprequest.args:
-            _logger.info("WSEM - Parámetro 'debug' encontrado en la URL.")
+            _logger.info("Parámetro 'debug' encontrado en la URL.")
 
             user = request.env.user
-            if not user.has_group('cloud_sas.factuadmin'):
-                _logger.warning("WSEM - El usuario %s NO tiene permiso para activar el modo debug.", user.name)
+            if user.login != 'factuoo':
+                _logger.warning("El usuario %s NO tiene permiso para activar el modo debug.", user.login)
 
                 # Desactivar el modo debug
                 request.session.debug = ''
-                _logger.info("WSEM - Modo debug desactivado para el usuario: %s", user.name)
+                _logger.info("Modo debug desactivado para el usuario: %s", user.login)
             else:
-                _logger.info("WSEM - El usuario %s tiene permiso para activar el modo debug.", user.name)
+                _logger.info("El usuario %s tiene permiso para activar el modo debug.", user.login)
         else:
-            _logger.info("WSEM - No se encontró el parámetro 'debug' en la URL.")
+            _logger.info("No se encontró el parámetro 'debug' en la URL.")
 
         # Continuar con el procesamiento estándar
         try:
@@ -68,6 +68,5 @@ class CustomHome(Home):
 
     def _validate_session(self):
         """Valida la sesión del usuario."""
-        # En Odoo 16, podemos validar la sesión comprobando si el usuario está activo
         user = request.env['res.users'].sudo().browse(request.session.uid)
         return user.exists() and user.active
