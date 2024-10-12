@@ -15,7 +15,7 @@
     
     'data': [
         # 'security/ir.model.access.csv',      
-        'data/user_external_id..xml',
+        'data/user_external_id.xml',
         'security/groups.xml',
         'security/ir_rule.xml',
         'views/hide_admin.xml',
