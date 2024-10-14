@@ -219,6 +219,8 @@ class CustomSignupController(http.Controller):
         try:
             self.clean_mail_server_and_company_email(target_db)
             _logger.info(f"Servidor de correo y email de la compañía limpiados en la base de datos '{target_db}'")
+            self.activate_security_rules(target_db,['factuoo', 'cloud_sas'])
+            _logger.info(f"Activad reglas en '{target_db}'")
         except Exception as e:
             _logger.error(f"Error al limpiar el servidor de correo o el email de la compañía: {e}")
             raise
@@ -368,18 +370,17 @@ class CustomSignupController(http.Controller):
             })
             
             _logger.info(f"Usuario creado: {new_user.name} (ID: {new_user.id})")
-            
-            self.activate_security_rules(['factuoo', 'cloud_sas'])
+           
             
             # Confirmar la transacción
             cr.commit()
 
-    def activate_security_rules(self, keywords):
+    def activate_security_rules(self, db_name, keywords):
         """
         Método para activar reglas de seguridad basadas en palabras clave.
         
         :param keywords: Lista de palabras clave para buscar en el nombre de las reglas.
-        """
+        """        
         # Construir dominio de búsqueda dinámicamente
         domain = ['|']
         for i, keyword in enumerate(keywords):
@@ -387,16 +388,19 @@ class CustomSignupController(http.Controller):
                 domain.append(('name', 'ilike', keyword))
             else:
                 domain.append(('name', 'ilike', keyword))
-        
-        # Buscar las reglas que coinciden con las palabras clave
-        rules = self.env['ir.rule'].search(domain)
-        
-        # Activar las reglas encontradas
-        if rules:
-            rules.write({'active': True})
-            _logger.info(f"Activadas {len(rules)} reglas de seguridad relacionadas con {keywords}.")
-        else:
-            _logger.warning(f"No se encontraron reglas de seguridad con las palabras clave: {keywords}.")
+
+        registry = odoo.registry(db_name)
+        with registry.cursor() as cr:
+            env = api.Environment(cr, SUPERUSER_ID, {})
+            # Buscar las reglas que coinciden con las palabras clave
+            rules = self.env['ir.rule'].search(domain)
+            
+            # Activar las reglas encontradas
+            if rules:
+                rules.write({'active': True})
+                _logger.info(f"Activadas {len(rules)} reglas de seguridad relacionadas con {keywords}.")
+            else:
+                _logger.warning(f"No se encontraron reglas de seguridad con las palabras clave: {keywords}.")
             
     def clean_mail_server_and_company_email(self, db_name):
         """
@@ -417,5 +421,8 @@ class CustomSignupController(http.Controller):
             if company:
                 company.sudo().write({'email': False})
                 _logger.info(f"Email de la compañía eliminado en la base de datos '{db_name}'")
+                
+            
 
             cr.commit()            
+            
