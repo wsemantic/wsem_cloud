@@ -419,7 +419,7 @@ class CustomSignupController(http.Controller):
         
         registry = odoo.registry(db_name)
         with registry.cursor() as cr:
-            env = api.Environment(cr, SUPERUSER_ID, {})
+            env = api.Environment(cr, SUPERUSER_ID, {'active_test': False})
             # Buscar las reglas que coinciden con las palabras clave
             rules = env['ir.rule'].search(domain)
             
