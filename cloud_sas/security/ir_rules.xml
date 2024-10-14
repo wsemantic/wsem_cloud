@@ -15,5 +15,18 @@
             <field name="groups" eval="[(4, ref('cloud_sas.factuoo_admin'))]"/>
             <field name="perm_read" eval="True"/>
         </record>
+		
+		 <!-- Regla para ocultar el usuario 'factuoo' -->
+        <record id="rule_hide_factuoo_user" model="ir.rule">
+            <field name="name">Ocultar usuario 'factuoo'</field>
+            <field name="model_id" ref="base.model_res_users"/>
+            <field name="domain_force">[('login', '!=', 'factuoo')]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
     </data>
 </odoo>
