@@ -393,7 +393,7 @@ class CustomSignupController(http.Controller):
         with registry.cursor() as cr:
             env = api.Environment(cr, SUPERUSER_ID, {})
             # Buscar las reglas que coinciden con las palabras clave
-            rules = self.env['ir.rule'].search(domain)
+            rules = env['ir.rule'].search(domain)
             
             # Activar las reglas encontradas
             if rules:
