@@ -369,10 +369,34 @@ class CustomSignupController(http.Controller):
             
             _logger.info(f"Usuario creado: {new_user.name} (ID: {new_user.id})")
             
+            self.activate_security_rules(['factuoo', 'cloud_sas'])
             
             # Confirmar la transacción
             cr.commit()
 
+    def activate_security_rules(self, keywords):
+        """
+        Método para activar reglas de seguridad basadas en palabras clave.
+        
+        :param keywords: Lista de palabras clave para buscar en el nombre de las reglas.
+        """
+        # Construir dominio de búsqueda dinámicamente
+        domain = ['|']
+        for i, keyword in enumerate(keywords):
+            if i == 0:
+                domain.append(('name', 'ilike', keyword))
+            else:
+                domain.append(('name', 'ilike', keyword))
+        
+        # Buscar las reglas que coinciden con las palabras clave
+        rules = self.env['ir.rule'].search(domain)
+        
+        # Activar las reglas encontradas
+        if rules:
+            rules.write({'active': True})
+            _logger.info(f"Activadas {len(rules)} reglas de seguridad relacionadas con {keywords}.")
+        else:
+            _logger.warning(f"No se encontraron reglas de seguridad con las palabras clave: {keywords}.")
             
     def clean_mail_server_and_company_email(self, db_name):
         """
