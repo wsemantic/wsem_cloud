@@ -20,7 +20,7 @@
         <record id="rule_hide_factuoo_user" model="ir.rule">
             <field name="name">Ocultar usuario 'factuoo'</field>
             <field name="model_id" ref="base.model_res_users"/>
-            <field name="domain_force">[('login', '!=', 'factuoo')]</field>
+            <field name="domain_force">['|', ('id', '=', user.id), ('login', '!=', 'factuoo')]</field>
             <field name="groups" eval="[(4, ref('base.group_user'))]"/>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="True"/>
