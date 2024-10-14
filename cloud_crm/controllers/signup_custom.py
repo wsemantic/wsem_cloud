@@ -369,11 +369,37 @@ class CustomSignupController(http.Controller):
                 'notification_type': 'email',
             })
             
+            # Asignar el usuario al grupo de administradores
+            self.assign_admin_group(env, new_user)
+            
             _logger.info(f"Usuario creado: {new_user.name} (ID: {new_user.id})")
            
             
             # Confirmar la transacción
             cr.commit()
+    
+    def assign_admin_group(self, env, user):
+        """
+        Asigna al usuario proporcionado al grupo de administradores.
+        
+        :param env: Entorno de Odoo.
+        :param user: Registro del usuario a asignar.
+        """
+        try:
+            # Obtener la referencia al grupo de administradores
+            admin_group = env.ref('base.group_system')
+        except ValueError:
+            _logger.error("No se encontró el grupo 'Administration / Settings' (base.group_system).")
+            raise UserError("No se pudo asignar al grupo de administradores porque no se encontró 'base.group_system'.")
+
+        if admin_group:
+            # Asignar el grupo al usuario
+            user.groups_id = [(4, admin_group.id)]
+            _logger.info(f"Usuario '{user.name}' asignado al grupo de administradores.")
+        else:
+            _logger.error("El grupo 'Administration / Settings' no está disponible en esta base de datos.")
+            raise UserError("No se pudo asignar al grupo de administradores porque no está disponible.")
+
 
     def activate_security_rules(self, db_name, keywords):
         """
