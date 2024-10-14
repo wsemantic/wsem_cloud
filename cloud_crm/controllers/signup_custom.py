@@ -219,7 +219,7 @@ class CustomSignupController(http.Controller):
         try:
             self.clean_mail_server_and_company_email(target_db)
             _logger.info(f"Servidor de correo y email de la compañía limpiados en la base de datos '{target_db}'")
-            self.activate_security_rules(target_db,['factuoo', 'cloud_sas'])
+            self.activate_security_rules(target_db,['factuoo', 'cloud'])
             _logger.info(f"Activad reglas en '{target_db}'")
         except Exception as e:
             _logger.error(f"Error al limpiar el servidor de correo o el email de la compañía: {e}")
@@ -415,7 +415,7 @@ class CustomSignupController(http.Controller):
         else:
             domain = [('name', 'ilike', keywords[0])]
         
-        _logger.debug(f"Dominio de búsqueda construido: {domain}")
+        _logger.info(f"Dominio de búsqueda construido: {domain}")
         
         registry = odoo.registry(db_name)
         with registry.cursor() as cr:
