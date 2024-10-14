@@ -405,28 +405,38 @@ class CustomSignupController(http.Controller):
         """
         Método para activar reglas de seguridad basadas en palabras clave.
         
+        :param db_name: Nombre de la base de datos.
         :param keywords: Lista de palabras clave para buscar en el nombre de las reglas.
         """        
         # Construir dominio de búsqueda dinámicamente
-        domain = ['|']
-        for i, keyword in enumerate(keywords):
-            if i == 0:
-                domain.append(('name', 'ilike', keyword))
-            else:
-                domain.append(('name', 'ilike', keyword))
-
+        if len(keywords) > 1:
+            # Añadir N-1 operadores '|'
+            domain = ['|'] * (len(keywords) - 1) + [('name', 'ilike', kw) for kw in keywords]
+        else:
+            domain = [('name', 'ilike', keywords[0])]
+        
+        _logger.debug(f"Dominio de búsqueda construido: {domain}")
+        
         registry = odoo.registry(db_name)
         with registry.cursor() as cr:
             env = api.Environment(cr, SUPERUSER_ID, {})
             # Buscar las reglas que coinciden con las palabras clave
             rules = env['ir.rule'].search(domain)
             
-            # Activar las reglas encontradas
+            # Log de las reglas encontradas
             if rules:
+                rule_names = rules.mapped('name')
+                _logger.info(f"Reglas encontradas para {keywords}: {rule_names}")
+                # Activar las reglas encontradas
                 rules.write({'active': True})
                 _logger.info(f"Activadas {len(rules)} reglas de seguridad relacionadas con {keywords}.")
             else:
                 _logger.warning(f"No se encontraron reglas de seguridad con las palabras clave: {keywords}.")
+                # Opcional: Listar todas las reglas para depuración
+                all_rules = env['ir.rule'].search([])
+                all_rule_names = all_rules.mapped('name')
+                _logger.debug(f"Todas las reglas de seguridad disponibles: {all_rule_names}")
+
             
     def clean_mail_server_and_company_email(self, db_name):
         """
