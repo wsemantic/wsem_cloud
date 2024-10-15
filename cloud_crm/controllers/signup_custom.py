@@ -160,8 +160,8 @@ class CustomSignupController(http.Controller):
             modules = [
                 {'name': 'Ventas', 'technical_name': 'sale_management', 'icon': '/path/to/sale_icon.png'},
                 {'name': 'Contabilidad', 'technical_name': 'account', 'icon': '/path/to/account_icon.png'},
-                {'name': 'Inventario', 'technical_name': 'stock', 'icon': '/cloud_crm/static/img/stock.svg'},
-                {'name': 'Compras', 'technical_name': 'purchase', 'icon': '/path/to/purchase_icon.png'}
+                {'name': 'Inventario', 'technical_name': 'stock', 'icon': '/cloud_crm/static/src/img/stock.svg'},
+                {'name': 'Fabricación', 'technical_name': 'mrp', 'icon': '/cloud_crm/static/src/img/mrp.png'}
             ]
 
             return request.render('cloud_crm.signup_step2', {'modules': modules})
