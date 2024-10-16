@@ -87,15 +87,14 @@
         margin-bottom: 5px; /* Reducir el margen inferior del icono */
     }
 
-    .module-box label {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100%;
-        text-align: center;
-        margin-top: -20px; /* Acercar el checkbox al icono */
-    }
+	.module-box label span {
+		display: inline-block;
+		overflow: hidden; /* Oculta el desbordamiento del texto */
+		white-space: nowrap; /* Evita que el texto salte a la siguiente línea */
+		text-overflow: ellipsis; /* Añade puntos suspensivos al recortar el texto */
+		direction: ltr; /* Asegura que el texto se recorte solo por la derecha */
+		width: 100%; /* Asegura que el texto ocupe el ancho total disponible */
+	}
 
     .module-box input[type="checkbox"] {
         margin-bottom: 5px; /* Reducir el margen entre el checkbox y el icono */
