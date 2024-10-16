@@ -158,10 +158,13 @@ class CustomSignupController(http.Controller):
         else:
             # Definir una lista fija de módulos específicos
             modules = [
-                {'name': 'Ventas', 'technical_name': 'sale_management', 'icon': '/path/to/sale_icon.png'},
-                {'name': 'Contabilidad', 'technical_name': 'account', 'icon': '/path/to/account_icon.png'},
                 {'name': 'Inventario', 'technical_name': 'stock', 'icon': '/cloud_crm/static/src/img/stock.svg'},
-                {'name': 'Fabricación', 'technical_name': 'mrp', 'icon': '/cloud_crm/static/src/img/mrp.svg'}
+                {'name': 'Proyectos', 'technical_name': 'project', 'icon': '/cloud_crm/static/src/img/project.png'},
+                {'name': 'Fabricación', 'technical_name': 'mrp', 'icon': '/cloud_crm/static/src/img/mrp.svg'},
+                {'name': 'CRM- (Oportunidades Comerciales)', 'technical_name': 'crm', 'icon': '/cloud_crm/static/src/img/crm.svg'},                  
+                {'name': 'Email Marketing', 'technical_name': 'mass_mailing', 'icon': '/cloud_crm/static/src/img/mass_mailing.svg'},            
+                {'name': 'Sitio WEB', 'technical_name': 'website', 'icon': '/cloud_crm/static/src/img/website.svg'},  
+                {'name': 'Sitio WEB', 'technical_name': 'website_sale', 'icon': '/cloud_crm/static/src/img/website_sale.svg'},  
             ]
 
             return request.render('cloud_crm.signup_step2', {'modules': modules})
