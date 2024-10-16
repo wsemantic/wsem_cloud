@@ -73,7 +73,7 @@
         width: calc(33.33% - 10px); /* Tres módulos por fila */
         display: inline-block;
         vertical-align: top;
-        height: 200px; /* Fija la altura del recuadro */
+        height: 1200px; /* Fija la altura del recuadro */
         overflow: hidden; /* Evita que el contenido desborde el recuadro */
     }
 
