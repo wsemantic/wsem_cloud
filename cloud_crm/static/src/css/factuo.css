@@ -70,7 +70,7 @@
 
 @media (min-width: 768px) {
     .module-box {
-        width: calc(33.33% - 10px); /* Tres módulos por fila */
+        width: calc(25% - 10px); /* Tres módulos por fila */
         display: inline-block;
         vertical-align: top;
         height: 120px; /* Fijar la altura */
@@ -78,7 +78,7 @@
     }
 
     .module-box img {
-        max-width: 70px; /* Ajustar el tamaño del icono para que se ajuste mejor */
+        max-width: 50px; /* Ajustar el tamaño del icono para que se ajuste mejor */
         margin-bottom: 5px; /* Reducir el margen inferior del icono */
     }
 
