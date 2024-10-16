@@ -2,7 +2,7 @@
 <odoo>
     <template id="signup_step2" name="Custom Signup Step 2">
         <t t-call="website.layout">
-            <div class="container">
+            <div class="container step2-modules">
                 <h1>Registro de Usuario - Paso 2</h1>
                 <p>Selecciona los módulos que deseas instalar en tu base de datos.</p>
                 <form t-att-action="request.httprequest.path" method="post" id="signup_step2_form">

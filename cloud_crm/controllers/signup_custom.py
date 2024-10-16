@@ -159,7 +159,7 @@ class CustomSignupController(http.Controller):
             # Definir una lista fija de módulos específicos
             modules = [
                 {'name': 'Inventario', 'technical_name': 'stock', 'icon': '/cloud_crm/static/src/img/stock.svg'},
-                {'name': 'Proyectos', 'technical_name': 'project', 'icon': '/cloud_crm/static/src/img/project.png'},
+                {'name': 'Proyectos', 'technical_name': 'project', 'icon': '/cloud_crm/static/src/img/project.svg'},
                 {'name': 'Fabricación', 'technical_name': 'mrp', 'icon': '/cloud_crm/static/src/img/mrp.svg'},
                 {'name': 'CRM- (Oportunidades Comerciales)', 'technical_name': 'crm', 'icon': '/cloud_crm/static/src/img/crm.svg'},                  
                 {'name': 'Email Marketing', 'technical_name': 'mass_mailing', 'icon': '/cloud_crm/static/src/img/mass_mailing.svg'},            

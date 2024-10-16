@@ -40,6 +40,31 @@
     .subdomain-group {
         width: 100%; /* Asegurar que el grupo tome el 100% del ancho en pantallas pequeñas */
     }
+	/*SETP2*/
+	.step2-modules .module-box {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .step2-modules .module-box img {
+        max-width: 40px;
+        margin-right: 10px;
+    }
+
+    .step2-modules .module-box label {
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
+
+    .step2-modules .module-box input[type="checkbox"] {
+        margin-right: 10px;
+    }
+
+    .step2-modules .module-box span {
+        white-space: nowrap;
+    }
 }
 
 @media (min-width: 768px) {
@@ -47,3 +72,4 @@
         width: 30%;
     }
 }
+
