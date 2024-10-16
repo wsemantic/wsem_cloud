@@ -10,7 +10,7 @@
                     <div class="row">
                         <!-- Iterar sobre la lista fija de módulos -->
                         <t t-foreach="modules" t-as="module">
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="module-box">
                                     <img t-att-src="module['icon']" alt="" class="img-fluid"/>
                                     <label>
