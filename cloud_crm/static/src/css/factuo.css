@@ -67,9 +67,23 @@
     }
 }
 
+
 @media (min-width: 768px) {
     .module-box {
-        width: 30%;
+        width: calc(33.33% - 10px); /* Distribuir tres módulos por fila con espacio entre ellos */
+        display: inline-block;
+        vertical-align: top;
     }
+
+    .module-box img {
+        max-width: 60px; /* Tamaño más grande en pantallas grandes */
+        margin-bottom: 10px;
+    }
+
+    .module-box label {
+        display: block;
+        text-align: center;
+    }
+}
 }
 
