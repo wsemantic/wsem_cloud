@@ -70,20 +70,26 @@
 
 @media (min-width: 768px) {
     .module-box {
-        width: calc(33.33% - 10px); /* Distribuir tres módulos por fila con espacio entre ellos */
+        width: calc(33.33% - 10px); /* Tres módulos por fila */
         display: inline-block;
         vertical-align: top;
+        height: 200px; /* Fija la altura del recuadro */
+        overflow: hidden; /* Evita que el contenido desborde el recuadro */
     }
 
     .module-box img {
-        max-width: 60px; /* Tamaño más grande en pantallas grandes */
+        max-width: 60px; /* Tamaño del icono en pantallas grandes */
         margin-bottom: 10px;
     }
 
     .module-box label {
         display: block;
         text-align: center;
+        height: 100%; /* Asegura que el texto también se alinee con la altura */
+        display: flex;
+        flex-direction: column;
+        justify-content: center; /* Centra verticalmente el contenido */
     }
 }
-}
+
 
