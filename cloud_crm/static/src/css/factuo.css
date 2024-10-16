@@ -73,23 +73,33 @@
         width: calc(33.33% - 10px); /* Tres módulos por fila */
         display: inline-block;
         vertical-align: top;
-        height: 120px; /* Fija la altura del recuadro */
-        overflow: hidden; /* Evita que el contenido desborde el recuadro */
+        height: 120px; /* Fijar la altura */
+        overflow: hidden; /* Evitar desbordamiento */
     }
 
     .module-box img {
-        max-width: 60px; /* Tamaño del icono en pantallas grandes */
-        margin-bottom: 0px;
+        max-width: 50px; /* Ajustar el tamaño del icono para que se ajuste mejor */
+        margin-bottom: 5px; /* Reducir el margen inferior del icono */
     }
 
     .module-box label {
-        display: block;
-        text-align: center;
-        height: 100%; /* Asegura que el texto también se alinee con la altura */
         display: flex;
         flex-direction: column;
-        justify-content: center; /* Centra verticalmente el contenido */
+        align-items: center; /* Alinear el checkbox y el texto al centro */
+        justify-content: center; /* Centrar verticalmente el contenido */
+        height: 100%;
+        text-align: center;
+        margin-top: -10px; /* Juntar más el checkbox al icono */
+    }
+
+    .module-box input[type="checkbox"] {
+        margin-bottom: 5px; /* Reducir el margen inferior del checkbox */
+    }
+
+    .module-box span {
+        white-space: nowrap; /* Evitar que el texto se divida en varias líneas */
     }
 }
+
 
 
