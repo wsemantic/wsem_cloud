@@ -67,39 +67,41 @@
     }
 }
 
-
 @media (min-width: 768px) {
     .module-box {
-        width: calc(25% - 10px); /* Tres módulos por fila */
+        width: calc(25% - 10px); /* Cuatro módulos por fila */
         display: inline-block;
         vertical-align: top;
-        height: 120px; /* Fijar la altura */
+        height: 120px; /* Mantener la altura fija */
         overflow: hidden; /* Evitar desbordamiento */
+        box-sizing: border-box; /* Incluir padding y borde en el ancho total */
+        margin-right: 10px; /* Espacio entre los módulos */
+    }
+
+    .module-box:nth-child(4n) {
+        margin-right: 0; /* Eliminar el margen derecho en el último elemento de cada fila */
     }
 
     .module-box img {
-        max-width: 50px; /* Ajustar el tamaño del icono para que se ajuste mejor */
+        max-width: 50px; /* Mantener el tamaño del icono */
         margin-bottom: 5px; /* Reducir el margen inferior del icono */
     }
 
     .module-box label {
         display: flex;
         flex-direction: column;
-        align-items: center; /* Alinear el checkbox y el texto al centro */
-        justify-content: center; /* Centrar verticalmente el contenido */
+        align-items: center;
+        justify-content: center;
         height: 100%;
         text-align: center;
-        margin-top: -20px; /* Juntar más el checkbox al icono */
+        margin-top: -20px; /* Acercar el checkbox al icono */
     }
 
     .module-box input[type="checkbox"] {
-        margin-bottom: 5px; /* Reducir el margen inferior del checkbox */
+        margin-bottom: 5px; /* Reducir el margen entre el checkbox y el icono */
     }
 
     .module-box span {
         white-space: nowrap; /* Evitar que el texto se divida en varias líneas */
     }
 }
-
-
-
