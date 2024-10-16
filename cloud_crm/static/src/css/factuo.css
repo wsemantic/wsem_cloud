@@ -69,7 +69,7 @@
 
 @media (min-width: 768px) {
     .module-box {
-        width: calc(10% - 0px); /* Cuatro módulos por fila */
+        width: calc(40% - 0px); /* Cuatro módulos por fila */
         display: inline-block;
         vertical-align: top;
         height: 120px; /* Mantener la altura fija */
