@@ -79,7 +79,7 @@
 
     .module-box img {
         max-width: 60px; /* Tamaño del icono en pantallas grandes */
-        margin-bottom: 10px;
+        margin-bottom: 0px;
     }
 
     .module-box label {
