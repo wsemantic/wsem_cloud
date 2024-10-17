@@ -1,10 +1,32 @@
-/* Módulo Box - estilo básico */
-.module-box {border: 1px solid #ccc; padding: 5px; text-align: center; margin-bottom: 15px; box-sizing: border-box;}
+/* Módulo Box - estilo básico con límite de ancho */
+.module-box {
+    border: 1px solid #ccc; 
+    padding: 5px; 
+    text-align: center; 
+    margin-bottom: 15px; 
+    box-sizing: border-box; 
+    max-width: 250px; /* Establece un ancho máximo */
+    width: 100%; /* Se adapta al 100% del contenedor disponible hasta alcanzar el max-width */
+}
+
 .module-box img {max-width: 80px; margin-bottom: 5px;}
 
 /* Eliminar cualquier padding o margen en label */
-.module-box label {padding: 0; margin: 0; display: inline-block; width: 100%; text-align: center;}
+.module-box label {
+    padding: 0; 
+    margin: 0; 
+    display: inline-block; 
+    width: 100%; 
+    text-align: center;
+}
 
 /* Estilos para span dentro del label - eliminamos cualquier exceso */
-.module-box label span {font-weight: normal; font-size: 14px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; display: inline-block; width: 90%;}
-
+.module-box label span {
+    font-weight: normal; 
+    font-size: 14px; 
+    white-space: nowrap; 
+    text-overflow: ellipsis; 
+    overflow: hidden; 
+    display: inline-block; 
+    width: 90%;
+}
