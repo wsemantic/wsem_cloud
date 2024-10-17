@@ -13,7 +13,7 @@
                             <div class="col-md-3">
                                 <div class="module-box">
                                     <img t-att-src="module['icon']" alt="" class="img-fluid"/>
-                                    <label>
+                                    <label style="padding: 0; margin: 0;">
                                         <input type="checkbox" name="modules" t-att-value="module['technical_name']"/>
                                         <span t-esc="module['name']"/>
                                     </label>
