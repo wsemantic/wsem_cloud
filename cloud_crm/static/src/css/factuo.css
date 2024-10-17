@@ -20,8 +20,6 @@
 
 /* Estilos específicos para step2 */
 .step2-modules .module-box {
-    display: flex;
-    align-items: center;
     margin-bottom: 10px;
 }
 
@@ -31,13 +29,13 @@
 }
 
 .step2-modules .module-box label {
-    display: flex;
-    align-items: center;
+    display: inline-block; /* No usar flex por defecto */
     width: 100%;
+    text-align: center; /* Centra el checkbox y el texto */
 }
 
 .step2-modules .module-box input[type="checkbox"] {
-    margin-right: 10px;
+    margin-right: 5px; /* Ajustar margen entre checkbox y texto */
 }
 
 .step2-modules .module-box label span {
@@ -48,7 +46,7 @@
     white-space: nowrap; /* Mantiene texto en una línea */
     text-overflow: ellipsis; /* Puntos suspensivos si se corta */
     direction: ltr; /* Recorte por la derecha */
-    width: 100%; /* Asegura que el texto use todo el ancho */
+    width: calc(100% - 25px); /* Asegura espacio para el checkbox */
 }
 
 /* Estilos de subdominio (utilizados en otras páginas) */
@@ -74,6 +72,11 @@
 
     .subdomain-group {
         width: 100%;
+    }
+
+    .step2-modules .module-box label {
+        display: flex; /* Solo usar flex en pantallas pequeñas */
+        align-items: center;
     }
 }
 
@@ -101,6 +104,4 @@
     }
 
     .module-box span {
-        white-space: nowrap; /* Mantener una sola línea */
-    }
-}
+        white-space: nowrap; /* Mantener
