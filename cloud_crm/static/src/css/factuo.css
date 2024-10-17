@@ -1,6 +1,6 @@
 /* Módulo Box */
-.module-box {border: 1px solid #ccc; padding: 10px; text-align: center; margin-bottom: 15px; transition: all 0.2s ease;}
-.module-box img {max-width: 80px; margin-bottom: 10px;}
+.module-box {border: 1px solid #ccc; padding: 5px; text-align: center; margin-bottom: 15px; transition: all 0.2s ease;} /* Reducido el padding a 5px */
+.module-box img {max-width: 80px; margin-bottom: 5px;} /* Reducido el margen inferior del icono */
 .module-box.selected {border-color: #007bff; background-color: #f1f8ff;}
 
 /* Subdomain Group con Flexbox */
@@ -24,10 +24,7 @@
     .module-box:nth-child(4n) {margin-right: 0;}
     .module-box img {max-width: 50px; margin-bottom: 5px;}
     .module-box span {white-space: nowrap;} /* Aplica a todos los spans dentro de module-box */
-    .module-box label {display: inline-block; width: 100%; text-align: center;}
-    .module-box input[type="checkbox"] {margin-bottom: 5px;} /* Mantengo la posición original */
-    .module-box label span {font-weight: normal; font-size: 14px; display: inline-block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; direction: ltr; width: 90%;} /* Aplica al span hijo de label */
+    .module-box input[type="checkbox"] {margin-bottom: 5px;}
+	.module-box label {display: inline-block; width: 100%; text-align: center; padding: 0 5px;} /* Reducido el padding lateral dentro de label */
+    .module-box label span {font-weight: normal; font-size: 14px; display: inline-block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; direction: ltr; width: 90%;} /* Mantiene el ajuste del span hijo de label */
 }
-
-
-
