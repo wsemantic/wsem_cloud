@@ -23,8 +23,8 @@
     .module-box {width: calc(30% - 10px); display: inline-block; vertical-align: top; height: 120px; overflow: hidden; box-sizing: border-box; margin-right: 10px;}
     .module-box:nth-child(4n) {margin-right: 0;}
     .module-box img {max-width: 50px; margin-bottom: 5px;}
-    .module-box label {display: inline-block; width: 100%; text-align: center;}
-    .module-box span {white-space: nowrap;} /* Mantener inline y nowrap */
-    .module-box input[type="checkbox"] {margin-right: 5px;} /* Mantiene la posición original */
-    .module-box label span {font-weight: normal; font-size: 14px; display: inline-block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; direction: ltr; width: 90%;} /* Cambio: Más espacio para el texto */
+    .module-box label {display: inline-block; width: 100%; text-align: center;} /* Aplicar inline-block a label */
+    .module-box span {display: inline-block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 90%;} /* inline-block también aplicado a span */
+    .module-box input[type="checkbox"] {margin-right: 5px;} /* Mantener la posición original */
+    .module-box label span {font-weight: normal; font-size: 14px; direction: ltr;} /* Eliminar width de esta línea para mantener más espacio */
 }
