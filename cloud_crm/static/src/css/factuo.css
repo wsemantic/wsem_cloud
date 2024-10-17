@@ -24,8 +24,8 @@
     .module-box:nth-child(4n) {margin-right: 0;}
     .module-box img {max-width: 50px; margin-bottom: 5px;}
     .module-box label {display: inline-block; width: 100%; text-align: center;}
-    .module-box input[type="checkbox"] {margin-right: 5px;}
     .module-box label span {font-weight: normal; font-size: 14px; display: inline-block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; direction: ltr; width: 90%;} /* Cambio: Más espacio para el texto */
+	.module-box input[type="checkbox"] {margin-bottom: 5px;}
     .module-box span {white-space: nowrap;}
 }
 
