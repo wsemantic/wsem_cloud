@@ -1,10 +1,11 @@
-/* Módulo Box */
+/* Estilos generales para las cajas de módulos */
 .module-box {
     border: 1px solid #ccc;
     padding: 10px;
     text-align: center;
     margin-bottom: 15px;
     transition: all 0.2s ease;
+    box-sizing: border-box;
 }
 
 .module-box img {
@@ -17,90 +18,89 @@
     background-color: #f1f8ff;
 }
 
-/* Subdomain Group con Flexbox */
+/* Estilos específicos para step2 */
+.step2-modules .module-box {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.step2-modules .module-box img {
+    max-width: 40px;
+    margin-right: 10px;
+}
+
+.step2-modules .module-box label {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.step2-modules .module-box input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.step2-modules .module-box label span {
+    font-weight: normal; /* No negrita */
+    font-size: 14px; /* Tamaño reducido */
+    display: inline-block;
+    overflow: hidden; /* Oculta desbordamiento */
+    white-space: nowrap; /* Mantiene texto en una línea */
+    text-overflow: ellipsis; /* Puntos suspensivos si se corta */
+    direction: ltr; /* Recorte por la derecha */
+    width: 100%; /* Asegura que el texto use todo el ancho */
+}
+
+/* Estilos de subdominio (utilizados en otras páginas) */
 .subdomain-group {
-    display: flex; /* Activar flexbox */
-    align-items: center; /* Alinear verticalmente en el centro */
-    justify-content: flex-start; /* Alinear el grupo a la izquierda */
-    max-width: 400px; /* Limitar el ancho máximo */
-    margin-left: 0; /* Alinear el grupo a la izquierda */
-    margin-right: auto; /* Mantener auto-margin en el lado derecho */
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    max-width: 400px;
+    margin-left: 0;
+    margin-right: auto;
 }
 
 .subdomain-group .form-control {
-    text-align: right; /* Mantener la alineación del texto a la derecha */
-    flex-grow: 1; /* Hacer que el input ocupe el máximo espacio disponible */
+    text-align: right;
+    flex-grow: 1;
 }
 
-/* Agrupación de media queries */
+/* Responsividad: pantallas pequeñas */
 @media (max-width: 768px) {
     .module-box {
         width: 100%;
     }
+
     .subdomain-group {
-        width: 100%; /* Asegurar que el grupo tome el 100% del ancho en pantallas pequeñas */
-    }
-	/*SETP2*/
-	.step2-modules .module-box {
-        display: flex;
-        align-items: center;
-        margin-bottom: 10px;
-    }
-
-    .step2-modules .module-box img {
-        max-width: 40px;
-        margin-right: 10px;
-    }
-
-    .step2-modules .module-box label {
-        display: flex;
-        align-items: center;
         width: 100%;
-    }
-
-    .step2-modules .module-box input[type="checkbox"] {
-        margin-right: 10px;
-    }
-
-    .step2-modules .module-box span {
-        white-space: nowrap;
     }
 }
 
+/* Responsividad: pantallas medianas y grandes */
 @media (min-width: 768px) {
     .module-box {
-        width: calc(35% - 0px); /* Cuatro módulos por fila */
+        width: calc(25% - 10px); /* 4 columnas por fila */
         display: inline-block;
         vertical-align: top;
-        height: 120px; /* Mantener la altura fija */
-        overflow: hidden; /* Evitar desbordamiento */
-        box-sizing: border-box; /* Incluir padding y borde en el ancho total */
-        margin-right: 10px; /* Espacio entre los módulos */
+        height: 120px;
+        margin-right: 10px;
     }
 
     .module-box:nth-child(4n) {
-        margin-right: 0; /* Eliminar el margen derecho en el último elemento de cada fila */
+        margin-right: 0; /* Sin margen derecho en el último de la fila */
     }
 
     .module-box img {
-        max-width: 50px; /* Mantener el tamaño del icono */
-        margin-bottom: 5px; /* Reducir el margen inferior del icono */
+        max-width: 50px;
+        margin-bottom: 5px;
     }
 
-	.module-box label span {
-		display: inline-block;
-		overflow: hidden; /* Oculta el desbordamiento del texto */
-		white-space: nowrap; /* Evita que el texto salte a la siguiente línea */
-		text-overflow: ellipsis; /* Añade puntos suspensivos al recortar el texto */
-		direction: ltr; /* Asegura que el texto se recorte solo por la derecha */
-		width: 100%; /* Asegura que el texto ocupe el ancho total disponible */
-	}
-
     .module-box input[type="checkbox"] {
-        margin-bottom: 5px; /* Reducir el margen entre el checkbox y el icono */
+        margin-bottom: 5px;
     }
 
     .module-box span {
-        white-space: nowrap; /* Evitar que el texto se divida en varias líneas */
+        white-space: nowrap; /* Mantener una sola línea */
     }
 }
