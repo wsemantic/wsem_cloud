@@ -1,30 +1,10 @@
-/* Módulo Box */
-.module-box {border: 1px solid #ccc; padding: 5px; text-align: center; margin-bottom: 15px; transition: all 0.2s ease; box-sizing: border-box;}
+/* Módulo Box - estilo básico */
+.module-box {border: 1px solid #ccc; padding: 5px; text-align: center; margin-bottom: 15px; box-sizing: border-box;}
 .module-box img {max-width: 80px; margin-bottom: 5px;}
-.module-box.selected {border-color: #007bff; background-color: #f1f8ff;}
 
-/* Subdomain Group con Flexbox */
-.subdomain-group {display: flex; align-items: center; justify-content: flex-start; max-width: 400px; margin-left: 0; margin-right: auto;}
-.subdomain-group .form-control {text-align: right; flex-grow: 1;}
+/* Eliminar cualquier padding o margen en label */
+.module-box label {padding: 0; margin: 0; display: inline-block; width: 100%; text-align: center;}
 
-/* Agrupación de media queries */
-@media (max-width: 768px) {
-    .module-box {width: 100%;}
-    .subdomain-group {width: 100%;}
-    /*SETP2*/
-    .step2-modules .module-box {display: flex; align-items: center; margin-bottom: 10px;}
-    .step2-modules .module-box img {max-width: 40px; margin-right: 10px;}
-    .step2-modules .module-box label {display: flex; align-items: center; width: 100%; padding: 0 !important;} /* Forzar el padding a 0 */
-    .step2-modules .module-box input[type="checkbox"] {margin-right: 5px;} /* Ajustar margen del checkbox */
-    .step2-modules .module-box span {white-space: nowrap;}
-}
+/* Estilos para span dentro del label - eliminamos cualquier exceso */
+.module-box label span {font-weight: normal; font-size: 14px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; display: inline-block; width: 90%;}
 
-@media (min-width: 768px) {
-    .module-box {width: calc(35% - 0px); display: inline-block; vertical-align: top; height: 120px; overflow: hidden; box-sizing: border-box; margin-right: 10px;}
-    .module-box:nth-child(4n) {margin-right: 0;}
-    .module-box img {max-width: 50px; margin-bottom: 5px;}
-    .module-box span {white-space: nowrap;} /* Aplica a todos los spans dentro de module-box */
-    .step2-modules .module-box label {display: inline-block; width: 100%; text-align: center; padding: 0 !important; margin: 0 !important;} /* Forzar el padding y margen a 0 */
-    .step2-modules .module-box input[type="checkbox"] {margin-right: 5px;} /* Mantener margen del checkbox */
-    .step2-modules .module-box label span {font-weight: normal; font-size: 14px; display: inline-block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; direction: ltr; width: 90%;} /* Mantener ajuste en span hijo de label */
-}
