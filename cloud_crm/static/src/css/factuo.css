@@ -24,7 +24,7 @@
     .module-box:nth-child(4n) {margin-right: 0;}
     .module-box img {max-width: 50px; margin-bottom: 5px;}
     .module-box span {white-space: nowrap;} /* Aplica a todos los spans dentro de module-box */
-    .step2-modules .module-box label {display: inline-block; width: 100%; text-align: center; padding: 0 !important; margin: 0;} /* Forzar el padding y margen a 0 */
-    .module-box input[type="checkbox"] {margin-right: 5px;} /* Mantener margen del checkbox */
-    .module-box label span {font-weight: normal; font-size: 14px; display: inline-block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; direction: ltr; width: 90%;} /* Mantener ajuste en span hijo de label */
+    .step2-modules .module-box label {display: inline-block; width: 100%; text-align: center; padding: 0 !important; margin: 0 !important;} /* Forzar el padding y margen a 0 */
+    .step2-modules .module-box input[type="checkbox"] {margin-right: 5px;} /* Mantener margen del checkbox */
+    .step2-modules .module-box label span {font-weight: normal; font-size: 14px; display: inline-block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; direction: ltr; width: 90%;} /* Mantener ajuste en span hijo de label */
 }
