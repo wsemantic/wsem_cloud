@@ -23,9 +23,11 @@
     .module-box {width: calc(35% - 0px); display: inline-block; vertical-align: top; height: 120px; overflow: hidden; box-sizing: border-box; margin-right: 10px;}
     .module-box:nth-child(4n) {margin-right: 0;}
     .module-box img {max-width: 50px; margin-bottom: 5px;}
+    .module-box span {white-space: nowrap;} /* Aplica a todos los spans dentro de module-box */
     .module-box label {display: inline-block; width: 100%; text-align: center;}
-    .module-box input[type="checkbox"] {margin-bottom: 5px;}
-    .module-box label span {display: inline-block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; direction: ltr; width: 90%;} /* Un solo cambio: ancho al 90% */
+    .module-box input[type="checkbox"] {margin-bottom: 5px;} /* Mantengo la posición original */
+    .module-box label span {font-weight: normal; font-size: 14px; display: inline-block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; direction: ltr; width: 90%;} /* Aplica al span hijo de label */
 }
+
 
 
