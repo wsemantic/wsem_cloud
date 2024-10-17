@@ -20,13 +20,12 @@
 }
 
 @media (min-width: 768px) {
-    .module-box {width: calc(25% - 10px); display: inline-block; vertical-align: top; height: 120px; overflow: hidden; box-sizing: border-box; margin-right: 10px;}
+    .module-box {width: calc(30% - 10px); display: inline-block; vertical-align: top; height: 120px; overflow: hidden; box-sizing: border-box; margin-right: 10px;}
     .module-box:nth-child(4n) {margin-right: 0;}
     .module-box img {max-width: 50px; margin-bottom: 5px;}
-    .module-box label {display: inline-block; width: 100%; text-align: center;} /* Cambio: No flex por defecto */
-    .module-box input[type="checkbox"] {margin-right: 5px;} /* Ajustar margen entre checkbox y texto */
-    .module-box label span {font-weight: normal; font-size: 14px; display: inline-block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; direction: ltr; width: calc(100% - 25px);} /* Cambios en negrita, tamaño y recorte */
+    .module-box label {display: inline-block; width: 100%; text-align: center;}
+    .module-box input[type="checkbox"] {margin-right: 5px;}
+    .module-box label span {font-weight: normal; font-size: 14px; display: inline-block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; direction: ltr; width: 90%;} /* Cambio: Más espacio para el texto */
     .module-box span {white-space: nowrap;}
 }
-
 
