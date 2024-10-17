@@ -1,107 +1,30 @@
-/* Estilos generales para las cajas de módulos */
-.module-box {
-    border: 1px solid #ccc;
-    padding: 10px;
-    text-align: center;
-    margin-bottom: 15px;
-    transition: all 0.2s ease;
-    box-sizing: border-box;
-}
+/* Módulo Box */
+.module-box {border: 1px solid #ccc; padding: 10px; text-align: center; margin-bottom: 15px; transition: all 0.2s ease;}
+.module-box img {max-width: 80px; margin-bottom: 10px;}
+.module-box.selected {border-color: #007bff; background-color: #f1f8ff;}
 
-.module-box img {
-    max-width: 80px;
-    margin-bottom: 10px;
-}
+/* Subdomain Group con Flexbox */
+.subdomain-group {display: flex; align-items: center; justify-content: flex-start; max-width: 400px; margin-left: 0; margin-right: auto;}
+.subdomain-group .form-control {text-align: right; flex-grow: 1;}
 
-.module-box.selected {
-    border-color: #007bff;
-    background-color: #f1f8ff;
-}
-
-/* Estilos específicos para step2 */
-.step2-modules .module-box {
-    margin-bottom: 10px;
-}
-
-.step2-modules .module-box img {
-    max-width: 40px;
-    margin-right: 10px;
-}
-
-.step2-modules .module-box label {
-    display: inline-block; /* No usar flex por defecto */
-    width: 100%;
-    text-align: center; /* Centra el checkbox y el texto */
-}
-
-.step2-modules .module-box input[type="checkbox"] {
-    margin-right: 5px; /* Ajustar margen entre checkbox y texto */
-}
-
-.step2-modules .module-box label span {
-    font-weight: normal; /* No negrita */
-    font-size: 14px; /* Tamaño reducido */
-    display: inline-block;
-    overflow: hidden; /* Oculta desbordamiento */
-    white-space: nowrap; /* Mantiene texto en una línea */
-    text-overflow: ellipsis; /* Puntos suspensivos si se corta */
-    direction: ltr; /* Recorte por la derecha */
-    width: calc(100% - 25px); /* Asegura espacio para el checkbox */
-}
-
-/* Estilos de subdominio (utilizados en otras páginas) */
-.subdomain-group {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    max-width: 400px;
-    margin-left: 0;
-    margin-right: auto;
-}
-
-.subdomain-group .form-control {
-    text-align: right;
-    flex-grow: 1;
-}
-
-/* Responsividad: pantallas pequeñas */
+/* Agrupación de media queries */
 @media (max-width: 768px) {
-    .module-box {
-        width: 100%;
-    }
-
-    .subdomain-group {
-        width: 100%;
-    }
-
-    .step2-modules .module-box label {
-        display: flex; /* Solo usar flex en pantallas pequeñas */
-        align-items: center;
-    }
+    .module-box {width: 100%;}
+    .subdomain-group {width: 100%;}
+    /*SETP2*/
+    .step2-modules .module-box {display: flex; align-items: center; margin-bottom: 10px;}
+    .step2-modules .module-box img {max-width: 40px; margin-right: 10px;}
+    .step2-modules .module-box label {display: flex; align-items: center; width: 100%;}
+    .step2-modules .module-box input[type="checkbox"] {margin-right: 10px;}
+    .step2-modules .module-box span {white-space: nowrap;}
 }
 
-/* Responsividad: pantallas medianas y grandes */
 @media (min-width: 768px) {
-    .module-box {
-        width: calc(25% - 10px); /* 4 columnas por fila */
-        display: inline-block;
-        vertical-align: top;
-        height: 120px;
-        margin-right: 10px;
-    }
+    .module-box {width: calc(35% - 0px); display: inline-block; vertical-align: top; height: 120px; overflow: hidden; box-sizing: border-box; margin-right: 10px;}
+    .module-box:nth-child(4n) {margin-right: 0;}
+    .module-box img {max-width: 50px; margin-bottom: 5px;}
+    .module-box label span {display: inline-block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; direction: ltr; width: 100%;}
+    .module-box input[type="checkbox"] {margin-bottom: 5px;}
+    .module-box span {white-space: nowrap;}
+}
 
-    .module-box:nth-child(4n) {
-        margin-right: 0; /* Sin margen derecho en el último de la fila */
-    }
-
-    .module-box img {
-        max-width: 50px;
-        margin-bottom: 5px;
-    }
-
-    .module-box input[type="checkbox"] {
-        margin-bottom: 5px;
-    }
-
-    .module-box span {
-        white-space: nowrap; /* Mantener
