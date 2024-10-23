@@ -1,10 +1,11 @@
 .subdomain-group {
     display: flex;
-    align-items: center;
+    align-items:  baseline;;
     justify-content: flex-start;
     max-width: 300px; /* Limitar el ancho máximo */
     margin-left: 0; /* Alinear el grupo a la izquierda */
     margin-right: auto; /* Mantener auto-margin en el lado derecho */
+	
 }
 
 .subdomain-group .form-control {
