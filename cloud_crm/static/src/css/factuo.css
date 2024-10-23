@@ -51,10 +51,16 @@ h3 {
     color: #007bff; /* Cambiar el color del título, puedes ajustar el valor al color deseado */
 }
 
+.form-control {
+    width: 100%;
+    max-width: 600px; /* Limitar el ancho máximo de cada campo si se desea */
+    margin-bottom: 20px; /* Espacio adicional entre los campos */
+}
 
 .field-street, .field-street2, .field-zip, .field-city {
     width: 100%;
     max-width: 600px;
+	margin-bottom: 15px;
 }
 
 /* Mantener consistencia entre etiquetas y campos */
