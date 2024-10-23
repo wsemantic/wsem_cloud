@@ -3,7 +3,7 @@
     <template id="signup_step1" name="Signup Step 1">
         <t t-call="website.layout">
             <div class="container mt16 mb16">
-                <h3>Registro - Paso 1</h3>
+                <h3>Datos de contacto (pag. 1 de 2)</h3>
                 <form id="signup_step1_form" method="post">
                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                     
