@@ -50,3 +50,18 @@ h3 {
     margin-bottom: 20px; /* Añadir un margen inferior para separar el título del resto del contenido */
     color: #007bff; /* Cambiar el color del título, puedes ajustar el valor al color deseado */
 }
+
+.form-control {
+    max-width: 400px; /* Limita el ancho de los campos de entrada */
+    margin: 0 auto; /* Centra los campos en la página */
+}
+
+.field-address, .field-street, .field-street2, .field-zip, .field-city {
+    max-width: 600px; /* Limitar el ancho de los campos de dirección */
+}
+
+h3 {
+    text-align: center; /* Centrar el título horizontalmente */
+    margin-bottom: 20px; /* Añadir un margen inferior para separar el título del resto del contenido */
+    color: #007bff; /* Cambiar el color del título */
+}

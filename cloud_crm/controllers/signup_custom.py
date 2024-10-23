@@ -25,12 +25,15 @@ class CustomSignupController(http.Controller):
             email = kwargs.get('email')
             company_name = kwargs.get('company_name')
             dni = kwargs.get('dni')
-            address = kwargs.get('address')
+            street = kwargs.get('street')
+            street2 = kwargs.get('street2')
+            zip_code = kwargs.get('zip')
+            city = kwargs.get('city')
             phone = kwargs.get('phone')
             subdomain = kwargs.get('subdomain')
 
             # Validar campos obligatorios
-            if not all([name, email, company_name, dni, address, phone, subdomain]):
+            if not all([name, email, company_name, dni, street, zip_code, city, phone, subdomain]):
                 error = 'Todos los campos son obligatorios.'
                 return request.render('cloud_crm.signup_step1', {
                     'error': error,
@@ -38,7 +41,10 @@ class CustomSignupController(http.Controller):
                     'email': email,
                     'company_name': company_name,
                     'dni': dni,
-                    'address': address,
+                    'street': street,
+                    'street2': street2,
+                    'zip': zip_code,
+                    'city': city,
                     'phone': phone,
                     'subdomain': subdomain,
                 })
@@ -55,7 +61,10 @@ class CustomSignupController(http.Controller):
                     'email': email,
                     'company_name': company_name,
                     'dni': dni,
-                    'address': address,
+                    'street': street,
+                    'street2': street2,
+                    'zip': zip_code,
+                    'city': city,
                     'phone': phone,
                     'subdomain': subdomain,
                 })
@@ -69,7 +78,10 @@ class CustomSignupController(http.Controller):
                         'name': name,
                         'company_name': company_name,
                         'vat': dni,
-                        'street': address,
+                        'street': street,
+                        'street2': street2,
+                        'zip': zip_code,
+                        'city': city,
                         'phone': phone,
                         'cloud_url': cloud_url,
                     })
@@ -82,14 +94,17 @@ class CustomSignupController(http.Controller):
                         'email': email,
                         'company_name': company_name,
                         'dni': dni,
-                        'address': address,
+                        'street': street,
+                        'street2': street2,
+                        'zip': zip_code,
+                        'city': city,
                         'phone': phone,
                         'subdomain': subdomain,
                     })
             else:
                 # Si no existe, crear un nuevo res.partner
                 try:
-                    self.create_partner_in_db(name, email, company_name, dni, address, phone, cloud_url)
+                    self.create_partner_in_db(name, email, company_name, dni, street, street2, zip_code, city, phone, cloud_url)
                 except Exception as e:
                     _logger.error(f"Error al crear el res.partner: {e}")
                     error = 'Hubo un error al procesar tu solicitud. Por favor, inténtalo de nuevo.'
@@ -99,7 +114,10 @@ class CustomSignupController(http.Controller):
                         'email': email,
                         'company_name': company_name,
                         'dni': dni,
-                        'address': address,
+                        'street': street,
+                        'street2': street2,
+                        'zip': zip_code,
+                        'city': city,
                         'phone': phone,
                         'subdomain': subdomain,
                     })
@@ -110,7 +128,10 @@ class CustomSignupController(http.Controller):
                 'email': email,
                 'company_name': company_name,
                 'dni': dni,
-                'address': address,
+                'street': street,
+                'street2': street2,
+                'zip': zip_code,
+                'city': city,
                 'phone': phone,
                 'subdomain': subdomain,
                 'cloud_url': cloud_url,
@@ -250,7 +271,7 @@ class CustomSignupController(http.Controller):
         return False
 
 
-    def create_partner_in_db(self, name, email, company_name, dni, address, phone, cloud_url):
+    def create_partner_in_db(self, name, email, company_name, dni, street, street2, zip_code, city, phone, cloud_url):
         """
         Crea un res.partner en la base de datos actual con los datos proporcionados.
         """
@@ -260,7 +281,10 @@ class CustomSignupController(http.Controller):
             'email': email,
             'company_name': company_name,
             'vat': dni,
-            'street': address,
+            'street': street,
+            'street2': street2,
+            'zip': zip_code,
+            'city': city,
             'phone': phone,
             'cloud_url': cloud_url,
         }

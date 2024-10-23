@@ -34,11 +34,27 @@
                         <label for="dni">DNI</label>
                         <input type="text" name="dni" id="dni" required="required" class="form-control form-control-sm" placeholder="00000000A" t-att-value="dni or ''"/>
                     </div>
-                    <!-- Campo Dirección -->
-                    <div class="mb-3 field-address">
-                        <label for="address">Dirección</label>
-                        <input type="text" name="address" id="address" required="required" class="form-control form-control-sm" t-att-value="address or ''"/>
-                    </div>
+					<!-- Campo Calle -->
+					<div class="mb-3 field-street">
+						<label for="street">Calle</label>
+						<input type="text" name="street" id="street" required="required" class="form-control form-control-sm" t-att-value="street or ''"/>
+					</div>
+					<!-- Campo Dirección 2 -->
+					<div class="mb-3 field-street2">
+						<label for="street2">Dirección 2</label>
+						<input type="text" name="street2" id="street2" class="form-control form-control-sm" t-att-value="street2 or ''"/>
+					</div>
+					<!-- Campo Código Postal -->
+					<div class="mb-3 field-zip">
+						<label for="zip">Código Postal</label>
+						<input type="text" name="zip" id="zip" required="required" class="form-control form-control-sm" t-att-value="zip or ''"/>
+					</div>
+					<!-- Campo Población -->
+					<div class="mb-3 field-city">
+						<label for="city">Población</label>
+						<input type="text" name="city" id="city" required="required" class="form-control form-control-sm" t-att-value="city or ''"/>
+					</div>
+					
                     <!-- Campo Teléfono -->
                     <div class="mb-3 field-phone">
                         <label for="phone">Teléfono</label>
