@@ -51,10 +51,6 @@ h3 {
     color: #007bff; /* Cambiar el color del título, puedes ajustar el valor al color deseado */
 }
 
-.form-control {
-    max-width: 400px; /* Limita el ancho de los campos de entrada */
-    margin: 0 auto; /* Centra los campos en la página */
-}
 
 .field-street, .field-street2, .field-zip, .field-city {
     width: 100%;
