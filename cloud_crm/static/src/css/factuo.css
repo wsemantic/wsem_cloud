@@ -70,8 +70,16 @@ label {
     font-weight: bold;
 }
 
+/* Botón 'Continuar al Paso 2' */
+.oe_login_buttons button {
+    max-width: 200px; /* Limitar el ancho del botón */
+    margin: 0 auto; /* Centrar horizontalmente el botón */
+    display: block;
+}
+
 /* Asegurar que el contenedor ocupe el 100% del ancho */
 .container {
-    width: 100%;
-    padding: 0 15px;
+    max-width: 600px; /* Limitar el ancho máximo del contenedor */
+    margin: 0 auto; /* Centrar horizontalmente el contenedor */
+    padding: 20px;
 }
