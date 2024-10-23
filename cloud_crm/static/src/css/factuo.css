@@ -56,12 +56,20 @@ h3 {
     margin: 0 auto; /* Centra los campos en la página */
 }
 
-.field-address, .field-street, .field-street2, .field-zip, .field-city {
-    max-width: 600px; /* Limitar el ancho de los campos de dirección */
+.field-street, .field-street2, .field-zip, .field-city {
+    width: 100%;
+    max-width: 600px;
 }
 
-h3 {
-    text-align: center; /* Centrar el título horizontalmente */
-    margin-bottom: 20px; /* Añadir un margen inferior para separar el título del resto del contenido */
-    color: #007bff; /* Cambiar el color del título */
+/* Mantener consistencia entre etiquetas y campos */
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+/* Asegurar que el contenedor ocupe el 100% del ancho */
+.container {
+    width: 100%;
+    padding: 0 15px;
 }
