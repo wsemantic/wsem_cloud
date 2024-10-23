@@ -27,10 +27,25 @@ class CustomSignupController(http.Controller):
             dni = kwargs.get('dni')
             street = kwargs.get('street')
             street2 = kwargs.get('street2')
-            postal_code = kwargs.get('zip')
-            city = kwargs.get('city')
+            zip_id = kwargs.get('zip_id')  # Capturar zip_id del formulario
             phone = kwargs.get('phone')
             subdomain = kwargs.get('subdomain')
+
+            # Buscar información del código postal seleccionado
+            if zip_id:
+                zip_record = request.env['res.city.zip'].sudo().browse(int(zip_id))
+                if zip_record.exists():
+                    postal_code = zip_record.name
+                    city = zip_record.city_id.name
+                    state_id = zip_record.city_id.state_id.id
+                else:
+                    postal_code = ''
+                    city = ''
+                    state_id = None
+            else:
+                postal_code = kwargs.get('zip')
+                city = kwargs.get('city')
+                state_id = None
 
             # Validar campos obligatorios
             if not all([name, email, company_name, dni, street, postal_code, city, phone, subdomain]):
@@ -43,6 +58,7 @@ class CustomSignupController(http.Controller):
                     'dni': dni,
                     'street': street,
                     'street2': street2,
+                    'zip_id': zip_id,
                     'zip': postal_code,
                     'city': city,
                     'phone': phone,
@@ -51,10 +67,10 @@ class CustomSignupController(http.Controller):
 
             # Generar el cloud_url
             cloud_url = f"{subdomain}.factuoo.com"
-            
+
             # Verificar si existe un res.partner con el mismo cloud_url
             if self.url_conflict(cloud_url, email):
-                error_subdomain = f"'{subdomain}' ya está en uso. Por favor modificalo e intenta de nuevo (modificar el subdominio o primera casilla de la URL)."
+                error_subdomain = f"'{subdomain}' ya está en uso. Por favor modifícalo e intenta de nuevo."
                 return request.render('cloud_crm.signup_step1', {
                     'error_subdomain': error_subdomain,
                     'name': name,
@@ -63,6 +79,7 @@ class CustomSignupController(http.Controller):
                     'dni': dni,
                     'street': street,
                     'street2': street2,
+                    'zip_id': zip_id,
                     'zip': postal_code,
                     'city': city,
                     'phone': phone,
@@ -71,20 +88,24 @@ class CustomSignupController(http.Controller):
 
             # Buscar si existe un res.partner con el mismo email
             partner = self.find_partner_by_email(email)
+            partner_vals = {
+                'name': name,
+                'email': email,
+                'company_name': company_name,
+                'vat': dni,
+                'street': street,
+                'street2': street2,
+                'zip': postal_code,
+                'city': city,
+                'phone': phone,
+                'cloud_url': cloud_url,
+                'state_id': state_id,
+            }
+
             if partner:
-                # Si el partner existe, actualizar su cloud_url
+                # Si el partner existe, actualizar su información
                 try:
-                    partner.sudo().write({
-                        'name': name,
-                        'company_name': company_name,
-                        'vat': dni,
-                        'street': street,
-                        'street2': street2,
-                        'zip': postal_code,
-                        'city': city,
-                        'phone': phone,
-                        'cloud_url': cloud_url,
-                    })
+                    partner.sudo().write(partner_vals)
                 except Exception as e:
                     _logger.error(f"Error al actualizar el res.partner: {e}")
                     error = 'Hubo un error al actualizar tu información. Por favor, inténtalo de nuevo.'
@@ -96,6 +117,7 @@ class CustomSignupController(http.Controller):
                         'dni': dni,
                         'street': street,
                         'street2': street2,
+                        'zip_id': zip_id,
                         'zip': postal_code,
                         'city': city,
                         'phone': phone,
@@ -104,7 +126,7 @@ class CustomSignupController(http.Controller):
             else:
                 # Si no existe, crear un nuevo res.partner
                 try:
-                    self.create_partner_in_db(name, email, company_name, dni, street, street2, postal_code, city, phone, cloud_url)
+                    self.create_partner_in_db(**partner_vals)
                 except Exception as e:
                     _logger.error(f"Error al crear el res.partner: {e}")
                     error = 'Hubo un error al procesar tu solicitud. Por favor, inténtalo de nuevo.'
@@ -116,6 +138,7 @@ class CustomSignupController(http.Controller):
                         'dni': dni,
                         'street': street,
                         'street2': street2,
+                        'zip_id': zip_id,
                         'zip': postal_code,
                         'city': city,
                         'phone': phone,
@@ -123,19 +146,9 @@ class CustomSignupController(http.Controller):
                     })
 
             # Guardar los datos en la sesión
-            request.session['signup_data'] = {
-                'name': name,
-                'email': email,
-                'company_name': company_name,
-                'dni': dni,
-                'street': street,
-                'street2': street2,
-                'zip': postal_code,
-                'city': city,
-                'phone': phone,
-                'subdomain': subdomain,
-                'cloud_url': cloud_url,
-            }
+            request.session['signup_data'] = partner_vals
+            request.session['signup_data']['subdomain'] = subdomain
+            request.session['signup_data']['cloud_url'] = cloud_url
 
             # Redirigir al segundo paso
             return request.redirect('/signup_step2')

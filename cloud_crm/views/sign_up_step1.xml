@@ -45,9 +45,14 @@
 						<input type="text" name="street2" id="street2" class="form-control form-control-sm" t-att-value="street2 or ''"/>
 					</div>
 					<!-- Campo Código Postal -->
-					<div class="mb-3 field-zip">
-						<label for="zip">Código Postal</label>
-						<input type="text" name="zip" id="zip" required="required" class="form-control form-control-sm" t-att-value="postal_code or ''"/>
+					<div class="mb-3 field-zip_id">
+						<label for="zip_id">Código Postal</label>
+						<select name="zip_id" id="zip_id" required="required" class="form-control form-control-sm">
+							<option value="">Seleccione un código postal</option>
+							<t t-foreach="request.env['res.city.zip'].sudo().search([])" t-as="zip">
+								<option t-att-value="zip.id" t-esc="zip.name"/>
+							</t>
+						</select>
 					</div>
 					<!-- Campo Población -->
 					<div class="mb-3 field-city">
