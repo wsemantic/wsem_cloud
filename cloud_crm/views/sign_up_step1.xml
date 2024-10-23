@@ -47,7 +47,7 @@
 					<!-- Campo Código Postal -->
 					<div class="mb-3 field-zip">
 						<label for="zip">Código Postal</label>
-						<input type="text" name="zip" id="zip" required="required" class="form-control form-control-sm" t-att-value="zip or ''"/>
+						<input type="text" name="zip" id="zip" required="required" class="form-control form-control-sm" t-att-value="postal_code or ''"/>
 					</div>
 					<!-- Campo Población -->
 					<div class="mb-3 field-city">
