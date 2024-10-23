@@ -38,3 +38,12 @@ document.addEventListener('DOMContentLoaded', function () {
         companyInput.addEventListener('input', updateSubdomain);
     }
 });
+
+// Incluir la funcionalidad select2 en el campo de código postal
+$(document).ready(function() {
+    $('#zip_id').select2({
+        placeholder: "Seleccione un código postal",
+        allowClear: true,
+        width: '100%' // Asegurarse de que la lista desplegable ocupe el ancho completo del contenedor
+    });
+});
