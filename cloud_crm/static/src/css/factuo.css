@@ -12,6 +12,11 @@
     flex-grow: 1; /* Hacer que el input ocupe el máximo espacio disponible */
 }
 
+.subdomain-group .input-group-text {
+    flex-shrink: 0; /* Mantener el ancho del sufijo y evitar que se reduzca */
+    margin-left: 5px; /* Añadir un pequeño margen para la separación entre el input y el sufijo */
+}
+
 /* Módulo Box - estilo básico con límite de ancho */
 .module-box {
     border: 1px solid #ccc; 
