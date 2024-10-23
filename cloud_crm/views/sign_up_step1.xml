@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <template id="signup_step1" name="Signup Step 1">
-        <!--<t t-call="website.layout">-->
+        <t t-call="website.layout">
             <div class="container mt16 mb16">
-                <h1>Registro - Paso 1</h1>
+                <h3>Registro - Paso 1</h3>
                 <form id="signup_step1_form" method="post">
                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                     
@@ -65,6 +65,6 @@
 
             <!-- Incluir el archivo JavaScript -->
             <script type="text/javascript" src="/cloud_crm/static/src/js/signup_step1.js"></script>
-        <!--</t>-->
+        </t>
     </template>
 </odoo>
