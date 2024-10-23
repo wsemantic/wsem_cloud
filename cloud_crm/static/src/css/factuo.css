@@ -44,3 +44,9 @@
     display: inline-block; 
     width: 90%;
 }
+
+h3 {
+    text-align: center; /* Centrar el título horizontalmente */
+    margin-bottom: 20px; /* Añadir un margen inferior para separar el título del resto del contenido */
+    color: #007bff; /* Cambiar el color del título, puedes ajustar el valor al color deseado */
+}
