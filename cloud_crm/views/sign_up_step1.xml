@@ -2,7 +2,7 @@
 <odoo>
     <template id="signup_step1" name="Signup Step 1">
         <t t-call="website.layout">
-            <div class="container mt16 mb16">
+            <div class="container custom-signup-container mt16 mb16">
                 <h3>Datos de contacto</h3>
                 <form id="signup_step1_form" method="post">
                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>

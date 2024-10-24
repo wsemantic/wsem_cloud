@@ -83,9 +83,9 @@ label {
     display: block;
 }
 
-/* Asegurar que el contenedor ocupe el 100% del ancho */
-.container {
-    max-width: 600px; /* Limitar el ancho máximo del contenedor */
-    margin: 0 auto; /* Centrar horizontalmente el contenedor */
+/* Asegurar que el contenedor ocupe el 100% del ancho 
+.custom-signup-container {
+    max-width: 600px; 
+    margin: 0 auto; 
     padding: 20px;
-}
+}*/
