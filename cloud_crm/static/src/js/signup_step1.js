@@ -1,49 +1,89 @@
-// JavaScript para el primer paso (cálculo dinámico del subdominio)
-document.addEventListener('DOMContentLoaded', function () {
-    // Función para actualizar el subdominio dinámicamente
-    function updateSubdomain() {
-        var companyField = document.getElementById('company_name');
-        var subdomainField = document.getElementById('subdomain_input');
+odoo.define('cloud_crm.signup_step1', function (require) {
+    "use strict";
 
+    const { Component, useState, mount } = owl;
+    const { xml } = owl.tags;
+    const { rpc } = require('web.rpc');
 
-        if (companyField && subdomainField) {
-            // Obtener el nombre de la empresa y eliminar espacios al inicio y final
-            var companyName = companyField.value.trim();
+    class SignupStep1 extends Component {
+        // Definir el estado inicial
+        constructor() {
+            super(...arguments);
+            this.state = useState({
+                zip: '',
+                zipOptions: [],
+                selectedZip: null,
+                city: '',
+            });
+        }
 
-			// Dividir el nombre de la empresa en palabras
-			var words = companyName.split(/\s+/);
+        // Método para manejar la entrada del código postal y realizar la búsqueda
+        async onZipInput(event) {
+            const term = event.target.value;
+            this.state.zip = term;
 
-			if (words.length >= 2 && words[0].length >= 5) {
-				// Usar la primera palabra como subdominio
-				subdomain = words[0];
-			} else {
-				// Eliminar espacios y limitar a 7 caracteres
-				subdomain = companyName.replace(/\s+/g, '').substring(0, 7);
-			}
+            if (term.length >= 2) {
+                // Hacer una llamada RPC a Odoo para buscar los códigos postales que coincidan
+                const results = await rpc.query({
+                    model: 'res.city.zip',
+                    method: 'search_read',
+                    args: [[['name', 'ilike', term]], ['id', 'name', 'city_id']],
+                    limit: 10,
+                });
 
-			// Convertir a minúsculas
-			subdomain = subdomain.toLowerCase();
+                this.state.zipOptions = results;
+            } else {
+                this.state.zipOptions = [];
+            }
+        }
 
-			// Eliminar caracteres no alfanuméricos ni guiones
-			subdomain = subdomain.replace(/[^a-z0-9\-]/g, '');
+        // Manejar la selección de un código postal
+        onSelectZip(zip) {
+            this.state.selectedZip = zip;
+            this.state.zipOptions = [];
+            this.state.city = zip.city_id[1]; // Actualizamos la ciudad basada en el código postal seleccionado
+        }
 
-            // Establecer el valor del campo subdominio
-            subdomainField.value = subdomain ;
+        // Renderizar el componente OWL
+        static template = xml`
+            <div>
+                <!-- Campo de búsqueda de código postal -->
+                <input
+                    type="text"
+                    class="form-control"
+                    t-on-input="onZipInput"
+                    placeholder="Ingrese el código postal"
+                    t-model="state.zip"
+                />
+                
+                <!-- Lista de resultados del autocompletado -->
+                <ul class="autocomplete-results">
+                    <t t-foreach="state.zipOptions" t-as="zip" t-key="zip.id">
+                        <li t-on-click="() => this.onSelectZip(zip)">
+                            <t t-esc="zip.name"/> - <t t-esc="zip.city_id[1]"/>
+                        </li>
+                    </t>
+                </ul>
+                
+                <!-- Campo Población -->
+                <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Población"
+                    t-model="state.city"
+                />
+            </div>
+        `;
+    }
+
+    // Montar el componente OWL en el DOM
+    function mountSignupStep1() {
+        const target = document.getElementById('signup_step1');
+        if (target) {
+            mount(SignupStep1, { target });
         }
     }
 
-    // Asignar la función al evento 'input' del campo 'company_name'
-    var companyInput = document.getElementById('company_name');
-    if (companyInput) {
-        companyInput.addEventListener('input', updateSubdomain);
-    }
-});
-
-// Incluir la funcionalidad select2 en el campo de código postal
-$(document).ready(function() {
-    $('#zip_id').select2({
-        placeholder: "Seleccione un código postal",
-        allowClear: true,
-        width: '100%' // Asegurarse de que la lista desplegable ocupe el ancho completo del contenedor
-    });
+    // Ejecutar cuando el DOM esté listo
+    document.addEventListener('DOMContentLoaded', mountSignupStep1);
 });
