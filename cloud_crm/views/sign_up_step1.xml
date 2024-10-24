@@ -87,11 +87,10 @@
                 </form>
             </div>
 
-			<script type="text/javascript" src="/web/static/lib/jquery/jquery.js"></script>
+
             <!-- Incluir el archivo JavaScript -->
             <script type="text/javascript" src="/cloud_crm/static/src/js/signup_step1.js"></script>
-			 <!-- Incluir el nuevo archivo con OWL -->
-            <script type="text/javascript" src="/cloud_crm/static/src/js/zip_autocomplete.js"></script>
+
         </t>
     </template>
 </odoo>
