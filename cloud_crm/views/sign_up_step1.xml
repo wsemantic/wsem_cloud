@@ -90,7 +90,7 @@
             <!-- Incluir el archivo JavaScript -->
             <script type="text/javascript" src="/cloud_crm/static/src/js/signup_step1.js"></script>
 			 <!-- Incluir el nuevo archivo con OWL -->
-            <script type="module" src="/cloud_crm/static/src/js/zip_autocomplete.js"></script>
+            <script type="text/javascript" src="/path_to_your_module/static/src/js/zip_autocomplete.js"></script>
         </t>
     </template>
 </odoo>
