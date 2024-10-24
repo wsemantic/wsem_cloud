@@ -30,12 +30,13 @@
         'views/sign_up_step1.xml',
         'views/sign_up_step2.xml',
         'views/success_register.xml',
+        'views/owl_step1_template.xml',
         
     ],
     "assets":{       
         'web.assets_frontend':[
             'web/static/lib/owl/owl.js',
-           
+            ('module', '/cloud_crm/static/src/js/signup_step1.js'),
             'cloud_crm/static/src/css/factuo.css',
         ], 
     }, 

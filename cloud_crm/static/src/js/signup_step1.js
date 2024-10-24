@@ -4,7 +4,7 @@ import { Component } from "@odoo/owl";
 import { useState } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 
-export class SignupStep1 extends Component {
+export class ZipAutocomplete  extends Component {
     static template = 'cloud_crm.signup_step1_template';
     
     setup() {
@@ -52,4 +52,4 @@ export class SignupStep1 extends Component {
     }
 }
 
-registry.category("public_components").add("SignupStep1", SignupStep1);
+registry.category("public_components").add("ZipAutocomplete", ZipAutocomplete);
