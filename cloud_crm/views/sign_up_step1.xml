@@ -87,10 +87,6 @@
                 </form>
             </div>
 
-
-            <!-- Incluir el archivo JavaScript -->
-            <script type="text/javascript" src="/cloud_crm/static/src/js/signup_step1.js"></script>
-
         </t>
     </template>
 </odoo>
