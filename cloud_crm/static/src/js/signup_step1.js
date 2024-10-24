@@ -1,9 +1,10 @@
-const { Component, useState } = owl;
-const { xml } = owl.tags;
+/** @odoo-module */
 
-// Definir el componente
+import { Component, useState } from "@odoo/owl";
+import { xml } from "@odoo/owl";
+
+// Definir el componente de autocompletado de códigos postales
 class ZipAutocomplete extends Component {
-    // Configurar el estado del componente
     setup() {
         this.state = useState({
             zip: '',
@@ -13,7 +14,6 @@ class ZipAutocomplete extends Component {
         });
     }
 
-    // Manejar el input del código postal y hacer una búsqueda RPC
     async onZipInput(event) {
         const term = event.target.value;
         this.state.zip = term;
@@ -32,44 +32,19 @@ class ZipAutocomplete extends Component {
         }
     }
 
-    // Manejar la selección del código postal
     onSelectZip(zip) {
         this.state.selectedZip = zip;
         this.state.zipOptions = [];
         this.state.city = zip.city_id[1];
     }
-
-    // Definir el template del componente
-    static template = xml`
-        <div>
-            <input
-                type="text"
-                class="form-control"
-                t-on-input="onZipInput"
-                placeholder="Ingrese el código postal"
-                t-model="state.zip"
-            />
-            <ul class="autocomplete-results">
-                <t t-foreach="state.zipOptions" t-as="zip" t-key="zip.id">
-                    <li t-on-click="() => this.onSelectZip(zip)">
-                        <t t-esc="zip.name"/> - <t t-esc="zip.city_id[1]"/>
-                    </li>
-                </t>
-            </ul>
-            <input
-                type="text"
-                class="form-control"
-                placeholder="Población"
-                t-model="state.city"
-            />
-        </div>
-    `;
 }
 
-// Montar el componente cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', () => {
+// Montar el componente al cargar el DOM
+document.addEventListener('DOMContentLoaded', async () => {
     const target = document.getElementById('signup_step1');
     if (target) {
         owl.mount(ZipAutocomplete, { target });
     }
 });
+
+export default ZipAutocomplete;
