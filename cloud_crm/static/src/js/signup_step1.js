@@ -44,30 +44,5 @@ export class ZipAutocomplete extends Component {
 }
 
 // Asignación directa del template heredado
-ZipAutocomplete.template = xml`
-    <div>
-        <!-- Input del Código Postal -->
-        <input
-            type="text"
-            class="form-control"
-            t-on-input="onZipInput"
-            placeholder="Ingrese el código postal"
-            t-model="state.zip"
-        />
-        <!-- Lista de Resultados de Autocompletado -->
-        <ul class="autocomplete-results">
-            <t t-foreach="state.zipOptions" t-as="zip" t-key="zip.id">
-                <li t-on-click="() => this.onSelectZip(zip)">
-                    <t t-esc="zip.name"/> - <t t-esc="zip.city_id[1]"/>
-                </li>
-            </t>
-        </ul>
-        <!-- Input de la Población -->
-        <input
-            type="text"
-            class="form-control"
-            placeholder="Población"
-            t-model="state.city"
-        />
-    </div>
-`;
+// Asignar el template OWL desde el archivo XML
+ZipAutocomplete.template = 'signup_step1_template';
