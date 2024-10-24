@@ -1,6 +1,6 @@
 <odoo>
-    <template id="signup_step1_template" name="Signup Step 1 OWL Template" >
-        <div>
+    <templates >
+        <div t-name="signup_step1_template" name="Signup Step 1 OWL Template" owl="1" >
             <!-- Input del Código Postal -->
             <input
                 type="text"
@@ -25,5 +25,5 @@
                 t-model="state.city"
             />
         </div>
-    </template>
+    </templates>
 </odoo>
