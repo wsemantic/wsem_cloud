@@ -36,7 +36,7 @@
     "assets":{       
         'web.assets_frontend':[
             'web/static/lib/owl/owl.js',
-            ('module', '/cloud_crm/static/src/js/signup_step1.js'),
+           
             'cloud_crm/static/src/css/factuo.css',
         ], 
     }, 
