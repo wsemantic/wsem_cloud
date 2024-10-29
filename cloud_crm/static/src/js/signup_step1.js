@@ -1,48 +1,49 @@
-/** @odoo-module */
+// JavaScript para el primer paso (cálculo dinámico del subdominio)
+document.addEventListener('DOMContentLoaded', function () {
+    // Función para actualizar el subdominio dinámicamente
+    function updateSubdomain() {
+        var companyField = document.getElementById('company_name');
+        var subdomainField = document.getElementById('subdomain_input');
 
-import { Component, useState } from "@odoo/owl";
-import { xml } from "@odoo/owl";
 
-// Definir y exportar la clase del componente OWL
-export class ZipAutocomplete extends Component {
-    setup() {
-        this.state = useState({
-            zip: '',
-            zipOptions: [],
-            selectedZip: null,
-            city: '',
-        });
-    }
+        if (companyField && subdomainField) {
+            // Obtener el nombre de la empresa y eliminar espacios al inicio y final
+            var companyName = companyField.value.trim();
 
-    // Método para manejar la entrada del código postal
-    async onZipInput(event) {
-        const term = event.target.value;
-        this.state.zip = term;
+			// Dividir el nombre de la empresa en palabras
+			var words = companyName.split(/\s+/);
 
-        if (term.length >= 2) {
-            const results = await this.env.services.rpc({
-                model: 'res.city.zip',
-                method: 'search_read',
-                args: [[['name', 'ilike', term]], ['id', 'name', 'city_id']],
-                limit: 10,
-            });
+			if (words.length >= 2 && words[0].length >= 5) {
+				// Usar la primera palabra como subdominio
+				subdomain = words[0];
+			} else {
+				// Eliminar espacios y limitar a 7 caracteres
+				subdomain = companyName.replace(/\s+/g, '').substring(0, 7);
+			}
 
-            this.state.zipOptions = results;
-        } else {
-            this.state.zipOptions = [];
+			// Convertir a minúsculas
+			subdomain = subdomain.toLowerCase();
+
+			// Eliminar caracteres no alfanuméricos ni guiones
+			subdomain = subdomain.replace(/[^a-z0-9\-]/g, '');
+
+            // Establecer el valor del campo subdominio
+            subdomainField.value = subdomain ;
         }
     }
 
-    // Método para manejar la selección de un código postal
-    onSelectZip(zip) {
-        this.state.selectedZip = zip;
-        this.state.zipOptions = [];
-        this.state.city = zip.city_id[1];
-        // Disparar el evento para QWeb
-        this.trigger('zip-selected', { zip: zip });
+    // Asignar la función al evento 'input' del campo 'company_name'
+    var companyInput = document.getElementById('company_name');
+    if (companyInput) {
+        companyInput.addEventListener('input', updateSubdomain);
     }
-}
+});
 
-// Asignación directa del template heredado
-// Asignar el template OWL desde el archivo XML
-ZipAutocomplete.template = 'signup_step1_template';
+// Incluir la funcionalidad select2 en el campo de código postal
+$(document).ready(function() {
+    $('#zip_id').select2({
+        placeholder: "Seleccione un código postal",
+        allowClear: true,
+        width: '100%' // Asegurarse de que la lista desplegable ocupe el ancho completo del contenedor
+    });
+});
