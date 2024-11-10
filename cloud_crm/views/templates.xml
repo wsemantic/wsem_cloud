@@ -30,4 +30,19 @@
             </div>
         </xpath>
     </template>
+
+    <template id="portal_my_contracts" name="My Contracts Cloud URL" inherit_id="contract.portal_my_contracts">
+        <xpath expr="//thead//tr" position="inside">
+            <th>Cloud URL</th>
+        </xpath>
+        
+        <xpath expr="//tbody//tr" position="inside">
+            <td>
+                <a t-att-href="contract.partner_id.cloud_url">
+                    <span t-field="contract.partner_id.cloud_url" />
+                </a>
+            </td>
+        </xpath>
+    </template>
+
 </odoo>
