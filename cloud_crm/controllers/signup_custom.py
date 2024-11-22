@@ -48,22 +48,30 @@ class CustomSignupController(http.Controller):
                 state_id = None
 
             # Validar campos obligatorios
-            if not all([name, email, company_name, dni, street, postal_code, city, phone, subdomain]):
-                error = 'Todos los campos son obligatorios.'
+            # Diccionario de campos con sus nombres y valores
+            fields = {
+                "name": name,
+                "email": email,
+                "company_name": company_name,
+                "dni": dni,
+                "street": street,
+                "postal_code": postal_code,
+                "city": city,
+                "phone": phone,
+                "subdomain": subdomain,
+            }
+
+            # Lista para almacenar los nombres de los campos que faltan
+            missing_fields = [field for field, value in fields.items() if not value]
+
+            if missing_fields:
+                # Construir el mensaje de error con los nombres de los campos que faltan
+                error = f"Los siguientes campos son obligatorios: {', '.join(missing_fields)}."
                 return request.render('cloud_crm.signup_step1', {
                     'error': error,
-                    'name': name,
-                    'email': email,
-                    'company_name': company_name,
-                    'dni': dni,
-                    'street': street,
-                    'street2': street2,
-                    'zip_id': zip_id,
-                    'zip': postal_code,
-                    'city': city,
-                    'phone': phone,
-                    'subdomain': subdomain,
+                    **fields  # Pasamos los valores para rellenar el formulario con los datos introducidos
                 })
+
 
             # Generar el cloud_url
             cloud_url = f"{subdomain}.factuoo.com"
