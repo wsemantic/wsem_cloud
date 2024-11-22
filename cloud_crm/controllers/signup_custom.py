@@ -68,6 +68,7 @@ class CustomSignupController(http.Controller):
             if missing_fields:
                 # Construir el mensaje de error con los nombres de los campos que faltan
                 error = f"Los siguientes campos son obligatorios: {', '.join(missing_fields)}."
+                _logger.error(f"WSEM {error}")
                 return request.render('cloud_crm.signup_step1', {
                     'error': error,
                     **fields  # Pasamos los valores para rellenar el formulario con los datos introducidos
