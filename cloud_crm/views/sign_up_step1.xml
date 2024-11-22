@@ -54,7 +54,8 @@
                     <div class="mb-3 field-zip_id">
                         <label for="zip_id">Código Postal</label>
                         <!-- Aquí se incluye el componente OWL para el autocompletado -->
-                        <div t-component="ZipAutocomplete" t-on-zip-selected="onZipSelected"/>
+                        <!-- <div t-component="ZipAutocomplete" t-on-zip-selected="onZipSelected"/> -->
+                        <input type='text' id='zip_id' name='Zip' class='form-control form-control-sm'/>
                     </div>
 					
 					<!-- Campo Población -->
