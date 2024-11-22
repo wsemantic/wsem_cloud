@@ -9,7 +9,6 @@ import re
 import configparser
 import os
 import time
-import json
 
 _logger = logging.getLogger(__name__)
 
@@ -57,6 +56,7 @@ class CustomSignupController(http.Controller):
                 "dni": dni,
                 "street": street,
                 "postal_code": postal_code,
+                "zip_id": zip_id,
                 "city": city,
                 "phone": phone,
                 "subdomain": subdomain,
@@ -511,36 +511,3 @@ class CustomSignupController(http.Controller):
 
             cr.commit()            
             
-    @http.route('/get_zip_list', type='http', auth='public', methods=['GET'], website=True)
-    def get_res_city_zip(self, **kwargs):
-        searchTerm = kwargs.get('searchTerm', '') 
-        page = int(kwargs.get('page', 1))
-        pageSize = int(kwargs.get('pageSize', 20))
-
-        try:
-            page = int(page)
-            pageSize = int(pageSize)
-        except ValueError:
-            page, pageSize = 1, 20
-
-        city_ids = request.env['res.city'].sudo().search(
-            [('name', '=ilike', "%" + searchTerm + "%")],
-            limit=pageSize,
-            offset=(page - 1) * pageSize
-        ).ids
-
-        zip_ids = request.env['res.city.zip'].sudo().search_read(
-            domain=['|', 
-                    ('name', '=ilike', "%" + searchTerm + "%"),
-                    ('city_id', 'in', city_ids)],
-            fields=['name', 'city_id'],
-            limit=pageSize,
-            offset=(page - 1) * pageSize
-        )
-
-        zip_ids = [{'id': record['id'], 'name': f"{record['name']} {record['city_id'][1]}"} for record in zip_ids]
-
-        return request.make_response(
-            json.dumps(zip_ids),
-            headers=[("Content-Type", "application/json")]
-        )
