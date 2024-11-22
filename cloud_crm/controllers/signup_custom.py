@@ -39,12 +39,15 @@ class CustomSignupController(http.Controller):
                     postal_code = zip_record.name
                     city = zip_record.city_id.name
                     state_id = zip_record.city_id.state_id.id
+                    _logger.error(f"WSEM ZIp exists {postal_code}")
                 else:
+                    _logger.error(f"WSEM ZIp Not exists")
                     postal_code = ''
                     city = ''
                     state_id = None
-            else:
+            else:                
                 postal_code = kwargs.get('zip')
+                _logger.error(f"WSEM No ZIp ID {postal_code}")
                 city = kwargs.get('city')
                 state_id = None
 
