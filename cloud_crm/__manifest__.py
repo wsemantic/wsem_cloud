@@ -35,7 +35,6 @@
     ],
     "assets":{       
         'web.assets_frontend':[
-            'cloud_crm/static/src/js/autocomplete_zip.js',
             'cloud_crm/static/src/js/signup_step1.js',
             'cloud_crm/static/src/css/factuo.css',
         ], 
