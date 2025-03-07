@@ -16,8 +16,8 @@
     # Categories can be used to filter modules in modules listing
     # Check https://github.com/odoo/odoo/blob/16.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
-    'category': 'Uncategorized',
-    'version': '16.0.0.2',
+    'category': 'Sales/CRM',
+    'version': '17.0.1.0',
 
     # any module necessary for this one to work correctly
     'depends': ['sale','l10n_es_toponyms', 'contract'], 
@@ -34,7 +34,7 @@
         
     ],
     "assets":{       
-        'web.assets_frontend':[
+        'web.assets_website':[
             'cloud_crm/static/src/js/signup_step1.js',
             'cloud_crm/static/src/css/factuo.css',
         ], 
