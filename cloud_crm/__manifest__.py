@@ -35,7 +35,8 @@
     ],
     "assets":{       
         'web.assets_website':[
-            'cloud_crm/static/src/js/signup_step1.js',
+            'cloud_crm/static/src/js/signup_step1_subdomain.js',
+            'cloud_crm/static/src/js/signup_step1_complete.js',
             'cloud_crm/static/src/css/factuo.css',
         ], 
     }, 
