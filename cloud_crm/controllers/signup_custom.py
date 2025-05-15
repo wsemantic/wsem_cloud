@@ -351,7 +351,7 @@ class CustomSignupController(http.Controller):
             )
 
             domain = "factuoo.com"
-            ip_servidor_odoo = "79.143.93.12"  # Reemplaza con la IP real de tu servidor Odoo
+            ip_servidor_odoo = self._get_server_ip()
 
             try:
                 _logger.info(f"Creando registro A para el subdominio '{subdomain}.{domain}' apuntando a {ip_servidor_odoo}")
@@ -469,7 +469,7 @@ class CustomSignupController(http.Controller):
         else:
             domain = [('name', 'ilike', keywords[0])]
         
-        _logger.info(f"Dominio de búsqueda construido: {domain}")
+        _logger.info(f"WS Dominio de búsqueda construido: {domain}")
         
         registry = odoo.registry(db_name)
         with registry.cursor() as cr:
@@ -510,7 +510,7 @@ class CustomSignupController(http.Controller):
             company = env['res.company'].search([], limit=1)
             if company:
                 company.sudo().write({'email': False})
-                _logger.info(f"Email de la compañía eliminado en la base de datos '{db_name}'")
+                _logger.info(f"WS Email de la compañía eliminado en la base de datos '{db_name}'")
                 
             
 
@@ -549,3 +549,9 @@ class CustomSignupController(http.Controller):
             json.dumps(zip_ids),
             headers=[("Content-Type", "application/json")]
         )
+        
+    def _get_server_ip(self):
+        ip = config.get('ovh_server_ip')
+        if not ip:
+            raise UserError(_('WS No está configurada la IP en odoo.conf (ovh_server_ip)'))
+        return ip
