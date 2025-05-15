@@ -20,7 +20,7 @@
     'version': '17.0.1.0',
 
     # any module necessary for this one to work correctly
-    'depends': ['sale','l10n_es_toponyms', 'contract'], 
+    'depends': ['sale','l10n_es_toponyms', 'contract','website'], 
 
     # always loaded
     'data': [
