@@ -229,7 +229,7 @@ class CustomSignupController(http.Controller):
         company_name= signup_data.get('company_name')
 
         target_db = subdomain  # Usamos el subdominio como nombre de la base de datos
-        source_db = 'verifactu'  # Nombre de la base de datos predefinida a clonar
+        source_db = 'veri-template'  # Nombre de la base de datos predefinida a clonar
         
         # Crear el subdominio en OVH
         try:
