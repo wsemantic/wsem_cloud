@@ -1,6 +1,6 @@
 {
     'name': "cloud_sas",
-    'version': '1.0',
+    'version': '18.0.0.0',
     'category': 'API',
     'depends': ['base', 'web'],
     'data': [],
