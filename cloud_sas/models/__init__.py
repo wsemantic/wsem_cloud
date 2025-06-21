@@ -1,2 +1,3 @@
-from . import models,res_users
+from . import models
+from . import res_users
 
