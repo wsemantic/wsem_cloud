@@ -6,6 +6,7 @@ This repository contains two custom Odoo addons for managing customer signup and
 - **cloud_sas**: Provides access control utilities used by the signup process.
 
 Both addons were originally written for Odoo 16 and updated here to target Odoo 18. They have been tested on Ubuntu 24.
+In Odoo 18 the backend is now served under `/odoo` rather than `/web`, so the routes in these modules use the new prefix.
 
 ## Requirements
 

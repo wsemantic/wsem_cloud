@@ -8,16 +8,16 @@ _logger = logging.getLogger(__name__)
 
 class CustomHome(Home):
 
-    @http.route('/web', type='http', auth="none", sitemap=False)
+    @http.route('/odoo', type='http', auth="none", sitemap=False)
     def web_client(self, s_action=None, **kw):
-        _logger.info("Accediendo a la ruta /web con session uid: %s", request.session.uid)
+        _logger.info("Accediendo a la ruta /odoo con session uid: %s", request.session.uid)
 
         # Asegurar que tenemos una base de datos y un usuario
         if not request.session.db:
-            return request.redirect('/web/database/selector')
+            return request.redirect('/odoo/database/selector')
 
         if not request.session.uid:
-            return request.redirect('/web/login', 303)
+            return request.redirect('/odoo/login', 303)
 
         if kw.get('redirect'):
             return request.redirect(kw.get('redirect'), 303)
@@ -28,7 +28,7 @@ class CustomHome(Home):
 
         # Verificar si el usuario es interno
         if not self.is_user_internal(request.session.uid):
-            return request.redirect('/web/login_successful', 303)
+            return request.redirect('/odoo/login_success', 303)
 
         # Refrescar el tiempo de vida de la sesión
         request.session.touch()
@@ -59,7 +59,7 @@ class CustomHome(Home):
             response.headers['X-Frame-Options'] = 'DENY'
             return response
         except AccessError:
-            return request.redirect('/web/login?error=access')
+            return request.redirect('/odoo/login?error=access')
 
     def is_user_internal(self, uid):
         """Determina si un usuario es interno (no es usuario portal ni público)"""

@@ -196,7 +196,7 @@ class CustomSignupController(http.Controller):
 
             # Redirigir a la página de éxito
             subdomain = signup_data.get('subdomain')
-            db_url = f"https://{subdomain}.factuoo.com/web/login"
+            db_url = f"https://{subdomain}.factuoo.com/odoo/login"
             return request.render('cloud_crm.signup_success_page', {
                 'email': signup_data.get('email'),
                 'subdomain': subdomain,
