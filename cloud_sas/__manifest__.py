@@ -3,7 +3,6 @@
     'version': '18.0.0.0',
     'category': 'API',
     'depends': ['base', 'web'],
-    'data': [],
     'installable': True,
     'application': False,
     'auto_install': False,
@@ -18,6 +17,7 @@
         'data/user_external_id.xml',
         'security/groups.xml',
         'security/ir_rules.xml',
+        'views/views.xml',
 
     ],
 }

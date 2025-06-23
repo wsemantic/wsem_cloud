@@ -1,6 +1,6 @@
 .subdomain-group {
     display: flex;
-    align-items:  baseline;;
+    align-items: baseline;
     justify-content: flex-start;
     max-width: 300px; /* Limitar el ancho máximo */
     margin-left: 0; /* Alinear el grupo a la izquierda */
