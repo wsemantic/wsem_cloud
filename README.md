@@ -21,7 +21,11 @@ pip install -r requirements.txt
 2. Update the app list and install the `cloud_crm` module. The required dependencies are `sale`, `l10n_es_toponyms` and `contract`.
 3. Install Python dependencies with `pip install -r requirements.txt`.
 
-The signup workflow starts at `/signup/step1` and guides users through database creation and module selection.
+The signup workflow starts at `/signup_step1` and guides users through database creation and module selection.
+After the first step, users continue to `/signup_step2` to choose optional modules.
 
 OWL components are optional; the standard QWeb forms work on Odoo 18 without OWL.
+## Template Database
+
+Prepare a template database named `veri-template` containing the `cloud_sas` module and a maintenance user with ID `2` (login `factuoo`). New customer databases are cloned from this template and the security rules can be activated when ready.
 
