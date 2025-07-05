@@ -2,18 +2,20 @@
 <odoo>
     <template id="signup_step2" name="Custom Signup Step 2">
         <t t-call="website.layout">
-            <div class="container step2-modules">
-                <h1>Registro de Usuario - Paso 2</h1>
-                <p>Selecciona los módulos que deseas instalar en tu base de datos.</p>
+            <div class="container step2-modules my-5">
+                <h1 class="text-center mb-4">Registro de Usuario - Paso 2</h1>
+                <p class="text-center mb-4">Selecciona los módulos que deseas instalar en tu base de datos.</p>
+
                 <form t-att-action="request.httprequest.path" method="post" id="signup_step2_form">
-					<input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
                     <div class="row">
-                        <!-- Iterar sobre la lista fija de módulos -->
                         <t t-foreach="modules" t-as="module">
-                            <div class="col-md-3">
-                                <div class="module-box">
-                                    <img t-att-src="module['icon']" alt="" class="img-fluid"/>
-                                    <label style="padding: 0; margin: 0;">
+                            <div class="col-md-3 col-sm-6 mb-4">
+                                <div class="module-box border rounded p-2 h-100 text-center">
+                                    <img t-att-src="module['icon']" alt="" class="img-fluid mb-2" style="max-height: 50px;" />
+
+                                    <label class="d-flex justify-content-center align-items-center text-wrap" style="gap: 8px; word-break: break-word;">
                                         <input type="checkbox" name="modules" t-att-value="module['technical_name']"/>
                                         <span t-esc="module['name']" />
                                     </label>
@@ -21,13 +23,12 @@
                             </div>
                         </t>
                     </div>
-                    <button type="submit" class="btn btn-primary">Registrar y Crear Base de Datos</button>
+
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-primary px-4 py-2">Registrar y Crear Base de Datos</button>
+                    </div>
                 </form>
             </div>
-            <!-- Incluir el archivo JavaScript para la selección de módulos -->
-            <script src="/cloud_crm/static/src/js/signup_step2.js"></script>
         </t>
     </template>
 </odoo>
-
-

@@ -20,7 +20,7 @@
     'version': '18.0.0.0',
 
     # any module necessary for this one to work correctly
-    'depends': ['sale','l10n_es_toponyms', 'contract'], 
+    'depends': ['sale','l10n_es_toponyms', 'contract', 'website'], 
 
     # always loaded
     'data': [
@@ -37,6 +37,9 @@
         'web.assets_frontend':[
             'cloud_crm/static/src/js/signup_step1.js',
             'cloud_crm/static/src/css/factuo.css',
+            'cloud_crm/static/src/lib/select2/select2.css',
+            'cloud_crm/static/src/lib/select2/select2.js',
+            'cloud_crm/static/src/lib/select2-bootstrap-css/select2-bootstrap.css',
         ], 
     }, 
     # only loaded in demonstration mode
