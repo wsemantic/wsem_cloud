@@ -2,7 +2,7 @@
     'name': "cloud_sas",
     'version': '18.0.0.0',
     'category': 'API',
-    'depends': ['base', 'web'],
+    'depends': ['base', 'web', 'account'],
     'installable': True,
     'application': False,
     'auto_install': False,

@@ -1,24 +1,31 @@
-// JavaScript para el segundo paso (gestión de la selección de módulos)
-document.addEventListener('DOMContentLoaded', function () {
-    // Función para alternar la selección visual del módulo
-    function toggleModuleSelection(event) {
-        var moduleCheckbox = event.target;
-        var moduleBox = moduleCheckbox.closest('.module-box');
+/** @odoo-module **/
 
-        if (moduleBox) {
-            if (moduleCheckbox.checked) {
-                moduleBox.classList.add('selected');
+import publicWidget from "@web/legacy/js/public/public_widget";
+
+publicWidget.registry.ModuleSelectionStep = publicWidget.Widget.extend({
+    selector: '#signup_step2_form', 
+    start: function () {
+        this._bindModuleCheckboxes();
+        return this._super.apply(this, arguments);
+    },
+
+    _bindModuleCheckboxes: function () {
+        const self = this;
+        this.$('input[name="modules"]').each(function () {
+            $(this).on('change', function (event) {
+                self._toggleModuleSelection(event.currentTarget);
+            });
+        });
+    },
+
+    _toggleModuleSelection: function (checkbox) {
+        const $box = $(checkbox).closest('.module-box');
+        if ($box.length) {
+            if (checkbox.checked) {
+                $box.addClass('selected');
             } else {
-                moduleBox.classList.remove('selected');
+                $box.removeClass('selected');
             }
         }
-    }
-
-    // Obtener todos los checkboxes de los módulos
-    var moduleCheckboxes = document.querySelectorAll('input[name="modules"]');
-
-    // Asignar el evento 'change' a cada checkbox de módulo
-    moduleCheckboxes.forEach(function (checkbox) {
-        checkbox.addEventListener('change', toggleModuleSelection);
-    });
+    },
 });
