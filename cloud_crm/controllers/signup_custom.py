@@ -3,6 +3,8 @@ from odoo.http import request
 from odoo.service import db
 from odoo import api, SUPERUSER_ID
 import odoo
+from odoo.exceptions import UserError
+from odoo.modules.registry import Registry
 import ovh
 import logging
 import re
@@ -377,7 +379,7 @@ class CustomSignupController(http.Controller):
             return  # No hay módulos para instalar
 
         # Cambiar el contexto a la nueva base de datos
-        registry = odoo.registry(db_name)
+        registry = Registry(db_name)
         with registry.cursor() as cr:
             env = api.Environment(cr, SUPERUSER_ID, {})
             # Instalar los módulos
@@ -387,7 +389,7 @@ class CustomSignupController(http.Controller):
                 modules_to_install.button_immediate_install()
 
     def create_user_in_db(self, db_name, email, name, subdomain, company_name):
-        registry = odoo.registry(db_name)
+        registry = Registry(db_name)
         #REQUISITOS
         # La base de datos a clonar debe incluir la configuración de correo (por ejemplo, factuoo)
         # El mail de la compañía se usará como remitente para el envío automático de la invitación, debe ser del mismo dominio que la base de datos (registro@factuoo.com)
@@ -472,7 +474,7 @@ class CustomSignupController(http.Controller):
         
         _logger.info(f"Dominio de búsqueda construido: {domain}")
         
-        registry = odoo.registry(db_name)
+        registry = Registry(db_name)
         with registry.cursor() as cr:
             env = api.Environment(cr, SUPERUSER_ID, {'active_test': False})
             # Buscar las reglas que coinciden con las palabras clave
@@ -497,7 +499,7 @@ class CustomSignupController(http.Controller):
         """
         Elimina la configuración de servidor de correo y limpia el email de la compañía.
         """
-        registry = odoo.registry(db_name)
+        registry = Registry(db_name)
         with registry.cursor() as cr:
             env = api.Environment(cr, SUPERUSER_ID, {})
             
