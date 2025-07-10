@@ -298,7 +298,7 @@ class CustomSignupController(http.Controller):
         return False
 
 
-    def create_partner_in_db(self, name, email, company_name, vat, street, street2, postal_code, city, phone, cloud_url):
+    def create_partner_in_db(self, name, email, company_name, vat, street, street2, zip, city, phone, cloud_url):
         """
         Crea un res.partner en la base de datos actual con los datos proporcionados.
         """
@@ -310,7 +310,7 @@ class CustomSignupController(http.Controller):
             'vat': vat,
             'street': street,
             'street2': street2,
-            'zip': postal_code,
+            'zip': zip,
             'city': city,
             'phone': phone,
             'cloud_url': cloud_url,
