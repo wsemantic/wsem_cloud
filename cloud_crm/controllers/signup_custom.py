@@ -350,7 +350,7 @@ class CustomSignupController(http.Controller):
             if os.path.exists(conf_path):
                 conf = configparser.ConfigParser()
                 conf.read(conf_path)
-                for option in ["http_interface", "xmlrpc_interface"]:
+                for option in ["httpconf"]:
                     if conf.has_option("options", option):
                         ip_addr = conf.get("options", option)
                         if ip_addr:
