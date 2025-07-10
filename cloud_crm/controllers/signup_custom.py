@@ -12,6 +12,7 @@ import configparser
 import os
 import time
 import json
+import socket
 
 _logger = logging.getLogger(__name__)
 
@@ -320,6 +321,43 @@ class CustomSignupController(http.Controller):
         }
         env['res.partner'].sudo().create(partner_vals)
 
+    def _get_odoo_server_ip(self):
+        """Devuelve la IP del servidor Odoo.
+
+        Primero intenta obtenerla consultando la interfaz de red y, si no es
+        posible, la lee de un archivo de configuración estándar.
+        """
+        ip_addr = None
+
+        # Intento automático leyendo la IP asociada a la interfaz de salida
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+                s.connect(("8.8.8.8", 80))
+                ip_addr = s.getsockname()[0]
+        except Exception as exc:
+            _logger.warning("No se pudo obtener la IP automáticamente: %s", exc)
+
+        # Si no se obtuvo o es localhost, leer la IP de un archivo de
+        # configuración. La ruta puede especificarse en las variables de
+        # entorno ODOO_CONF u ODOO_RC, de lo contrario se usa la ruta por
+        # defecto '/etc/odoo/odoo.conf'.
+        if not ip_addr or ip_addr.startswith("127."):
+            conf_path = (
+                os.environ.get("ODOO_CONF")
+                or os.environ.get("ODOO_RC")
+                or "/etc/odoo/odoo.conf"
+            )
+            if os.path.exists(conf_path):
+                conf = configparser.ConfigParser()
+                conf.read(conf_path)
+                for option in ["http_interface", "xmlrpc_interface"]:
+                    if conf.has_option("options", option):
+                        ip_addr = conf.get("options", option)
+                        if ip_addr:
+                            break
+
+        return ip_addr or "127.0.0.1"
+
     def create_subdomain_in_ovh(self, subdomain):
             """
             Crea el subdominio en OVH usando la API, leyendo las claves desde un archivo de configuración.
@@ -354,7 +392,7 @@ class CustomSignupController(http.Controller):
             )
 
             domain = "factuoo.com"
-            ip_servidor_odoo = "79.143.93.12"  # Reemplaza con la IP real de tu servidor Odoo
+            ip_servidor_odoo = self._get_odoo_server_ip()
 
             try:
                 _logger.info(f"Creando registro A para el subdominio '{subdomain}.{domain}' apuntando a {ip_servidor_odoo}")

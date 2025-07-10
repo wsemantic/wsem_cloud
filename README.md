@@ -21,6 +21,9 @@ pip install -r requirements.txt
 1. Copy both folders into your Odoo addons path.
 2. Update the app list and install the `cloud_crm` module. The required dependencies are `sale`, `l10n_es_toponyms` and `contract`.
 3. Install Python dependencies with `pip install -r requirements.txt`.
+4. Optionally set the environment variable `ODOO_CONF` (or `ODOO_RC`) with the path
+   to your `odoo.conf`. If unset, `/etc/odoo/odoo.conf` is used when retrieving the
+   server's IP address.
 
 The signup workflow starts at `/signup_step1` and guides users through database creation and module selection.
 After the first step, users continue to `/signup_step2` to choose optional modules.
