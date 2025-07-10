@@ -335,17 +335,17 @@ class CustomSignupController(http.Controller):
                 s.connect(("8.8.8.8", 80))
                 ip_addr = s.getsockname()[0]
         except Exception as exc:
-            _logger.warning("No se pudo obtener la IP automáticamente: %s", exc)
+            _logger.warning("WS No se pudo obtener la IP automáticamente: %s", exc)
 
         # Si no se obtuvo o es localhost, leer la IP de un archivo de
         # configuración. La ruta puede especificarse en las variables de
         # entorno ODOO_CONF u ODOO_RC, de lo contrario se usa la ruta por
-        # defecto '/etc/odoo/odoo.conf'.
+        # defecto '/etc/odoo18.conf'.
         if not ip_addr or ip_addr.startswith("127."):
             conf_path = (
                 os.environ.get("ODOO_CONF")
                 or os.environ.get("ODOO_RC")
-                or "/etc/odoo/odoo.conf"
+                or "/etc/odoo18.conf"
             )
             if os.path.exists(conf_path):
                 conf = configparser.ConfigParser()
