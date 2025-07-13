@@ -6,6 +6,7 @@ publicWidget.registry.SignupStep1Form = publicWidget.Widget.extend({
     selector: '#signup_step1_form',
     events: {
         'input #company_name': 'updateSubdomain',
+        'change #zip_id': 'OnchangeZip',
     },
 
     start: function () {
@@ -76,7 +77,26 @@ publicWidget.registry.SignupStep1Form = publicWidget.Widget.extend({
                 },
             },
         });
-    }
+    },
+
+    OnchangeZip: function (ev) {
+        var $zip = this.$('#zip_id');
+        var $city = this.$('#city');
+
+        if (!$zip.length) return;
+
+        var selectedData = $zip.select2('data');
+
+        var data = Array.isArray(selectedData) ? selectedData[0] : selectedData;
+
+        if (data && data.text) {
+            var parts = data.text.trim().split(' ');
+            var cityName = parts.slice(1).join(' ');
+            $city.val(cityName);
+        } else {
+            $city.val('');
+        }
+    },
 
 });
 

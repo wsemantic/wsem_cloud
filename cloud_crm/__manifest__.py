@@ -41,6 +41,9 @@
             'cloud_crm/static/src/lib/select2/select2.js',
             'cloud_crm/static/src/lib/select2-bootstrap-css/select2-bootstrap.css',
         ], 
+        'web.assets_backend':[
+            'cloud_crm/static/src/js/user_menu_item.js',
+        ],
     }, 
     # only loaded in demonstration mode
     'demo': [
