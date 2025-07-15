@@ -20,4 +20,10 @@
         'views/views.xml',
 
     ],
+    
+    "assets":{       
+        'web.assets_backend':[
+            'cloud_crm/static/src/js/user_menu_item.js',
+        ],
+    }, 
 }
