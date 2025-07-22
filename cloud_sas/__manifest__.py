@@ -20,4 +20,10 @@
         'views/views.xml',
 
     ],
+    "assets":{       
+        'web.assets_backend':[
+            'cloud_sas/static/src/js/user_menu_item.js',
+        ],
+    }, 
+
 }

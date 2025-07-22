@@ -1,7 +1,8 @@
 /** @odoo-module **/
 import { registry } from "@web/core/registry";
 import { browser } from "@web/core/browser/browser";
-
+import { session } from "@web/session";
+console.log(session.user_id)
 registry.category("user_menuitems").add("documentation", (env) => {
     return {
         type: "item",
@@ -33,11 +34,10 @@ registry.category("user_menuitems").add("odoo_account", (env) => {
         type: "item",
         id: "account",
         description: "Mi suscripción",
-        href: "https://verifact.wsemantic.com/my", 
+        href: "/sso/redirect",
         callback: () => {
-            browser.open("https://verifact.wsemantic.com/my", "_blank");
+            browser.open("/sso/redirect", "_blank");
         },
         sequence: 60,
     };
 }, { force: true });
-
