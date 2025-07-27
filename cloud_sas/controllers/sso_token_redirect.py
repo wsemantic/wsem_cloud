@@ -19,5 +19,5 @@ class SSORedirectController(http.Controller):
     def sso_redirect(self, **kw):
         login = request.env.user.login
         token = self.generate_token(login)
-        target_url = f"http://crm.local:8025/auth/sso_login?token={token}"
+        target_url = f"https://crm.factuoo.com/auth/sso_login?token={token}"
         return redirect(target_url)
