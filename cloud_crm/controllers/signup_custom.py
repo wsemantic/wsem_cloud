@@ -37,20 +37,37 @@ class CustomSignupController(http.Controller):
 
             # Buscar información del código postal seleccionado
             if zip_id:
-                zip_record = request.env['res.city.zip'].sudo().browse(int(zip_id))
-                if zip_record.exists():
-                    postal_code = zip_record.name
-                    city = zip_record.city_id.name
-                    state_id = zip_record.city_id.state_id.id
-                    _logger.error(f"WSEM ZIp exists {postal_code}")
+                if str(zip_id).isdigit():
+                    zip_record = request.env['res.city.zip'].sudo().browse(int(zip_id))
+                    if zip_record.exists():
+                        postal_code = zip_record.name
+                        city = zip_record.city_id.name
+                        state_id = zip_record.city_id.state_id.id
+                        _logger.error(f"WSEM ZIp exists {postal_code}")
+                    else:
+                        _logger.error("WSEM ZIp Not exists")
+                        postal_code = ''
+                        city = ''
+                        state_id = None
                 else:
-                    _logger.error(f"WSEM ZIp Not exists")
-                    postal_code = ''
-                    city = ''
-                    state_id = None
-            else:                
+                    error = "Código postal inválido."
+                    _logger.error(f"WSEM invalid zip_id value {zip_id}")
+                    return request.render('cloud_crm.signup_step1', {
+                        'error': error,
+                        'name': name,
+                        'email': email,
+                        'company_name': company_name,
+                        'dni': dni,
+                        'street': street,
+                        'street2': street2,
+                        'zip_id': '',
+                        'zip': kwargs.get('zip'),
+                        'city': kwargs.get('city'),
+                        'phone': phone,
+                        'subdomain': subdomain,
+                    })
+            else:
                 postal_code = kwargs.get('zip')
-                _logger.error(f"WSEM No ZIp ID {postal_code}")
                 city = kwargs.get('city')
                 state_id = None
 
