@@ -319,7 +319,11 @@ class CustomSignupController(http.Controller):
             'phone': phone,
             'cloud_url': cloud_url,
         }
-        env['res.partner'].sudo().create(partner_vals)
+        partner = env['res.partner'].sudo().create(partner_vals)
+        portal_wizard = request.env['portal.wizard'].sudo().with_context(active_ids=[partner.id]).create({})
+        portal_user = portal_wizard.user_ids
+        portal_user.email = partner.email
+        portal_user.sudo().action_grant_access()
 
     def _get_odoo_server_ip(self):
         """Devuelve la IP del servidor Odoo.

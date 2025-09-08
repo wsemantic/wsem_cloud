@@ -1,15 +1,16 @@
 /** @odoo-module **/
 import { registry } from "@web/core/registry";
 import { browser } from "@web/core/browser/browser";
-
+import { session } from "@web/session";
+console.log(session.user_id)
 registry.category("user_menuitems").add("documentation", (env) => {
     return {
         type: "item",
         id: "documentation",
         description: "Documentation",
-        href: "https://www.factuoo.com/documentacion", 
+        href: "https://verifact.wsemantic.com/documentacion", 
         callback: () => {
-            browser.open("https://www.factuoo.com/documentacion", "_blank");
+            browser.open("https://verifact.wsemantic.com/documentacion", "_blank");
         },
         sequence: 10,
     };
@@ -20,9 +21,9 @@ registry.category("user_menuitems").add("support", (env) => {
         type: "item",
         id: "support",
         description: "Support",
-        href: "https://www.factuoo.com/contacto/", 
+        href: "https://verifact.wsemantic.com/support", 
         callback: () => {
-            browser.open("https://www.factuoo.com/contacto/", "_blank");
+            browser.open("https://verifact.wsemantic.com/support", "_blank");
         },
         sequence: 20,
     };
@@ -33,11 +34,10 @@ registry.category("user_menuitems").add("odoo_account", (env) => {
         type: "item",
         id: "account",
         description: "Mi suscripción",
-        href: "https://crm.factuoo.com/my", 
+        href: "/sso/redirect",
         callback: () => {
-            browser.open("https://crm.factuoo.com/my", "_blank");
+            browser.open("/sso/redirect", "_blank");
         },
         sequence: 60,
     };
 }, { force: true });
-

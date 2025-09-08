@@ -3,12 +3,13 @@ from odoo import models, api, _
 class ResUsers(models.Model):
     _inherit = 'res.users'
 
-    @api.model
-    def create(self, vals):
-        user = super(ResUsers, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        users = super(ResUsers, self).create(vals_list)
         # Verificar si el usuario tiene permisos de contabilidad
-        self._assign_accounting_technical_group(user)
-        return user
+        for user in users:
+            self._assign_accounting_technical_group(user)
+        return users
 
     def write(self, vals):
         res = super(ResUsers, self).write(vals)
