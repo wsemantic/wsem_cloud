@@ -98,6 +98,27 @@ class CustomSignupController(http.Controller):
                     **fields  # Pasamos los valores para rellenar el formulario con los datos introducidos
                 })
 
+            dni = (dni or '').strip().upper()
+            # Determinar el tipo de partner según el NIF
+            try:
+                company_type = self._get_company_type(dni)
+            except ValueError as e:
+                error = str(e)
+                return request.render('cloud_crm.signup_step1', {
+                    'error': error,
+                    'name': name,
+                    'email': email,
+                    'company_name': company_name,
+                    'dni': dni,
+                    'street': street,
+                    'street2': street2,
+                    'zip_id': zip_id,
+                    'zip': postal_code,
+                    'city': city,
+                    'phone': phone,
+                    'subdomain': subdomain,
+                })
+
 
             # Generar el cloud_url
             cloud_url = f"{subdomain}.factuoo.com"
@@ -134,15 +155,16 @@ class CustomSignupController(http.Controller):
                 'phone': phone,
                 'cloud_url': cloud_url,
                 'state_id': state_id,
+                'company_type': company_type,
             }
 
             if partner:
                 # Si el partner existe, actualizar su información
                 try:
-                    partner.sudo().write(partner_vals)
+                    partner.sudo().with_context(no_vat_validation=True, lang='es_ES').write(partner_vals)
                 except Exception as e:
                     _logger.error(f"Error al actualizar el res.partner: {e}")
-                    error = 'Hubo un error al actualizar tu información. Por favor, inténtalo de nuevo.'
+                    error = getattr(e, 'name', str(e))
                     return request.render('cloud_crm.signup_step1', {
                         'error': error,
                         'name': name,
@@ -163,7 +185,7 @@ class CustomSignupController(http.Controller):
                     self.create_partner_in_db(**partner_vals)
                 except Exception as e:
                     _logger.error(f"Error al crear el res.partner: {e}")
-                    error = 'Hubo un error al procesar tu solicitud. Por favor, inténtalo de nuevo.'
+                    error = getattr(e, 'name', str(e))
                     return request.render('cloud_crm.signup_step1', {
                         'error': error,
                         'name': name,
@@ -246,7 +268,13 @@ class CustomSignupController(http.Controller):
         name = signup_data.get('name')
         email = signup_data.get('email')
         subdomain = signup_data.get('subdomain')
-        company_name= signup_data.get('company_name')
+        company_name = signup_data.get('company_name')
+        street = signup_data.get('street')
+        street2 = signup_data.get('street2')
+        zip_code = signup_data.get('zip')
+        city = signup_data.get('city')
+        state_id = signup_data.get('state_id')
+        phone = signup_data.get('phone')
 
         target_db = subdomain  # Usamos el subdominio como nombre de la base de datos
         source_db = 'veri-template'  # Nombre de la base de datos predefinida a clonar
@@ -280,7 +308,19 @@ class CustomSignupController(http.Controller):
             
         # Crear el usuario en la nueva base de datos
         try:
-            self.create_user_in_db(target_db, email, name, subdomain, company_name)
+            self.create_user_in_db(
+                target_db,
+                email,
+                name,
+                subdomain,
+                company_name,
+                street,
+                street2,
+                zip_code,
+                city,
+                state_id,
+                phone,
+            )
             _logger.info(f"WSEM Usuario '{email}' creado en la base de datos '{target_db}'")
         except Exception as e:
             _logger.error(f"Error al crear el usuario en la base de datos '{target_db}': {e}")
@@ -317,8 +357,21 @@ class CustomSignupController(http.Controller):
             return True
         return False
 
+    def _get_company_type(self, vat):
+        """Devuelve 'person' o 'company' según el formato del NIF.
 
-    def create_partner_in_db(self, name, email, company_name, vat, street, street2, zip, city, state_id, phone, cloud_url):
+        Acepta NIF de individuos (00000000A) y CIF de empresas (A00000000).
+        Lanza ValueError si el formato no es correcto.
+        """
+        vat_no_prefix = vat[2:] if vat.startswith('ES') else vat
+        if re.match(r'^\d{8}[A-Z]$', vat_no_prefix):
+            return 'person'
+        if re.match(r'^[A-Z]\d{8}$', vat_no_prefix):
+            return 'company'
+        raise ValueError('El número de NIF no es válido. Formatos aceptados: 00000000A o A00000000.')
+
+
+    def create_partner_in_db(self, name, email, company_name, vat, street, street2, zip, city, state_id, phone, cloud_url, company_type):
         """
         Crea un res.partner en la base de datos actual con los datos proporcionados.
         """
@@ -332,11 +385,12 @@ class CustomSignupController(http.Controller):
             'street2': street2,
             'zip': zip,
             'city': city,
-            'state_id':state_id,
+            'state_id': state_id,
             'phone': phone,
             'cloud_url': cloud_url,
+            'company_type': company_type,
         }
-        partner = env['res.partner'].sudo().create(partner_vals)
+        partner = env['res.partner'].with_context(no_vat_validation=True, lang='es_ES').sudo().create(partner_vals)
         portal_wizard = request.env['portal.wizard'].sudo().with_context(active_ids=[partner.id]).create({})
         portal_user = portal_wizard.user_ids
         portal_user.email = partner.email
@@ -447,7 +501,8 @@ class CustomSignupController(http.Controller):
             if modules_to_install:
                 modules_to_install.button_immediate_install()
 
-    def create_user_in_db(self, db_name, email, name, subdomain, company_name):
+    def create_user_in_db(self, db_name, email, name, subdomain, company_name,
+                          street, street2, zip_code, city, state_id, phone):
         registry = Registry(db_name)
         #REQUISITOS
         # La base de datos a clonar debe incluir la configuración de correo (por ejemplo, factuoo)
@@ -455,27 +510,39 @@ class CustomSignupController(http.Controller):
         # Ambas configuraciones se limpian al final con el método clean
         with registry.cursor() as cr:
             env = api.Environment(cr, SUPERUSER_ID, {})
-            
-            # Actualizar el nombre de la única compañía existente
+
+            # Actualizar la única compañía existente y su partner relacionado
             company = env['res.company'].search([], limit=1)
             if company:
                 company.sudo().write({'name': company_name})
-                _logger.info(f"Nombre de la compañía actualizado a: {company_name}")
+                partner_vals = {
+                    'name': company_name,
+                    'email': email,
+                    'street': street,
+                    'street2': street2,
+                    'zip': zip_code,
+                    'city': city,
+                    'phone': phone,
+                }
+                if state_id:
+                    partner_vals['state_id'] = state_id
+                company.sudo().partner_id.write(partner_vals)
+                _logger.info(f"Nombre y datos de la compañía actualizados a: {company_name}")
             else:
                 raise UserError("No se encontró ninguna compañía en la base de datos.")
-                
+
             # Verificar y cargar la configuración del servidor de correo
             mail_server = env['ir.mail_server'].search([], limit=1)
             if not mail_server:
                 raise UserError("No se encontró configuración de servidor de correo en la base de datos de destino.")
-            
+
             _logger.info(f"Usando servidor de correo: {mail_server.name}")
-            
+
             # Actualizar el parámetro `web.base.url` en la nueva base de datos
             base_url = f"https://{subdomain}.factuoo.com"
             env['ir.config_parameter'].sudo().set_param('web.base.url', base_url)
             _logger.info(f"Parámetro 'web.base.url' configurado como: {base_url}")
-        
+
             # Crear el nuevo usuario
             user_obj = env['res.users']
             new_user = user_obj.create({
@@ -484,13 +551,12 @@ class CustomSignupController(http.Controller):
                 'email': email,
                 'notification_type': 'email',
             })
-            
+
             # Asignar el usuario al grupo de administradores
             self.assign_admin_group(env, new_user)
-            
+
             _logger.info(f"Usuario creado: {new_user.name} (ID: {new_user.id})")
-           
-            
+
             # Confirmar la transacción
             cr.commit()
     

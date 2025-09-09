@@ -28,7 +28,7 @@ class SSOLoginController(http.Controller):
             return request.redirect("/web/login?error=invalid_token")
         user = request.env['res.users'].sudo().search([('login', '=', login)], limit=1)
         if not user:
-            return "User not found", 404
+            return request.redirect("/web/login?error=user_not_found")
 
         request.session.uid = user.id
         request.session.session_token = user._compute_session_token(request.session.sid)
