@@ -99,6 +99,24 @@ class CustomSignupController(http.Controller):
                 })
 
             dni = (dni or '').strip().upper()
+            if dni and not re.match(r'^[A-Z]{2}', dni):
+                dni = f'ES{dni}'
+            if dni and not dni.startswith('ES'):
+                error = "Solo se permiten NIF españoles (prefijo ES)."
+                return request.render('cloud_crm.signup_step1', {
+                    'error': error,
+                    'name': name,
+                    'email': email,
+                    'company_name': company_name,
+                    'dni': dni,
+                    'street': street,
+                    'street2': street2,
+                    'zip_id': zip_id,
+                    'zip': postal_code,
+                    'city': city,
+                    'phone': phone,
+                    'subdomain': subdomain,
+                })
             # Determinar el tipo de partner según el NIF
             try:
                 company_type = self._get_company_type(dni)
