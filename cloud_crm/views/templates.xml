@@ -45,4 +45,33 @@
         </xpath>
     </template>
 
+    <template id="portal_contract_page_inherit" inherit_id="contract.portal_contract_page">
+        <!-- Fix missing avatar images -->
+        <xpath expr="//img[@src='/web/static/src/img/user_menu_avatar.png']" position="attributes">
+            <attribute name="src">/web/static/img/user_menu_avatar.png</attribute>
+        </xpath>
+        <!-- IBAN form -->
+        <xpath expr="//div[@id='product_information']" position="before">
+            <div class="row mt32" id="iban_information">
+                <div class="col-12 col-md-6">
+                    <form t-att-action="'/my/contracts/%s/iban' % contract.id" method="post">
+                        <div class="row mb-2 mb-sm-1">
+                            <div class="col-12 col-sm-4">
+                                <label for="iban"><strong>IBAN</strong></label>
+                            </div>
+                            <div class="col-12 col-sm-8">
+                                <input type="text" name="iban" id="iban" t-att-value="contract.iban or ''" class="form-control" required="required"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 text-end">
+                                <button type="submit" class="btn btn-primary">Guardar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
 </odoo>
