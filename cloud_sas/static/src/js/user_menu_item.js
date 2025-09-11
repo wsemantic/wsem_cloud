@@ -18,7 +18,7 @@ registry.category("user_menuitems").add(
     () => ({
         type: "item",
         id: "support",
-        description: "Soporte",
+        description: "Mis solicitudes asistencia",
         href: "/sso/redirect/my/tickets",
         sequence: 20,
     }),
