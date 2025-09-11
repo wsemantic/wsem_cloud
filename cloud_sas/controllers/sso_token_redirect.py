@@ -19,5 +19,6 @@ class SSORedirectController(http.Controller):
     def sso_redirect(self, **kw):
         login = request.env.user.login
         token = self.generate_token(login)
-        target_url = f"https://crm.factuoo.com/auth/sso_login?token={token}"
+        redirect_path = kw.get('redirect', '/my')
+        target_url = f"https://crm.factuoo.com/auth/sso_login?token={token}&redirect={redirect_path}"
         return redirect(target_url)
