@@ -21,8 +21,8 @@ class SSOLoginController(http.Controller):
         except Exception:
             return None
 
-    @http.route('/auth/sso_login', auth='public', website=True)
-    def sso_login(self, token=None, redirect='/my', **kwargs):
+    @http.route(['/auth/sso_login', '/auth/sso_login/<path:redirect_path>'], auth='public', website=True)
+    def sso_login(self, token=None, redirect=None, redirect_path=None, **kwargs):
         login = self.verify_token(token)
         if not login:
             return request.redirect("/web/login?error=invalid_token")
@@ -33,4 +33,5 @@ class SSOLoginController(http.Controller):
         request.session.uid = user.id
         request.session.session_token = user._compute_session_token(request.session.sid)
 
-        return request.redirect(redirect)
+        target = redirect or (f"/{redirect_path}" if redirect_path else "/my")
+        return request.redirect(target)
