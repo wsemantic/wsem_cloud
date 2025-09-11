@@ -2,7 +2,9 @@ from odoo import http
 from odoo.http import request
 import time, json, base64, hmac, hashlib
 from werkzeug.utils import redirect
-SECRET_KEY = "e97b8f1debf497b4c3b67ac469b0d79fa1f47cc6d6f75c1467c2b637109a94e2" 
+
+SECRET_KEY = "e97b8f1debf497b4c3b67ac469b0d79fa1f47cc6d6f75c1467c2b637109a94e2"
+
 
 class SSORedirectController(http.Controller):
 
