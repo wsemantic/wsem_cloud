@@ -8,8 +8,8 @@ class SSORedirectController(http.Controller):
 
     def generate_token(self, login, expiration=300):
         data = {
-            'login': login,
-            'exp': time.time() + expiration,
+            "login": login,
+            "exp": time.time() + expiration,
         }
         payload = base64.urlsafe_b64encode(json.dumps(data).encode()).decode()
         signature = hmac.new(SECRET_KEY.encode(), payload.encode(), hashlib.sha256).hexdigest()
