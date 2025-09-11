@@ -1,43 +1,38 @@
 /** @odoo-module **/
 import { registry } from "@web/core/registry";
-import { browser } from "@web/core/browser/browser";
-import { session } from "@web/session";
-console.log(session.user_id)
-registry.category("user_menuitems").add("documentation", (env) => {
-    return {
+
+registry.category("user_menuitems").add(
+    "documentation",
+    () => ({
         type: "item",
         id: "documentation",
         description: "Documentation",
-        href: "https://www.factuoo.com/documentacion", 
-        callback: () => {
-            browser.open("https://www.factuoo.com/documentacion", "_blank");
-        },
+        href: "https://www.factuoo.com/documentacion",
         sequence: 10,
-    };
-}, { force: true });
+    }),
+    { force: true }
+);
 
-registry.category("user_menuitems").add("support", (env) => {
-    return {
+registry.category("user_menuitems").add(
+    "support",
+    () => ({
         type: "item",
         id: "support",
         description: "Soporte",
         href: "/sso/redirect/my/tickets",
-        callback: () => {
-            browser.open("/sso/redirect?redirect=/my/tickets", "_blank");
-        },
         sequence: 20,
-    };
-}, { force: true });
+    }),
+    { force: true }
+);
 
-registry.category("user_menuitems").add("odoo_account", (env) => {
-    return {
+registry.category("user_menuitems").add(
+    "odoo_account",
+    () => ({
         type: "item",
-        id: "account",
+        id: "odoo_account",
         description: "Mi suscripción",
         href: "/sso/redirect",
-        callback: () => {
-            browser.open("/sso/redirect", "_blank");
-        },
         sequence: 60,
-    };
-}, { force: true });
+    }),
+    { force: true }
+);
