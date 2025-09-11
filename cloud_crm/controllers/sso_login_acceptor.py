@@ -22,7 +22,7 @@ class SSOLoginController(http.Controller):
             return None
 
     @http.route('/auth/sso_login', auth='public', website=True)
-    def sso_login(self, token=None, **kwargs):
+    def sso_login(self, token=None, redirect='/my', **kwargs):
         login = self.verify_token(token)
         if not login:
             return request.redirect("/web/login?error=invalid_token")
@@ -33,4 +33,4 @@ class SSOLoginController(http.Controller):
         request.session.uid = user.id
         request.session.session_token = user._compute_session_token(request.session.sid)
 
-        return request.redirect('/my')
+        return request.redirect(redirect)

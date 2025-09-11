@@ -21,9 +21,9 @@ registry.category("user_menuitems").add("support", (env) => {
         type: "item",
         id: "support",
         description: "Support",
-        href: "https://crm.factuoo.com/my/tickets", 
+        href: "/sso/redirect?redirect=/my/tickets",
         callback: () => {
-            browser.open("https://crm.factuoo.com/my/tickets", "_blank");
+            browser.open("/sso/redirect?redirect=/my/tickets", "_blank");
         },
         sequence: 20,
     };
