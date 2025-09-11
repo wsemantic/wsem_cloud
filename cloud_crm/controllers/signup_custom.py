@@ -457,25 +457,23 @@ class CustomSignupController(http.Controller):
             """
             config_file = '/etc/letsencrypt/ovh.ini'  # Asegúrate de que esta ruta es correcta
 
-            config = configparser.ConfigParser()
             _logger.info(f"Intentando leer el archivo de configuración: {config_file}")
-            if not config.read(config_file):
+            if not os.path.isfile(config_file):
                 _logger.error(f"No se pudo leer el archivo de configuración: {config_file}")
                 raise Exception("Archivo de configuración de OVH no encontrado o inaccesible.")
 
-            if 'ovh_api' not in config.sections():
-                _logger.error("No section: 'ovh_api' en el archivo de configuración.")
-                raise Exception("Sección 'ovh_api' no encontrada en el archivo de configuración.")
-
+            parser = configparser.ConfigParser()
             try:
-                endpoint = config.get('ovh_api', 'endpoint')
-                application_key = config.get('ovh_api', 'application_key')
-                application_secret = config.get('ovh_api', 'application_secret')
-                consumer_key = config.get('ovh_api', 'consumer_key')
+                parser.read(config_file)
+                config = parser['ovh']
+                endpoint = config['dns_ovh_endpoint']
+                application_key = config['dns_ovh_application_key']
+                application_secret = config['dns_ovh_application_secret']
+                consumer_key = config['dns_ovh_consumer_key']
                 _logger.info("Configuración de OVH leída correctamente.")
-            except configparser.NoOptionError as e:
-                _logger.error(f"Falta la opción en la configuración: {e}")
-                raise Exception(f"Opción faltante en la configuración: {e}")
+            except (OSError, KeyError, configparser.Error) as e:
+                _logger.error(f"Error al procesar la configuración de OVH: {e}")
+                raise Exception(f"Error en la configuración de OVH: {e}")
 
             client = ovh.Client(
                 endpoint=endpoint,
