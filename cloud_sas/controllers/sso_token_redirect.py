@@ -26,3 +26,4 @@ class SSORedirectController(http.Controller):
             f"https://crm.factuoo.com/auth/sso_login/{target.lstrip('/')}?token={token}"
         )
         return werk_redirect(target_url)
+

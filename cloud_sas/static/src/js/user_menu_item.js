@@ -22,7 +22,7 @@ registry.category("user_menuitems").add(
     () => ({
         type: "item",
         id: "support",
-        description: "Soporte",
+        description: "Mis solicitudes asistencia",
         href: "/sso/redirect/my/tickets",
         callback: () => {
             browser.open("/sso/redirect/my/tickets", "_blank");
@@ -39,9 +39,6 @@ registry.category("user_menuitems").add(
         id: "odoo_account",
         description: "Mi suscripción",
         href: "/sso/redirect",
-        callback: () => {
-            browser.open("/sso/redirect", "_blank");
-        },
         sequence: 60,
     }),
     { force: true }
