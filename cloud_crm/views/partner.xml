@@ -5,7 +5,7 @@
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='website']" position="after">
-                <field name="cloud_url"/>
+                <field name="cloud_url" string="tu base de datos"/>
             </xpath>
         </field>
     </record>

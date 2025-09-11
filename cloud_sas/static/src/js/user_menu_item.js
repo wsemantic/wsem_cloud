@@ -8,9 +8,9 @@ registry.category("user_menuitems").add("documentation", (env) => {
         type: "item",
         id: "documentation",
         description: "Documentation",
-        href: "https://verifact.wsemantic.com/documentacion", 
+        href: "https://www.factuoo.com/documentacion", 
         callback: () => {
-            browser.open("https://verifact.wsemantic.com/documentacion", "_blank");
+            browser.open("https://www.factuoo.com/documentacion", "_blank");
         },
         sequence: 10,
     };
@@ -21,9 +21,9 @@ registry.category("user_menuitems").add("support", (env) => {
         type: "item",
         id: "support",
         description: "Support",
-        href: "https://verifact.wsemantic.com/support", 
+        href: "https://crm.factuoo.com/my/tickets", 
         callback: () => {
-            browser.open("https://verifact.wsemantic.com/support", "_blank");
+            browser.open("https://crm.factuoo.com/my/tickets", "_blank");
         },
         sequence: 20,
     };
