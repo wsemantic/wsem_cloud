@@ -20,7 +20,7 @@ registry.category("user_menuitems").add("support", (env) => {
     return {
         type: "item",
         id: "support",
-        description: "Soporte",
+        description: "Mis solicitudes asistencia",
         href: "/sso/redirect/my/tickets",
         callback: () => {
             browser.open("/sso/redirect?redirect=/my/tickets", "_blank");
