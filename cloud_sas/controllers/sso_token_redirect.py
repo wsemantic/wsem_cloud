@@ -15,10 +15,12 @@ class SSORedirectController(http.Controller):
         signature = hmac.new(SECRET_KEY.encode(), payload.encode(), hashlib.sha256).hexdigest()
         return f"{payload}.{signature}"
 
-    @http.route('/sso/redirect', auth='user')
-    def sso_redirect(self, **kw):
+    @http.route(["/sso/redirect", "/sso/redirect/<path:redirect_path>"], auth="user")
+    def sso_redirect(self, redirect=None, redirect_path=None, **kw):
         login = request.env.user.login
         token = self.generate_token(login)
-        redirect_path = kw.get('redirect', '/my')
-        target_url = f"https://crm.factuoo.com/auth/sso_login?token={token}&redirect={redirect_path}"
+        target = redirect or redirect_path or "my"
+        target_url = (
+            f"https://crm.factuoo.com/auth/sso_login/{target.lstrip('/')}?token={token}"
+        )
         return redirect(target_url)

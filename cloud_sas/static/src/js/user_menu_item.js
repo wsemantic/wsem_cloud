@@ -23,7 +23,7 @@ registry.category("user_menuitems").add("support", (env) => {
         description: "Mis solicitudes asistencia",
         href: "/sso/redirect/my/tickets",
         callback: () => {
-            browser.open("/sso/redirect?redirect=/my/tickets", "_blank");
+            browser.open("/sso/redirect/my/tickets", "_blank");
         },
         sequence: 20,
     };
