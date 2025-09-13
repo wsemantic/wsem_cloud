@@ -31,7 +31,8 @@
         'views/sign_up_step2.xml',
         'views/success_register.xml',
         'views/owl_step1_template.xml',
-        
+        'views/contract_bank.xml',
+        'views/contract_portal_img.xml',
     ],
     "assets":{       
         'web.assets_frontend':[

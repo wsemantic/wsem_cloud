@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_contract_page_inherit_img" inherit_id="contract.portal_contract_page">
+        <xpath expr="//div[@class='col flex-grow-0 pr-3'][img[@t-att-src='image_data_uri(contract.partner_id.image_128)'] or img[@t-att-src='image_data_uri(contract.partner_id.avatar_128)']]" position="replace">
+            <div class="col flex-grow-0 pr-3">
+                <img t-if="contract.partner_id.image_128" class="o_portal_contact_img rounded o_object_fit_cover" t-att-src="image_data_uri(contract.partner_id.image_128)" alt="Contact" />
+                <img t-else="" class="o_portal_contact_img rounded o_object_fit_cover" t-att-src="image_data_uri(contract.partner_id.avatar_128)" alt="Contact" height="80px" />
+            </div>
+        </xpath>
+
+        <xpath expr="//div[@class='row'][div[@class='col flex-grow-0 pr-3'] and div[address]]" position="after">
+            <t t-if="contract.partner_bank_id">
+                <div class="row">
+                    <div class="col pl-sm-0">
+                        <strong>Bank Account (IBAN):</strong>
+                        <span t-field="contract.partner_bank_id.acc_number"/>
+                    </div>
+                </div>
+            </t>
+        </xpath>
+        
+        <xpath expr="//div[@class='col flex-grow-0 pr-3'][img[@t-att-src='image_data_uri(contract.user_id.image_128)'] or img[@t-att-src='image_data_uri(contract.user_id.avatar_128)']]" position="replace">
+            <div class="col flex-grow-0 pr-3">
+                <img t-if="contract.user_id.image_128" class="o_portal_contact_img rounded o_object_fit_cover" t-att-src="image_data_uri(contract.user_id.image_128)" alt="Contact" />
+                <img t-else="" class="o_portal_contact_img rounded o_object_fit_cover" t-att-src="image_data_uri(contract.user_id.avatar_128)" alt="Contact" height="80px" />
+            </div>
+        </xpath>
+    </template>
+</odoo>
