@@ -39,6 +39,9 @@ registry.category("user_menuitems").add(
         id: "odoo_account",
         description: "Mi suscripción",
         href: "/sso/redirect",
+        callback: () => {
+            browser.open("/sso/redirect", "_blank");
+        },
         sequence: 60,
     }),
     { force: true }
