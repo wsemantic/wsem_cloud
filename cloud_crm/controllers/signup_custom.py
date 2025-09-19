@@ -484,7 +484,7 @@ class CustomSignupController(http.Controller):
     def create_subdomain_in_ovh(self, subdomain):
         """Crea el subdominio en OVH usando la API."""
 
-        config_file = '/etc/letsencrypt/ovh.ini'  # Asegúrate de que esta ruta es correcta
+        config_file = '/etc/letsencrypt/ovhodoo.ini'  # Asegúrate de que esta ruta es correcta
 
         _logger.info("Intentando leer el archivo de configuración: %s", config_file)
         if not os.path.isfile(config_file):
