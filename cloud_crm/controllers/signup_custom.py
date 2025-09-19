@@ -181,7 +181,9 @@ class CustomSignupController(http.Controller):
                 try:
                     partner.sudo().with_context(no_vat_validation=True, lang='es_ES').write(partner_vals)
                 except Exception as e:
-                    _logger.error(f"Error al actualizar el res.partner: {e}")
+                    _logger.exception(
+                        "Error al actualizar el res.partner con email '%s'", email
+                    )
                     error = getattr(e, 'name', str(e))
                     return request.render('cloud_crm.signup_step1', {
                         'error': error,
@@ -202,7 +204,9 @@ class CustomSignupController(http.Controller):
                 try:
                     self.create_partner_in_db(**partner_vals)
                 except Exception as e:
-                    _logger.error(f"Error al crear el res.partner: {e}")
+                    _logger.exception(
+                        "Error al crear el res.partner con email '%s'", email
+                    )
                     error = getattr(e, 'name', str(e))
                     return request.render('cloud_crm.signup_step1', {
                         'error': error,
@@ -247,9 +251,17 @@ class CustomSignupController(http.Controller):
             # Clonar la base de datos y crear el usuario
             try:
                 self.create_user_and_db(signup_data, selected_modules)
-            except Exception as e:
-                _logger.error(f"Error al crear la base de datos y el usuario: {e}")
-                return request.render('cloud_crm.signup_error', {'error': 'Hubo un error al crear la base de datos. Por favor, inténtalo de nuevo.'})
+            except Exception:
+                _logger.exception(
+                    "Error al crear la base de datos y el usuario para '%s'",
+                    signup_data.get('email'),
+                )
+                return request.render(
+                    'cloud_crm.signup_error',
+                    {
+                        'error': 'Hubo un error al crear la base de datos. Por favor, inténtalo de nuevo.'
+                    },
+                )
 
             # Limpiar la sesión
             request.session.pop('signup_data', None)
@@ -301,8 +313,10 @@ class CustomSignupController(http.Controller):
         try:
             self.create_subdomain_in_ovh(subdomain)
             _logger.info(f"Subdominio '{subdomain}.factuoo.com' creado en OVH")
-        except Exception as e:
-            _logger.error(f"Error al crear el subdominio '{subdomain}.factuoo.com' en OVH: {e}")
+        except Exception:
+            _logger.exception(
+                "Error al crear el subdominio '%s.factuoo.com' en OVH", subdomain
+            )
             raise
 
         _logger.info(f"WSEM Clonando la base de datos '{source_db}' a '{target_db}'")
@@ -311,17 +325,25 @@ class CustomSignupController(http.Controller):
         # Clonar la base de datos
         try:
             db.exp_duplicate_database(source_db, target_db, neutralize_database=False)
-            _logger.info(f"WSEM Base de datos '{source_db}' clonada exitosamente como '{target_db}'")
-        except Exception as e:
-            _logger.error(f"Error al clonar la base de datos: {e}")
+            _logger.info(
+                f"WSEM Base de datos '{source_db}' clonada exitosamente como '{target_db}'"
+            )
+        except Exception:
+            _logger.exception(
+                "Error al clonar la base de datos '%s' hacia '%s'", source_db, target_db
+            )
             raise
 
         # Instalar los módulos seleccionados en la nueva base de datos
         try:
             self.install_modules_in_db(target_db, selected_modules)
-            _logger.info(f"Módulos {selected_modules} instalados en la base de datos '{target_db}'")
-        except Exception as e:
-            _logger.error(f"Error al instalar los módulos en la base de datos '{target_db}': {e}")
+            _logger.info(
+                f"Módulos {selected_modules} instalados en la base de datos '{target_db}'"
+            )
+        except Exception:
+            _logger.exception(
+                "Error al instalar los módulos en la base de datos '%s'", target_db
+            )
             raise
             
         # Crear el usuario en la nueva base de datos
@@ -339,19 +361,27 @@ class CustomSignupController(http.Controller):
                 state_id,
                 phone,
             )
-            _logger.info(f"WSEM Usuario '{email}' creado en la base de datos '{target_db}'")
-        except Exception as e:
-            _logger.error(f"Error al crear el usuario en la base de datos '{target_db}': {e}")
+            _logger.info(
+                f"WSEM Usuario '{email}' creado en la base de datos '{target_db}'"
+            )
+        except Exception:
+            _logger.exception(
+                "Error al crear el usuario '%s' en la base de datos '%s'", email, target_db
+            )
             raise
             
         # Limpiar el servidor de correo y el email de la compañía en la nueva base de datos
         try:
             self.clean_mail_server_and_company_email(target_db)
-            _logger.info(f"Servidor de correo y email de la compañía limpiados en la base de datos '{target_db}'")
-            self.activate_security_rules(target_db,['factuoo', 'cloud'])
+            _logger.info(
+                f"Servidor de correo y email de la compañía limpiados en la base de datos '{target_db}'"
+            )
+            self.activate_security_rules(target_db, ['factuoo', 'cloud'])
             _logger.info(f"Activad reglas en '{target_db}'")
-        except Exception as e:
-            _logger.error(f"Error al limpiar el servidor de correo o el email de la compañía: {e}")
+        except Exception:
+            _logger.exception(
+                "Error al limpiar el servidor de correo o activar reglas en '%s'", target_db
+            )
             raise
             
     def find_partner_by_email(self, email):
@@ -452,53 +482,72 @@ class CustomSignupController(http.Controller):
         return ip_addr or "127.0.0.1"
 
     def create_subdomain_in_ovh(self, subdomain):
-            """
-            Crea el subdominio en OVH usando la API, leyendo las claves desde un archivo de configuración.
-            """
-            config_file = '/etc/letsencrypt/ovh.ini'  # Asegúrate de que esta ruta es correcta
+        """Crea el subdominio en OVH usando la API."""
 
-            _logger.info(f"Intentando leer el archivo de configuración: {config_file}")
-            if not os.path.isfile(config_file):
-                _logger.error(f"No se pudo leer el archivo de configuración: {config_file}")
-                raise Exception("Archivo de configuración de OVH no encontrado o inaccesible.")
+        config_file = '/etc/letsencrypt/ovh.ini'  # Asegúrate de que esta ruta es correcta
 
-            parser = configparser.ConfigParser()
-            try:
-                parser.read(config_file)
-                config = parser['ovh']
-                endpoint = config['dns_ovh_endpoint']
-                application_key = config['dns_ovh_application_key']
-                application_secret = config['dns_ovh_application_secret']
-                consumer_key = config['dns_ovh_consumer_key']
-                _logger.info("Configuración de OVH leída correctamente.")
-            except (OSError, KeyError, configparser.Error) as e:
-                _logger.error(f"Error al procesar la configuración de OVH: {e}")
-                raise Exception(f"Error en la configuración de OVH: {e}")
+        _logger.info("Intentando leer el archivo de configuración: %s", config_file)
+        if not os.path.isfile(config_file):
+            message = f"No se pudo leer el archivo de configuración: {config_file}"
+            _logger.error(message)
+            raise Exception("Archivo de configuración de OVH no encontrado o inaccesible.")
 
-            client = ovh.Client(
-                endpoint=endpoint,
-                application_key=application_key,
-                application_secret=application_secret,
-                consumer_key=consumer_key,
+        parser = configparser.ConfigParser()
+        try:
+            read_files = parser.read(config_file)
+            if not read_files:
+                raise OSError(f"No se pudo abrir el archivo {config_file}")
+            if 'ovh' not in parser:
+                raise KeyError('ovh')
+
+            config = parser['ovh']
+            endpoint = config['dns_ovh_endpoint']
+            application_key = config['dns_ovh_application_key']
+            application_secret = config['dns_ovh_application_secret']
+            consumer_key = config['dns_ovh_consumer_key']
+            _logger.info("Configuración de OVH leída correctamente.")
+        except (OSError, KeyError, configparser.Error) as exc:
+            _logger.exception(
+                "Error al procesar la configuración de OVH en el archivo %s", config_file
             )
+            raise Exception(f"Error en la configuración de OVH: {exc}") from exc
 
-            domain = "factuoo.com"
-            ip_servidor_odoo = self._get_odoo_server_ip()
+        client = ovh.Client(
+            endpoint=endpoint,
+            application_key=application_key,
+            application_secret=application_secret,
+            consumer_key=consumer_key,
+        )
 
-            try:
-                _logger.info(f"Creando registro A para el subdominio '{subdomain}.{domain}' apuntando a {ip_servidor_odoo}")
-                response = client.post(
-                    f"/domain/zone/{domain}/record",
-                    fieldType="A",
-                    subDomain=subdomain,
-                    target=ip_servidor_odoo,
-                    ttl=3600
-                )
-                client.post(f"/domain/zone/{domain}/refresh")
-                _logger.info(f"Subdominio '{subdomain}.{domain}' creado exitosamente en OVH apuntando a {ip_servidor_odoo}.")
-            except ovh.exceptions.APIError as e:
-                _logger.error(f"Error al crear el subdominio en OVH: {e}")
-                raise
+        domain = "factuoo.com"
+        ip_servidor_odoo = self._get_odoo_server_ip()
+
+        try:
+            _logger.info(
+                "Creando registro A para el subdominio '%s.%s' apuntando a %s",
+                subdomain,
+                domain,
+                ip_servidor_odoo,
+            )
+            response = client.post(
+                f"/domain/zone/{domain}/record",
+                fieldType="A",
+                subDomain=subdomain,
+                target=ip_servidor_odoo,
+                ttl=3600,
+            )
+            client.post(f"/domain/zone/{domain}/refresh")
+            _logger.info(
+                "Subdominio '%s.%s' creado exitosamente en OVH apuntando a %s.",
+                subdomain,
+                domain,
+                ip_servidor_odoo,
+            )
+        except ovh.exceptions.APIError:
+            _logger.exception(
+                "Error al crear el subdominio '%s.%s' en OVH", subdomain, domain
+            )
+            raise
 
     def install_modules_in_db(self, db_name, modules_list):
         """
