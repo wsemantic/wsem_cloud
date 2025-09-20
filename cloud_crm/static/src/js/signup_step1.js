@@ -2,6 +2,8 @@
 
 import publicWidget from "@web/legacy/js/public/public_widget";
 
+var confirmationStylesInjected = false;
+
 publicWidget.registry.SignupStep1Form = publicWidget.Widget.extend({
     selector: '#signup_step1_form',
     events: {
@@ -171,66 +173,189 @@ publicWidget.registry.SignupStep1Form = publicWidget.Widget.extend({
     },
 
     _showConfirmationDialog: function (subdomain) {
+        this._ensureConfirmationStyles();
+
         var sanitizedSubdomain = $('<div />').text(subdomain).html();
-        var $modal = $(
-            '<div class="modal fade o-signup-confirmation-modal" tabindex="-1" role="dialog">' +
-                '<div class="modal-dialog modal-dialog-centered" role="document">' +
-                    '<div class="modal-content">' +
-                        '<div class="modal-body text-center">' +
-                            '<p class="mb-3" style="font-size: 1.25rem;">' +
-                                'Se creará la base de datos en <strong>https://' +
-                                sanitizedSubdomain +
-                                '.factuoo.com</strong>' +
-                            '</p>' +
-                            '<p class="mb-0">¿Deseas continuar o modificar los datos?</p>' +
-                        '</div>' +
-                        '<div class="modal-footer justify-content-center">' +
-                            '<button type="button" class="btn btn-primary o-confirm-accept">Aceptar</button>' +
-                            '<button type="button" class="btn btn-secondary o-confirm-modify" data-dismiss="modal">Modificar</button>' +
-                        '</div>' +
-                    '</div>' +
-                '</div>' +
-            '</div>'
-        );
 
         return new Promise(function (resolve) {
             var resolved = false;
+            var previouslyFocused = document.activeElement;
 
-            var cleanup = function () {
-                $modal.remove();
+            var $backdrop = $('<div/>', {
+                class: 'o-signup-confirmation-backdrop',
+            });
+
+            var $dialog = $('<div/>', {
+                class: 'o-signup-confirmation-dialog',
+                role: 'dialog',
+                'aria-modal': 'true',
+                'aria-label': 'Confirmación de subdominio',
+            });
+
+            var $message = $('<p/>', {
+                class: 'o-signup-confirmation-message',
+                html:
+                    'Se creará la base de datos en <strong>https://' +
+                    sanitizedSubdomain +
+                    '.factuoo.com</strong>',
+            });
+
+            var $subtitle = $('<p/>', {
+                class: 'o-signup-confirmation-subtitle',
+                text: '¿Deseas continuar o modificar los datos?',
+            });
+
+            var $buttons = $('<div/>', { class: 'o-signup-confirmation-actions' });
+
+            var $acceptButton = $('<button/>', {
+                type: 'button',
+                class: 'o-signup-confirmation-button o-confirm-accept',
+                text: 'Aceptar',
+            });
+
+            var $modifyButton = $('<button/>', {
+                type: 'button',
+                class: 'o-signup-confirmation-button o-confirm-modify',
+                text: 'Modificar',
+            });
+
+            $buttons.append($acceptButton, $modifyButton);
+            $dialog.append($message, $subtitle, $buttons);
+            $backdrop.append($dialog);
+
+            var resolveOnce = function (value) {
+                if (resolved) {
+                    return;
+                }
+                resolved = true;
+                if (previouslyFocused && previouslyFocused.focus) {
+                    previouslyFocused.focus();
+                }
+                $backdrop.remove();
+                document.removeEventListener('keydown', onKeyDown, true);
+                resolve(value);
             };
 
-            $modal.on('click', '.o-confirm-accept', function () {
-                if (!resolved) {
-                    resolved = true;
-                    resolve(true);
+            var focusable = [$acceptButton[0], $modifyButton[0]];
+
+            var onKeyDown = function (ev) {
+                if (ev.key === 'Escape') {
+                    ev.preventDefault();
+                    resolveOnce(false);
+                } else if (ev.key === 'Enter') {
+                    ev.preventDefault();
+                    resolveOnce(true);
+                } else if (ev.key === 'Tab') {
+                    if (focusable.length === 0) {
+                        return;
+                    }
+                    ev.preventDefault();
+                    var currentIndex = focusable.indexOf(document.activeElement);
+                    if (currentIndex === -1) {
+                        focusable[0].focus();
+                        return;
+                    }
+                    if (ev.shiftKey) {
+                        var previousIndex = (currentIndex - 1 + focusable.length) % focusable.length;
+                        focusable[previousIndex].focus();
+                    } else {
+                        var nextIndex = (currentIndex + 1) % focusable.length;
+                        focusable[nextIndex].focus();
+                    }
                 }
-                $modal.modal('hide');
+            };
+
+            $acceptButton.on('click', function () {
+                resolveOnce(true);
             });
 
-            $modal.on('click', '.o-confirm-modify', function () {
-                if (!resolved) {
-                    resolved = true;
-                    resolve(false);
-                }
-                $modal.modal('hide');
+            $modifyButton.on('click', function () {
+                resolveOnce(false);
             });
 
-            $modal.on('hidden.bs.modal', function () {
-                if (!resolved) {
-                    resolved = true;
-                    resolve(false);
-                }
-                cleanup();
-            });
-
-            $modal.on('shown.bs.modal', function () {
-                $modal.find('.o-confirm-accept').trigger('focus');
-            });
-
-            $modal.appendTo('body');
-            $modal.modal({ backdrop: 'static', keyboard: false, show: true });
+            document.addEventListener('keydown', onKeyDown, true);
+            $('body').append($backdrop);
+            $acceptButton.trigger('focus');
         });
+    },
+
+    _ensureConfirmationStyles: function () {
+        if (confirmationStylesInjected) {
+            return;
+        }
+
+        confirmationStylesInjected = true;
+
+        var styles =
+            '.o-signup-confirmation-backdrop {' +
+            ' position: fixed;' +
+            ' inset: 0;' +
+            ' background-color: rgba(0, 0, 0, 0.45);' +
+            ' display: flex;' +
+            ' align-items: center;' +
+            ' justify-content: center;' +
+            ' z-index: 1100;' +
+            '}' +
+            '.o-signup-confirmation-dialog {' +
+            ' background-color: #ffffff;' +
+            ' border-radius: 12px;' +
+            ' padding: 24px 24px 20px;' +
+            ' max-width: 420px;' +
+            ' width: calc(100% - 32px);' +
+            ' box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);' +
+            ' text-align: center;' +
+            ' font-family: inherit;' +
+            '}' +
+            '.o-signup-confirmation-message {' +
+            ' font-size: 1.25rem;' +
+            ' font-weight: 500;' +
+            ' margin: 0 0 12px;' +
+            '}' +
+            '.o-signup-confirmation-subtitle {' +
+            ' margin: 0 0 24px;' +
+            ' color: #444444;' +
+            ' font-size: 0.95rem;' +
+            '}' +
+            '.o-signup-confirmation-actions {' +
+            ' display: flex;' +
+            ' gap: 12px;' +
+            ' flex-wrap: wrap;' +
+            ' justify-content: center;' +
+            '}' +
+            '.o-signup-confirmation-button {' +
+            ' min-width: 120px;' +
+            ' padding: 10px 18px;' +
+            ' border-radius: 999px;' +
+            ' border: 1px solid transparent;' +
+            ' font-size: 0.95rem;' +
+            ' cursor: pointer;' +
+            ' transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;' +
+            '}' +
+            '.o-signup-confirmation-button:focus {' +
+            ' outline: 3px solid rgba(41, 128, 185, 0.35);' +
+            ' outline-offset: 2px;' +
+            '}' +
+            '.o-confirm-accept {' +
+            ' background-color: #2980b9;' +
+            ' color: #ffffff;' +
+            '}' +
+            '.o-confirm-accept:hover {' +
+            ' background-color: #1f6392;' +
+            '}' +
+            '.o-confirm-modify {' +
+            ' background-color: #ffffff;' +
+            ' color: #2980b9;' +
+            ' border-color: #2980b9;' +
+            '}' +
+            '.o-confirm-modify:hover {' +
+            ' background-color: rgba(41, 128, 185, 0.08);' +
+            '}' +
+            '.o-signup-confirmation-dialog strong {' +
+            ' word-break: break-word;' +
+            '}';
+
+        var $style = $('<style/>', { text: styles });
+        $style.appendTo('head');
     },
 
     _initZipSelect2: function () {
