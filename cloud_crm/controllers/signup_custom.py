@@ -73,10 +73,9 @@ class CustomSignupController(http.Controller):
 
             # Validar campos obligatorios
             # Diccionario de campos con sus nombres y valores
-            fields = {
+            required_fields = {
                 "name": name,
                 "email": email,
-                "company_name": company_name,
                 "dni": dni,
                 "street": street,
                 "postal_code": postal_code,
@@ -87,7 +86,7 @@ class CustomSignupController(http.Controller):
             }
 
             # Lista para almacenar los nombres de los campos que faltan
-            missing_fields = [field for field, value in fields.items() if not value]
+            missing_fields = [field for field, value in required_fields.items() if not value]
 
             if missing_fields:
                 # Construir el mensaje de error con los nombres de los campos que faltan
@@ -95,7 +94,17 @@ class CustomSignupController(http.Controller):
                 _logger.error(f"WSEM {error}")
                 return request.render('cloud_crm.signup_step1', {
                     'error': error,
-                    **fields  # Pasamos los valores para rellenar el formulario con los datos introducidos
+                    'name': name,
+                    'email': email,
+                    'company_name': company_name,
+                    'dni': dni,
+                    'street': street,
+                    'street2': street2,
+                    'zip_id': zip_id,
+                    'zip': postal_code,
+                    'city': city,
+                    'phone': phone,
+                    'subdomain': subdomain,
                 })
 
             dni = (dni or '').strip().upper()
@@ -122,6 +131,23 @@ class CustomSignupController(http.Controller):
                 company_type = self._get_company_type(dni)
             except ValueError as e:
                 error = str(e)
+                return request.render('cloud_crm.signup_step1', {
+                    'error': error,
+                    'name': name,
+                    'email': email,
+                    'company_name': company_name,
+                    'dni': dni,
+                    'street': street,
+                    'street2': street2,
+                    'zip_id': zip_id,
+                    'zip': postal_code,
+                    'city': city,
+                    'phone': phone,
+                    'subdomain': subdomain,
+                })
+
+            if company_type == 'company' and not company_name:
+                error = "El campo Empresa es obligatorio para compañías."
                 return request.render('cloud_crm.signup_step1', {
                     'error': error,
                     'name': name,

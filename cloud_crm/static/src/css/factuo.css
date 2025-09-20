@@ -13,6 +13,11 @@
     flex-grow: 1; /* Hacer que el input ocupe el máximo espacio disponible */
 }
 
+.subdomain-input {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
 .subdomain-group .input-group-text {
     flex-shrink: 0; /* Mantener el ancho del sufijo y evitar que se reduzca */
     margin-left: 5px; /* Añadir un pequeño margen para la separación entre el input y el sufijo */

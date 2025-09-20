@@ -32,10 +32,10 @@
                         <input type="text" name="company_name" id="company_name" class="form-control form-control-sm" t-att-value="company_name or ''"/>
                     </div>
 
-					<div class="mb-3 field-subdomain ">
+                                        <div class="mb-3 field-subdomain ">
                         <label for="subdomain_input">¡¡¡Tu acceso modificable!!!!</label>
                         <div class="input-group subdomain-group">
-                            <input type="text" name="subdomain" id="subdomain_input" required="required" class="form-control form-control-sm text-end" placeholder="subdominio" t-att-value="subdomain or ''"/>
+                            <input type="text" name="subdomain" id="subdomain_input" required="required" class="form-control text-end subdomain-input" placeholder="subdominio" t-att-value="subdomain or ''"/>
                             <span class="input-group-text" id="subdomain_suffix">.factuoo.com</span>
                         </div>
                         <!-- Mostrar mensaje de error específico si existe -->
