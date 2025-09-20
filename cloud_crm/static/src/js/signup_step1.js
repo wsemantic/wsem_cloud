@@ -64,14 +64,33 @@ publicWidget.registry.SignupStep1Form = publicWidget.Widget.extend({
             return;
         }
 
-        var message = 'Se creará la base de datos en https://' + subdomain + '.factuoo.com.\n¿Estás de acuerdo o deseas modificarlo?';
-        this._confirmationShownOnce = true;
-        if (!window.confirm(message)) {
+        if (subdomain.length < 3) {
             ev.preventDefault();
+            if (this._subdomainField[0] && this._subdomainField[0].setCustomValidity) {
+                this._subdomainField[0].setCustomValidity('El subdominio debe contener al menos 3 caracteres.');
+                this._subdomainField[0].reportValidity();
+            } else {
+                window.alert('El subdominio debe contener al menos 3 caracteres.');
+            }
             return;
         }
 
-        this._skipFurtherConfirmation = true;
+        if (this._subdomainField[0] && this._subdomainField[0].setCustomValidity) {
+            this._subdomainField[0].setCustomValidity('');
+        }
+
+        ev.preventDefault();
+        this._confirmationShownOnce = true;
+
+        var self = this;
+        this._showConfirmationDialog(subdomain).then(function (confirmed) {
+            if (!confirmed) {
+                return;
+            }
+
+            self._skipFurtherConfirmation = true;
+            self.el.submit();
+        });
     },
 
     _updateSubdomainSuggestion: function (source) {
@@ -83,6 +102,15 @@ publicWidget.registry.SignupStep1Form = publicWidget.Widget.extend({
         if (source === 'company') {
             baseValue = (this._companyField.val() || '').trim();
             if (!baseValue) {
+                if (!this._subdomainEditedManually) {
+                    var nameFallback = (this._nameField.val() || '').trim();
+                    if (nameFallback) {
+                        var fallbackSuggestion = this._buildSubdomainCandidate(nameFallback);
+                        this._setSubdomainValue(fallbackSuggestion);
+                    } else {
+                        this._setSubdomainValue('');
+                    }
+                }
                 return;
             }
         } else {
@@ -136,6 +164,73 @@ publicWidget.registry.SignupStep1Form = publicWidget.Widget.extend({
         this._isProgrammaticUpdate = true;
         this._subdomainField.val(value);
         this._isProgrammaticUpdate = false;
+
+        if (this._subdomainField[0] && this._subdomainField[0].setCustomValidity) {
+            this._subdomainField[0].setCustomValidity('');
+        }
+    },
+
+    _showConfirmationDialog: function (subdomain) {
+        var sanitizedSubdomain = $('<div />').text(subdomain).html();
+        var $modal = $(
+            '<div class="modal fade o-signup-confirmation-modal" tabindex="-1" role="dialog">' +
+                '<div class="modal-dialog modal-dialog-centered" role="document">' +
+                    '<div class="modal-content">' +
+                        '<div class="modal-body text-center">' +
+                            '<p class="mb-3" style="font-size: 1.25rem;">' +
+                                'Se creará la base de datos en <strong>https://' +
+                                sanitizedSubdomain +
+                                '.factuoo.com</strong>' +
+                            '</p>' +
+                            '<p class="mb-0">¿Deseas continuar o modificar los datos?</p>' +
+                        '</div>' +
+                        '<div class="modal-footer justify-content-center">' +
+                            '<button type="button" class="btn btn-primary o-confirm-accept">Aceptar</button>' +
+                            '<button type="button" class="btn btn-secondary o-confirm-modify" data-dismiss="modal">Modificar</button>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+            '</div>'
+        );
+
+        return new Promise(function (resolve) {
+            var resolved = false;
+
+            var cleanup = function () {
+                $modal.remove();
+            };
+
+            $modal.on('click', '.o-confirm-accept', function () {
+                if (!resolved) {
+                    resolved = true;
+                    resolve(true);
+                }
+                $modal.modal('hide');
+            });
+
+            $modal.on('click', '.o-confirm-modify', function () {
+                if (!resolved) {
+                    resolved = true;
+                    resolve(false);
+                }
+                $modal.modal('hide');
+            });
+
+            $modal.on('hidden.bs.modal', function () {
+                if (!resolved) {
+                    resolved = true;
+                    resolve(false);
+                }
+                cleanup();
+            });
+
+            $modal.on('shown.bs.modal', function () {
+                $modal.find('.o-confirm-accept').trigger('focus');
+            });
+
+            $modal.appendTo('body');
+            $modal.modal({ backdrop: 'static', keyboard: false, show: true });
+        });
     },
 
     _initZipSelect2: function () {
