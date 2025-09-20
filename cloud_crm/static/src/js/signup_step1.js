@@ -5,44 +5,137 @@ import publicWidget from "@web/legacy/js/public/public_widget";
 publicWidget.registry.SignupStep1Form = publicWidget.Widget.extend({
     selector: '#signup_step1_form',
     events: {
-        'input #company_name': 'updateSubdomain',
+        'input #name': 'onNameInput',
+        'input #company_name': 'onCompanyInput',
+        'input #subdomain_input': 'onSubdomainInput',
+        'submit': 'onFormSubmit',
         'change #zip_id': 'OnchangeZip',
     },
 
     start: function () {
+        this._subdomainLocked = false;
+        this._isProgrammaticUpdate = false;
+        this._confirmationShownOnce = false;
+        this._skipFurtherConfirmation = false;
+        this._subdomainEditedManually = false;
+        this._nameField = this.$('#name');
+        this._companyField = this.$('#company_name');
+        this._subdomainField = this.$('#subdomain_input');
+
         this._initZipSelect2();
+
+        if (!this._subdomainField.val()) {
+            if (this._companyField.val()) {
+                this._updateSubdomainSuggestion('company');
+            } else {
+                this._updateSubdomainSuggestion('name');
+            }
+        }
+
         return this._super.apply(this, arguments);
     },
 
-    updateSubdomain: function () {
-        var companyField = this.$('#company_name');
-        var subdomainField = this.$('#subdomain_input');
-        if (companyField && subdomainField) {
-            // Obtener el nombre de la empresa y eliminar espacios al inicio y final
-            var companyName = companyField.val().trim();
+    onNameInput: function () {
+        this._updateSubdomainSuggestion('name');
+    },
 
-			// Dividir el nombre de la empresa en palabras
-			var words = companyName.split(/\s+/);
+    onCompanyInput: function () {
+        this._updateSubdomainSuggestion('company');
+    },
 
-            var subdomain = '';
-
-			if (words.length >= 2 && words[0].length >= 5) {
-				// Usar la primera palabra como subdominio
-				subdomain = words[0];
-			} else {
-				// Eliminar espacios y limitar a 7 caracteres
-				subdomain = companyName.replace(/\s+/g, '').substring(0, 7);
-			}
-
-			// Convertir a minúsculas
-			subdomain = subdomain.toLowerCase();
-
-			// Eliminar caracteres no alfanuméricos ni guiones
-			subdomain = subdomain.replace(/[^a-z0-9\-]/g, '');
-
-            // Establecer el valor del campo subdominio
-            subdomainField.val(subdomain) ;
+    onSubdomainInput: function () {
+        if (this._isProgrammaticUpdate) {
+            return;
         }
+        this._subdomainLocked = true;
+        this._subdomainEditedManually = true;
+        if (this._confirmationShownOnce) {
+            this._skipFurtherConfirmation = true;
+        }
+    },
+
+    onFormSubmit: function (ev) {
+        if (this._skipFurtherConfirmation) {
+            return;
+        }
+
+        var subdomain = (this._subdomainField.val() || '').trim();
+        if (!subdomain) {
+            return;
+        }
+
+        var message = 'Se creará la base de datos en https://' + subdomain + '.factuoo.com.\n¿Estás de acuerdo o deseas modificarlo?';
+        this._confirmationShownOnce = true;
+        if (!window.confirm(message)) {
+            ev.preventDefault();
+            return;
+        }
+
+        this._skipFurtherConfirmation = true;
+    },
+
+    _updateSubdomainSuggestion: function (source) {
+        if (this._subdomainLocked) {
+            return;
+        }
+
+        var baseValue = '';
+        if (source === 'company') {
+            baseValue = (this._companyField.val() || '').trim();
+            if (!baseValue) {
+                return;
+            }
+        } else {
+            baseValue = (this._nameField.val() || '').trim();
+            if (!baseValue) {
+                baseValue = (this._companyField.val() || '').trim();
+                if (!baseValue) {
+                    return;
+                }
+            }
+        }
+
+        var suggestion = this._buildSubdomainCandidate(baseValue);
+        if (!suggestion && source === 'name') {
+            suggestion = this._buildSubdomainCandidate((this._companyField.val() || '').trim());
+        }
+
+        if (suggestion) {
+            this._setSubdomainValue(suggestion);
+        }
+    },
+
+    _buildSubdomainCandidate: function (value) {
+        if (!value) {
+            return '';
+        }
+
+        var normalized = value;
+        if (normalized.normalize) {
+            normalized = normalized.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        }
+
+        var words = normalized.split(/\s+/).filter(Boolean);
+        var candidate = '';
+
+        if (words.length >= 2 && words[0].length >= 5) {
+            candidate = words[0];
+        } else {
+            candidate = normalized.replace(/\s+/g, '');
+        }
+
+        candidate = candidate.toLowerCase().replace(/[^a-z0-9\-]/g, '');
+        return candidate.substring(0, 20);
+    },
+
+    _setSubdomainValue: function (value) {
+        if (!this._subdomainField.length) {
+            return;
+        }
+
+        this._isProgrammaticUpdate = true;
+        this._subdomainField.val(value);
+        this._isProgrammaticUpdate = false;
     },
 
     _initZipSelect2: function () {
