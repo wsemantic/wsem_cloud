@@ -28,10 +28,22 @@
 
                     <!-- Campo Empresa -->
                     <div class="mb-3 field-company_name">
-                        <label for="company_name">Empresa</label>
-                        <input type="text" name="company_name" id="company_name" required="required" class="form-control form-control-sm" t-att-value="company_name or ''"/>
+                        <label for="company_name">Empresa (Opcional)</label>
+                        <input type="text" name="company_name" id="company_name" class="form-control form-control-sm" t-att-value="company_name or ''"/>
                     </div>
 
+					<div class="mb-3 field-subdomain ">
+                        <label for="subdomain_input">¡¡¡Tu acceso modificable!!!!</label>
+                        <div class="input-group subdomain-group">
+                            <input type="text" name="subdomain" id="subdomain_input" required="required" class="form-control form-control-sm text-end" placeholder="subdominio" t-att-value="subdomain or ''"/>
+                            <span class="input-group-text" id="subdomain_suffix">.factuoo.com</span>
+                        </div>
+                        <!-- Mostrar mensaje de error específico si existe -->
+                        <t t-if="error_subdomain">
+                            <small class="text-danger"><t t-esc="error_subdomain"/></small>
+                        </t>
+                    </div>
+					
                     <!-- Campo DNI -->
                     <div class="mb-3 field-dni">
                         <label for="dni">DNI</label>
@@ -68,17 +80,6 @@
                     <div class="mb-3 field-phone">
                         <label for="phone">Teléfono</label>
                         <input type="tel" name="phone" id="phone" required="required" class="form-control form-control-sm" t-att-value="phone or ''"/>
-                    </div>
-					<div class="mb-3 field-subdomain ">
-                        <label for="subdomain_input">URL de la Base de Datos</label>
-                        <div class="input-group subdomain-group">
-                            <input type="text" name="subdomain" id="subdomain_input" required="required" class="form-control form-control-sm text-end" placeholder="subdominio" t-att-value="subdomain or ''"/>
-                            <span class="input-group-text" id="subdomain_suffix">.factuoo.com</span>
-                        </div>
-                        <!-- Mostrar mensaje de error específico si existe -->
-                        <t t-if="error_subdomain">
-                            <small class="text-danger"><t t-esc="error_subdomain"/></small>
-                        </t>
                     </div>
 
                     <!-- Botón Enviar -->
