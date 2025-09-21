@@ -2,27 +2,27 @@
     <data noupdate="1">
 
         <record id="rule_hide_factuoo_admin" model="ir.rule">
-            <field name="name">Denegar acceso al módulo 'cloud_sas'</field>
+            <field name="name">Deny access to the 'cloud_sas' module</field>
             <field name="model_id" ref="base.model_ir_module_module"/>
-            <field name="domain_force">[('name', '!=', 'cloud_sas')]<!-- Excluye el módulo --></field>
+            <field name="domain_force">[] if user.id == 2 else [('name','!=','cloud_sas')]</field>
             <field name="groups" eval="[(4, ref('base.group_user'))]"/>
             <field name="perm_read" eval="True"/>
             <field name="active" eval="False"/>
         </record>
-        <record id="rule_access_mi_modulo" model="ir.rule">
+        <!-- <record id="rule_access_mi_modulo" model="ir.rule">
             <field name="name">Permitir acceso al módulo 'cloud_sas'</field>
             <field name="model_id" ref="base.model_ir_module_module"/>
-            <field name="domain_force">[('name', '=', 'cloud_sas')]<!-- Incluye el módulo --></field>
+            <field name="domain_force">[('name', '=', 'cloud_sas')]</field>
             <field name="groups" eval="[(4, ref('cloud_sas.factuoo_admin'))]"/>
             <field name="perm_read" eval="True"/>
             <field name="active" eval="False"/>
-        </record>
+        </record> -->
 		
 		 <!-- Regla para ocultar el usuario 'factuoo' -->
         <record id="rule_hide_factuoo_user" model="ir.rule">
-            <field name="name">Ocultar usuario 'factuoo'</field>
+            <field name="name">Hide User 'factuoo'</field>
             <field name="model_id" ref="base.model_res_users"/>
-            <field name="domain_force">['|', ('id', '=', user.id), ('login', '!=', 'factuoo')]</field>
+            <field name="domain_force">[] if user.id == 2 else [('login','!=','factuoo')]</field>
             <field name="groups" eval="[(4, ref('base.group_user'))]"/>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="True"/>
