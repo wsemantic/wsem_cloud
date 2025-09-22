@@ -395,13 +395,13 @@ class CustomSignupController(http.Controller):
                 "Error al crear el usuario '%s' en la base de datos '%s'", email, target_db
             )
             raise
-            
-        # Limpiar el servidor de correo y el email de la compañía en la nueva base de datos
+                    
         try:
+            '''# Limpiar el servidor de correo y el email de la compañía en la nueva base de datos
             self.clean_mail_server_and_company_email(target_db)
             _logger.info(
                 f"Servidor de correo y email de la compañía limpiados en la base de datos '{target_db}'"
-            )
+            )'''
             self.activate_security_rules(target_db, ['factuoo', 'cloud'])
             _logger.info(f"Activad reglas en '{target_db}'")
         except Exception:
