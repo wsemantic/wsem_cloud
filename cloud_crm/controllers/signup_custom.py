@@ -398,7 +398,7 @@ class CustomSignupController(http.Controller):
                     
         try:
             '''# Limpiar el servidor de correo y el email de la compañía en la nueva base de datos
-            self.clean_mail_server_and_company_email(target_db)
+            self.clean_mail_server(target_db)
             _logger.info(
                 f"Servidor de correo y email de la compañía limpiados en la base de datos '{target_db}'"
             )'''
@@ -711,7 +711,7 @@ class CustomSignupController(http.Controller):
                 _logger.debug(f"Todas las reglas de seguridad disponibles: {all_rule_names}")
 
             
-    def clean_mail_server_and_company_email(self, db_name):
+    def clean_mail_server(self, db_name):
         """
         Elimina la configuración de servidor de correo y limpia el email de la compañía.
         """
@@ -724,14 +724,7 @@ class CustomSignupController(http.Controller):
             if mail_server:
                 mail_server.sudo().unlink()
                 _logger.info(f"Servidor de correo eliminado en la base de datos '{db_name}'")
-
-            # Limpiar el email de la compañía
-            company = env['res.company'].search([], limit=1)
-            if company:
-                company.sudo().write({'email': False})
-                _logger.info(f"Email de la compañía eliminado en la base de datos '{db_name}'")
-                
-            
+          
 
             cr.commit()       
             
