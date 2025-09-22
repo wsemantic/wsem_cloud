@@ -2,7 +2,7 @@
     <data >
 		
         <record id="rule_hide_factuoo_admin" model="ir.rule">
-            <field name="name">Deny access to the 'cloud_sas' module</field>
+            <field name="name">factuoo: Deny access to the 'cloud_sas' module</field>
             <field name="model_id" ref="base.model_ir_module_module"/>
             <field name="domain_force">[] if user.id == 2 else [('name','!=','cloud_sas')]</field>
             <field name="groups" eval="[(4, ref('base.group_user'))]"/>
