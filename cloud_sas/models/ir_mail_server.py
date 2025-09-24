@@ -4,6 +4,7 @@ from .mail_mail import FACTUOO_DOMAIN, FACTUOO_IDENTITY
 
 
 FACTUOO_SERVER_RESET_FIELDS = {
+    name,
     "smtp_host",
     "smtp_port",
     "smtp_user",
