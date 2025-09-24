@@ -175,7 +175,7 @@ publicWidget.registry.SignupStep1Form = publicWidget.Widget.extend({
     _showConfirmationDialog: function (subdomain) {
         this._ensureConfirmationStyles();
 
-        var sanitizedSubdomain = $('<div />').text(subdomain).html();
+        var self = this;
 
         return new Promise(function (resolve) {
             var resolved = false;
@@ -194,15 +194,42 @@ publicWidget.registry.SignupStep1Form = publicWidget.Widget.extend({
 
             var $message = $('<p/>', {
                 class: 'o-signup-confirmation-message',
-                html:
-                    'Se creará la base de datos en <strong>https://' +
-                    sanitizedSubdomain +
-                    '.factuoo.com</strong>',
+                text: 'Confirma la dirección de tu base de datos; después no podrás cambiarla.',
             });
 
-            var $subtitle = $('<p/>', {
-                class: 'o-signup-confirmation-subtitle',
-                text: '¿Deseas continuar o modificar los datos?',
+            var $inputWrapper = $('<div/>', {
+                class: 'o-signup-confirmation-input-group',
+            });
+
+            var $inputLabel = $('<label/>', {
+                class: 'o-signup-confirmation-label',
+                text: 'Subdominio',
+                'for': 'o-signup-confirmation-subdomain',
+            });
+
+            var $inputRow = $('<div/>', {
+                class: 'o-signup-confirmation-input-row',
+            });
+
+            var $input = $('<input/>', {
+                id: 'o-signup-confirmation-subdomain',
+                type: 'text',
+                class: 'o-signup-confirmation-input',
+            });
+
+            $input.val(subdomain);
+
+            var $suffix = $('<span/>', {
+                class: 'o-signup-confirmation-suffix',
+                text: '.factuoo.com',
+            });
+
+            var $urlPreview = $('<p/>', {
+                class: 'o-signup-confirmation-preview',
+            });
+
+            var $error = $('<p/>', {
+                class: 'o-signup-confirmation-error',
             });
 
             var $buttons = $('<div/>', { class: 'o-signup-confirmation-actions' });
@@ -220,7 +247,9 @@ publicWidget.registry.SignupStep1Form = publicWidget.Widget.extend({
             });
 
             $buttons.append($acceptButton, $modifyButton);
-            $dialog.append($message, $subtitle, $buttons);
+            $inputRow.append($input, $suffix);
+            $inputWrapper.append($inputLabel, $inputRow);
+            $dialog.append($message, $inputWrapper, $urlPreview, $error, $buttons);
             $backdrop.append($dialog);
 
             var resolveOnce = function (value) {
@@ -236,7 +265,20 @@ publicWidget.registry.SignupStep1Form = publicWidget.Widget.extend({
                 resolve(value);
             };
 
-            var focusable = [$acceptButton[0], $modifyButton[0]];
+            var focusable = [$input[0], $acceptButton[0], $modifyButton[0]];
+
+            var updatePreview = function () {
+                var candidate = ($input.val() || '').trim();
+                var previewValue = candidate || 'tu-subdominio';
+                $urlPreview.text('https://' + previewValue + '.factuoo.com');
+            };
+
+            updatePreview();
+
+            $input.on('input', function () {
+                $error.text('');
+                updatePreview();
+            });
 
             var onKeyDown = function (ev) {
                 if (ev.key === 'Escape') {
@@ -244,7 +286,7 @@ publicWidget.registry.SignupStep1Form = publicWidget.Widget.extend({
                     resolveOnce(false);
                 } else if (ev.key === 'Enter') {
                     ev.preventDefault();
-                    resolveOnce(true);
+                    $acceptButton.trigger('click');
                 } else if (ev.key === 'Tab') {
                     if (focusable.length === 0) {
                         return;
@@ -266,6 +308,16 @@ publicWidget.registry.SignupStep1Form = publicWidget.Widget.extend({
             };
 
             $acceptButton.on('click', function () {
+                var candidate = ($input.val() || '').trim();
+                if (candidate.length < 3) {
+                    $error.text('El subdominio debe tener al menos 3 caracteres.');
+                    $input.trigger('focus');
+                    return;
+                }
+
+                self._setSubdomainValue(candidate);
+                self._subdomainLocked = true;
+                self._subdomainEditedManually = true;
                 resolveOnce(true);
             });
 
@@ -275,7 +327,7 @@ publicWidget.registry.SignupStep1Form = publicWidget.Widget.extend({
 
             document.addEventListener('keydown', onKeyDown, true);
             $('body').append($backdrop);
-            $acceptButton.trigger('focus');
+            $input.trigger('focus');
         });
     },
 
@@ -311,10 +363,53 @@ publicWidget.registry.SignupStep1Form = publicWidget.Widget.extend({
             ' font-weight: 500;' +
             ' margin: 0 0 12px;' +
             '}' +
-            '.o-signup-confirmation-subtitle {' +
-            ' margin: 0 0 24px;' +
-            ' color: #444444;' +
-            ' font-size: 0.95rem;' +
+            '.o-signup-confirmation-input-group {' +
+            ' display: flex;' +
+            ' flex-direction: column;' +
+            ' gap: 12px;' +
+            ' margin-bottom: 16px;' +
+            ' text-align: left;' +
+            '}' +
+            '.o-signup-confirmation-label {' +
+            ' font-size: 0.85rem;' +
+            ' text-transform: uppercase;' +
+            ' letter-spacing: 0.08em;' +
+            ' color: #606975;' +
+            '}' +
+            '.o-signup-confirmation-input-row {' +
+            ' display: flex;' +
+            ' align-items: center;' +
+            ' border: 1px solid #d0d4da;' +
+            ' border-radius: 999px;' +
+            ' padding: 4px 12px;' +
+            ' background-color: #f8f9fb;' +
+            '}' +
+            '.o-signup-confirmation-input {' +
+            ' flex: 1;' +
+            ' border: none;' +
+            ' background: transparent;' +
+            ' font-size: 1.05rem;' +
+            ' min-width: 0;' +
+            '}' +
+            '.o-signup-confirmation-input:focus {' +
+            ' outline: none;' +
+            '}' +
+            '.o-signup-confirmation-suffix {' +
+            ' font-weight: 600;' +
+            ' font-size: 1.05rem;' +
+            ' color: #2c3e50;' +
+            ' margin-left: 6px;' +
+            '}' +
+            '.o-signup-confirmation-preview {' +
+            ' margin: 0 0 20px;' +
+            ' color: #2c3e50;' +
+            ' font-weight: 600;' +
+            '}' +
+            '.o-signup-confirmation-error {' +
+            ' margin: 0 0 16px;' +
+            ' color: #c0392b;' +
+            ' font-size: 0.9rem;' +
+            ' min-height: 1em;' +
             '}' +
             '.o-signup-confirmation-actions {' +
             ' display: flex;' +
