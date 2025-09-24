@@ -9,7 +9,6 @@ FACTUOO_SERVER_RESET_FIELDS = {
     "smtp_encryption",
     "smtp_user",
     "smtp_pass",
-    "smtp_from",
     "from_filter",
 }
 
@@ -38,11 +37,6 @@ class IrMailServer(models.Model):
             return factuoo_vals
 
         reset_required = False
-
-        if "smtp_from" in factuoo_vals:
-            new_from = (factuoo_vals["smtp_from"] or "").strip().lower()
-            if new_from != FACTUOO_IDENTITY:
-                reset_required = True
 
         if "from_filter" in factuoo_vals:
             new_filter = (factuoo_vals["from_filter"] or "").strip().lower()
