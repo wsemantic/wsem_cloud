@@ -25,15 +25,15 @@ class CustomSignupController(http.Controller):
         """
         if request.httprequest.method == 'POST':
             # Capturar y validar los datos del formulario
-            name = kwargs.get('name')
-            email = kwargs.get('email')
-            company_name = kwargs.get('company_name')
-            dni = kwargs.get('dni')
-            street = kwargs.get('street')
-            street2 = kwargs.get('street2')
-            zip_id = kwargs.get('zip_id')  # Capturar zip_id del formulario
-            phone = kwargs.get('phone')
-            subdomain = kwargs.get('subdomain')
+            name = (kwargs.get('name') or '').strip()
+            email = (kwargs.get('email') or '').strip().lower()
+            company_name = (kwargs.get('company_name') or '').strip()
+            dni = (kwargs.get('dni') or '').strip().upper()
+            street = (kwargs.get('street') or '').strip()
+            street2 = (kwargs.get('street2') or '').strip()
+            zip_id = (kwargs.get('zip_id') or '').strip()  # Capturar zip_id del formulario
+            phone = (kwargs.get('phone') or '').strip()
+            subdomain = (kwargs.get('subdomain') or '').strip()
 
             # Buscar información del código postal seleccionado
             if zip_id:
@@ -74,15 +74,8 @@ class CustomSignupController(http.Controller):
             # Validar campos obligatorios
             # Diccionario de campos con sus nombres y valores
             required_fields = {
-                "name": name,
-                "email": email,
-                "dni": dni,
-                "street": street,
-                "postal_code": postal_code,
-                "zip_id": zip_id,
-                "city": city,
-                "phone": phone,
-                "subdomain": subdomain,
+                "Nombre": name,
+                "Correo electrónico": email,
             }
 
             # Lista para almacenar los nombres de los campos que faltan
@@ -107,7 +100,6 @@ class CustomSignupController(http.Controller):
                     'subdomain': subdomain,
                 })
 
-            dni = (dni or '').strip().upper()
             if dni and not re.match(r'^[A-Z]{2}', dni):
                 dni = f'ES{dni}'
             if dni and not dni.startswith('ES'):
@@ -127,42 +119,51 @@ class CustomSignupController(http.Controller):
                     'subdomain': subdomain,
                 })
             # Determinar el tipo de partner según el NIF
-            try:
-                company_type = self._get_company_type(dni)
-            except ValueError as e:
-                error = str(e)
-                return request.render('cloud_crm.signup_step1', {
-                    'error': error,
-                    'name': name,
-                    'email': email,
-                    'company_name': company_name,
-                    'dni': dni,
-                    'street': street,
-                    'street2': street2,
-                    'zip_id': zip_id,
-                    'zip': postal_code,
-                    'city': city,
-                    'phone': phone,
-                    'subdomain': subdomain,
-                })
+            partner = self.find_partner_by_email(email)
+            company_type = partner.company_type if partner and partner.company_type else 'person'
+            if dni:
+                try:
+                    company_type = self._get_company_type(dni)
+                except ValueError as e:
+                    error = str(e)
+                    return request.render('cloud_crm.signup_step1', {
+                        'error': error,
+                        'name': name,
+                        'email': email,
+                        'company_name': company_name,
+                        'dni': dni,
+                        'street': street,
+                        'street2': street2,
+                        'zip_id': zip_id,
+                        'zip': postal_code,
+                        'city': city,
+                        'phone': phone,
+                        'subdomain': subdomain,
+                    })
 
-            if company_type == 'company' and not company_name:
-                error = "El campo Empresa es obligatorio para compañías."
-                return request.render('cloud_crm.signup_step1', {
-                    'error': error,
-                    'name': name,
-                    'email': email,
-                    'company_name': company_name,
-                    'dni': dni,
-                    'street': street,
-                    'street2': street2,
-                    'zip_id': zip_id,
-                    'zip': postal_code,
-                    'city': city,
-                    'phone': phone,
-                    'subdomain': subdomain,
-                })
+                if company_type == 'company' and not company_name:
+                    error = "El campo Empresa es obligatorio para compañías."
+                    return request.render('cloud_crm.signup_step1', {
+                        'error': error,
+                        'name': name,
+                        'email': email,
+                        'company_name': company_name,
+                        'dni': dni,
+                        'street': street,
+                        'street2': street2,
+                        'zip_id': zip_id,
+                        'zip': postal_code,
+                        'city': city,
+                        'phone': phone,
+                        'subdomain': subdomain,
+                    })
 
+
+            if not subdomain:
+                if partner and partner.cloud_url:
+                    subdomain = self._extract_subdomain_from_url(partner.cloud_url)
+                if not subdomain:
+                    subdomain = self._generate_subdomain(name, email)
 
             # Generar el cloud_url
             cloud_url = f"{subdomain}.factuoo.com"
@@ -186,7 +187,6 @@ class CustomSignupController(http.Controller):
                 })
 
             # Buscar si existe un res.partner con el mismo email
-            partner = self.find_partner_by_email(email)
             partner_vals = {
                 'name': name,
                 'email': email,
@@ -425,11 +425,57 @@ class CustomSignupController(http.Controller):
         env = request.env
         # Buscar un partner que tenga el mismo cloud_url
         partner = env['res.partner'].sudo().search([('cloud_url', '=', cloud_url)], limit=1)
-        
+
         # Verificar si el partner existe y si el email es diferente
         if partner and partner.email != email:
             return True
         return False
+
+    def _sanitize_subdomain_candidate(self, value):
+        value = (value or '').lower()
+        # Reemplazar espacios y caracteres no válidos por '-'
+        value = re.sub(r'[^a-z0-9-]+', '-', value)
+        value = re.sub(r'-+', '-', value).strip('-')
+        return value
+
+    def _generate_subdomain(self, name, email):
+        base_candidates = []
+        if email and '@' in email:
+            base_candidates.append(email.split('@')[0])
+        base_candidates.extend([name, 'cliente'])
+
+        base = ''
+        for candidate in base_candidates:
+            sanitized = self._sanitize_subdomain_candidate(candidate)
+            if sanitized:
+                base = sanitized
+                break
+
+        if not base:
+            base = 'cliente'
+
+        subdomain = base
+        counter = 1
+        while self.url_conflict(f"{subdomain}.factuoo.com", email):
+            counter += 1
+            subdomain = f"{base}-{counter}"
+
+        return subdomain
+
+    def _extract_subdomain_from_url(self, cloud_url):
+        if not cloud_url:
+            return ''
+
+        cleaned = cloud_url
+        if '://' in cleaned:
+            cleaned = cleaned.split('://', 1)[1]
+
+        cleaned = cleaned.split('/')[0]
+
+        if cleaned.endswith('.factuoo.com'):
+            cleaned = cleaned[: -len('.factuoo.com')]
+
+        return self._sanitize_subdomain_candidate(cleaned)
 
     def _get_company_type(self, vat):
         """Devuelve 'person' o 'company' según el formato del NIF.
