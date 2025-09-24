@@ -4,7 +4,7 @@ from .mail_mail import FACTUOO_DOMAIN, FACTUOO_IDENTITY
 
 
 FACTUOO_SERVER_RESET_FIELDS = {
-    name,
+    "name",
     "smtp_host",
     "smtp_port",
     "smtp_user",
@@ -40,7 +40,9 @@ class IrMailServer(models.Model):
 
         if "from_filter" in factuoo_vals:
             new_filter = (factuoo_vals["from_filter"] or "").strip().lower()
-            if new_filter != FACTUOO_DOMAIN:
+            if new_filter != FACTUOO_DOMAIN and any(
+                server._cloud_sas_has_factuoo_trace() for server in self
+            ):
                 reset_required = True
 
         if reset_required:
@@ -61,3 +63,17 @@ class IrMailServer(models.Model):
         return self.filtered(
             lambda server: (server.from_filter or "").strip().lower() == FACTUOO_DOMAIN
         )
+
+    def _cloud_sas_has_factuoo_trace(self):
+        self.ensure_one()
+
+        if (self.from_filter or "").strip().lower() == FACTUOO_DOMAIN:
+            return True
+
+        factuoo_identity = FACTUOO_IDENTITY.lower()
+        if "smtp_user" in self._fields:
+            value = (self.smtp_user or "").strip().lower()
+            if value == factuoo_identity:
+                return True
+
+        return False
