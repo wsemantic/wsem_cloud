@@ -194,17 +194,11 @@ publicWidget.registry.SignupStep1Form = publicWidget.Widget.extend({
 
             var $message = $('<p/>', {
                 class: 'o-signup-confirmation-message',
-                text: 'Confirma la dirección de tu base de datos; después no podrás cambiarla.',
+                text: 'Confirma tu dirección personalizada',
             });
 
             var $inputWrapper = $('<div/>', {
                 class: 'o-signup-confirmation-input-group',
-            });
-
-            var $inputLabel = $('<label/>', {
-                class: 'o-signup-confirmation-label',
-                text: 'Subdominio',
-                'for': 'o-signup-confirmation-subdomain',
             });
 
             var $inputRow = $('<div/>', {
@@ -248,7 +242,7 @@ publicWidget.registry.SignupStep1Form = publicWidget.Widget.extend({
 
             $buttons.append($acceptButton, $modifyButton);
             $inputRow.append($input, $suffix);
-            $inputWrapper.append($inputLabel, $inputRow);
+            $inputWrapper.append($inputRow);
             $dialog.append($message, $inputWrapper, $urlPreview, $error, $buttons);
             $backdrop.append($dialog);
 
@@ -369,12 +363,6 @@ publicWidget.registry.SignupStep1Form = publicWidget.Widget.extend({
             ' gap: 12px;' +
             ' margin-bottom: 16px;' +
             ' text-align: left;' +
-            '}' +
-            '.o-signup-confirmation-label {' +
-            ' font-size: 0.85rem;' +
-            ' text-transform: uppercase;' +
-            ' letter-spacing: 0.08em;' +
-            ' color: #606975;' +
             '}' +
             '.o-signup-confirmation-input-row {' +
             ' display: flex;' +
