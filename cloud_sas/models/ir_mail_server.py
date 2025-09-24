@@ -1,4 +1,4 @@
-from odoo import models
+from odoo import _, fields, models
 
 from .mail_mail import FACTUOO_DOMAIN, FACTUOO_IDENTITY
 
@@ -36,36 +36,37 @@ class IrMailServer(models.Model):
         if not factuoo_vals:
             return factuoo_vals
 
-        reset_required = False
+        if not any(server._cloud_sas_has_factuoo_trace() for server in self):
+            return factuoo_vals
 
-        if "from_filter" in factuoo_vals:
-            new_filter = (factuoo_vals["from_filter"] or "").strip().lower()
-            if new_filter != FACTUOO_DOMAIN and any(
-                server._cloud_sas_has_factuoo_trace() for server in self
-            ):
-                reset_required = True
-
-        if reset_required:
-            for field in FACTUOO_SERVER_RESET_FIELDS:
-                if field == "from_filter":
-                    if field not in factuoo_vals:
+        for field in FACTUOO_SERVER_RESET_FIELDS:
+            if field == "from_filter":
+                if field not in factuoo_vals:
+                    factuoo_vals[field] = False
+                else:
+                    current = (factuoo_vals[field] or "").strip().lower()
+                    if current == FACTUOO_DOMAIN:
                         factuoo_vals[field] = False
-                    else:
-                        current = (factuoo_vals[field] or "").strip().lower()
-                        if current == FACTUOO_DOMAIN:
-                            factuoo_vals[field] = False
+            else:
+                if field == "name":
+                    if not factuoo_vals.get(field):
+                        factuoo_vals[field] = (
+                            self._cloud_sas_generate_default_server_name()
+                        )
                 else:
                     factuoo_vals.setdefault(field, False)
 
         return factuoo_vals
 
     def _cloud_sas_filter_factuoo_servers(self):
-        return self.filtered(
-            lambda server: (server.from_filter or "").strip().lower() == FACTUOO_DOMAIN
-        )
+        return self.filtered(lambda server: server._cloud_sas_has_factuoo_trace())
 
     def _cloud_sas_has_factuoo_trace(self):
         self.ensure_one()
+
+        name = (self.name or "").strip().lower()
+        if name in {"factuoo", "fatuoo"}:
+            return True
 
         if (self.from_filter or "").strip().lower() == FACTUOO_DOMAIN:
             return True
@@ -77,3 +78,7 @@ class IrMailServer(models.Model):
                 return True
 
         return False
+
+    def _cloud_sas_generate_default_server_name(self):
+        timestamp = fields.Datetime.context_timestamp(self, fields.Datetime.now())
+        return _("mi servidor %s") % fields.Datetime.to_string(timestamp)
