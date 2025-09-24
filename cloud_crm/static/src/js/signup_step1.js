@@ -243,7 +243,7 @@ publicWidget.registry.SignupStep1Form = publicWidget.Widget.extend({
             var $modifyButton = $('<button/>', {
                 type: 'button',
                 class: 'o-signup-confirmation-button o-confirm-modify',
-                text: 'Modificar',
+                text: 'Volver',
             });
 
             $buttons.append($acceptButton, $modifyButton);
@@ -390,6 +390,7 @@ publicWidget.registry.SignupStep1Form = publicWidget.Widget.extend({
             ' background: transparent;' +
             ' font-size: 1.05rem;' +
             ' min-width: 0;' +
+            ' text-align: right;' +
             '}' +
             '.o-signup-confirmation-input:focus {' +
             ' outline: none;' +
