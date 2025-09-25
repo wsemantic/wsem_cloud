@@ -77,13 +77,61 @@
 
 /* Estilos para span dentro del label - eliminamos cualquier exceso */
 .module-box label span {
-    font-weight: normal; 
-    font-size: 14px; 
-    white-space: nowrap; 
-    text-overflow: ellipsis; 
-    overflow: hidden; 
-    display: inline-block; 
+    font-weight: normal;
+    font-size: 14px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: inline-block;
     width: 90%;
+}
+
+.step2-modules {
+    max-width: 960px;
+}
+
+.step2-modules h1 {
+    font-size: 1.75rem;
+}
+
+.step2-modules p {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.step2-modules .module-box {
+    padding: 0.75rem 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.step2-modules .step2-module-row {
+    row-gap: 0.75rem;
+}
+
+.step2-modules .module-box img {
+    max-height: 45px;
+    margin-bottom: 0.5rem;
+}
+
+.step2-modules .module-label {
+    gap: 6px;
+    font-size: 0.95rem;
+    word-break: break-word;
+}
+
+.step2-modules .module-label span {
+    width: 100%;
+    white-space: normal;
+    text-align: left;
+}
+
+.step2-modules .module-label input {
+    margin-top: 0;
+}
+
+.step2-modules .btn-primary {
+    padding: 0.6rem 1.5rem;
+    font-size: 1rem;
 }
 
 h3 {
