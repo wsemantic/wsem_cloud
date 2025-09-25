@@ -134,44 +134,46 @@
     font-size: 1rem;
 }
 
-h3 {
-    text-align: center; /* Centrar el título horizontalmente */
-    margin-bottom: 20px; /* Añadir un margen inferior para separar el título del resto del contenido */
-    color: #007bff; /* Cambiar el color del título, puedes ajustar el valor al color deseado */
-}
-
-.form-control {
-    width: 100%;
-    max-width: 600px; /* Limitar el ancho máximo de cada campo si se desea */
-    margin-bottom: 20px; /* Espacio adicional entre los campos */
-}
-
-.field-street, .field-street2, .field-zip, .field-city {
-    width: 100%;
-    max-width: 600px;
-	margin-bottom: 15px;
-}
-
-/* Mantener consistencia entre etiquetas y campos */
-label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-/* Botón 'Continuar al Paso 2' */
-.oe_login_buttons button {
-    max-width: 200px; /* Limitar el ancho del botón */
-    margin: 0 auto; /* Centrar horizontalmente el botón */
-    display: block;
-}
-
-/* Asegurar que el contenedor ocupe el 100% del ancho 
 .custom-signup-container {
-    max-width: 600px; 
-    margin: 0 auto; 
-    padding: 20px;
-}*/
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.custom-signup-container h3 {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 24px;
+    color: #007bff;
+}
+
+.custom-signup-container form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.custom-signup-container .form-control {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.custom-signup-container label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 400;
+}
+
+.custom-signup-container .oe_login_buttons {
+    width: 100%;
+}
+
+.custom-signup-container .oe_login_buttons button {
+    width: 100%;
+}
 
 .autocomplete-results {
     list-style: none;
