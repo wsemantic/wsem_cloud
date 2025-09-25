@@ -38,6 +38,7 @@
     "assets":{       
         'web.assets_frontend':[
             'cloud_crm/static/src/js/signup_step1.js',
+            'cloud_crm/static/src/js/signup_step2.js',
             'cloud_crm/static/src/css/factuo.css',
             'cloud_crm/static/src/lib/select2/select2.css',
             'cloud_crm/static/src/lib/select2/select2.js',
