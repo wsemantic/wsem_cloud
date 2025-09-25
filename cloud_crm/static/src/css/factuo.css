@@ -210,6 +210,7 @@ body.signup-step1-body {
 .signup-step1-title {
     color: #0d2e57;
     font-weight: 600;
+    font-size: 1.35rem;
 }
 
 .signup-step1-form .signup-form-card {
