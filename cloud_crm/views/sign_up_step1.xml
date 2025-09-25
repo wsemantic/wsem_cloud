@@ -92,11 +92,10 @@
                                                 <label for="phone">Teléfono</label>
                                                 <input type="tel" name="phone" id="phone" class="form-control form-control-sm" t-att-value="phone or ''"/>
                                             </div>
-                                        </div>
-
-                                        <!-- Botón Enviar -->
-                                        <div class="text-center oe_login_buttons d-grid pt-3">
-                                            <button type="submit" class="btn btn-primary">Continuar al Paso 2</button>
+                                            <!-- Botón Enviar -->
+                                            <div class="text-center oe_login_buttons d-grid pt-3">
+                                                <button type="submit" class="btn btn-primary">Continuar al Paso 2</button>
+                                            </div>
                                         </div>
                                     </form>
                                 </div>
