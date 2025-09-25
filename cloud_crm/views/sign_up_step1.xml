@@ -2,93 +2,135 @@
 <odoo>
     <template id="signup_step1" name="Signup Step 1">
         <t t-call="website.layout">
-            <div class="container custom-signup-container mt16 mb16">
-                <h3>Datos de contacto</h3>
-                <form id="signup_step1_form" method="post">
-                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                    
-                    <!-- Mostrar mensaje de error general -->
-                    <t t-if="error">
-                        <div class="alert alert-danger">
-                            <t t-esc="error"/>
+            <t t-set="pageClass" t-value="'signup-step1-body'"/>
+            <div class="signup-step1-page py-5">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-12 col-lg-10 col-xl-9">
+                            <h3 class="signup-step1-title text-center mb-4">Datos de contacto</h3>
+                            <div class="row g-4 justify-content-center signup-step1-columns">
+                                <div class="col-12 col-lg-7">
+                                    <form id="signup_step1_form" method="post" class="signup-step1-form">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                        <div class="signup-form-card">
+                                            <!-- Mostrar mensaje de error general -->
+                                            <t t-if="error">
+                                                <div class="alert alert-danger mb-4">
+                                                    <t t-esc="error"/>
+                                                </div>
+                                            </t>
+
+                                            <p class="required-hint">Completa los campos resaltados para continuar.</p>
+
+                                            <!-- Campo Nombre -->
+                                            <div class="mb-4 required-field field-name">
+                                                <label for="name">Nombre completo</label>
+                                                <input type="text" name="name" id="name" required="required" class="form-control form-control-sm" t-att-value="name or ''"/>
+                                            </div>
+
+                                            <!-- Campo Email -->
+                                            <div class="mb-4 required-field field-email">
+                                                <label for="email">Correo electrónico</label>
+                                                <input type="email" name="email" id="email" required="required" class="form-control form-control-sm" t-att-value="email or ''"/>
+                                            </div>
+
+                                            <!-- Campo Empresa -->
+                                            <div class="mb-3 field-company_name">
+                                                <label for="company_name">Empresa (Opcional)</label>
+                                                <input type="text" name="company_name" id="company_name" class="form-control form-control-sm" t-att-value="company_name or ''"/>
+                                            </div>
+
+                                            <div class="mb-3 field-subdomain">
+                                                <label for="subdomain_input">Tu acceso (modificable)</label>
+                                                <div class="input-group subdomain-group">
+                                                    <input type="text" name="subdomain" id="subdomain_input" class="form-control text-end subdomain-input" placeholder="subdominio" t-att-value="subdomain or ''"/>
+                                                    <span class="input-group-text" id="subdomain_suffix">.factuoo.com</span>
+                                                </div>
+                                                <!-- Mostrar mensaje de error específico si existe -->
+                                                <t t-if="error_subdomain">
+                                                    <small class="text-danger"><t t-esc="error_subdomain"/></small>
+                                                </t>
+                                            </div>
+
+                                            <!-- Campo DNI -->
+                                            <div class="mb-3 field-dni">
+                                                <label for="dni">DNI</label>
+                                                <input type="text" name="dni" id="dni" class="form-control form-control-sm" placeholder="00000000A" t-att-value="dni or ''"/>
+                                            </div>
+
+                                            <!-- Campo Calle -->
+                                            <div class="mb-3 field-street">
+                                                <label for="street">Calle</label>
+                                                <input type="text" name="street" id="street" class="form-control form-control-sm" t-att-value="street or ''"/>
+                                            </div>
+
+                                            <!-- Campo Dirección 2 -->
+                                            <div class="mb-3 field-street2">
+                                                <label for="street2">Dirección 2</label>
+                                                <input type="text" name="street2" id="street2" class="form-control form-control-sm" t-att-value="street2 or ''"/>
+                                            </div>
+
+                                            <!-- Campo Código Postal (con OWL) -->
+                                            <div class="mb-3 field-zip_id">
+                                                <label for="zip_id">Código Postal</label>
+                                                <!-- Aquí se incluye el componente OWL para el autocompletado -->
+                                                <!-- <div t-component="ZipAutocomplete" t-on-zip-selected="onZipSelected"/> -->
+                                                <input type='text' id='zip_id' name='zip_id' class='form-control form-control-sm' t-att-value="zip_id or ''"/>
+                                            </div>
+
+                                            <!-- Campo Población -->
+                                            <div class="mb-3 field-city">
+                                                <label for="city">Población</label>
+                                                <input type="text" name="city" id="city" class="form-control form-control-sm" t-att-value="city or ''"/>
+                                            </div>
+
+                                            <!-- Campo Teléfono -->
+                                            <div class="mb-3 field-phone">
+                                                <label for="phone">Teléfono</label>
+                                                <input type="tel" name="phone" id="phone" class="form-control form-control-sm" t-att-value="phone or ''"/>
+                                            </div>
+                                        </div>
+
+                                        <!-- Botón Enviar -->
+                                        <div class="text-center oe_login_buttons d-grid pt-3">
+                                            <button type="submit" class="btn btn-primary">Continuar al Paso 2</button>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-12 col-lg-5 d-none d-lg-flex">
+                                    <div class="signup-marketing-card">
+                                        <h4 class="mb-3">Tu nube de confianza</h4>
+                                        <p class="text-muted mb-4">Miles de empresas gestionan su facturación con Factuoo. Nos encargamos de la seguridad, la disponibilidad y el soporte experto para que te centres en tu negocio.</p>
+                                        <ul class="list-unstyled mb-0">
+                                            <li class="marketing-point d-flex align-items-start mb-3">
+                                                <span class="point-icon me-3">✓</span>
+                                                <div>
+                                                    <h5 class="mb-1">Soporte cercano</h5>
+                                                    <p class="mb-0 text-muted">Equipo especializado que te acompaña desde la puesta en marcha.</p>
+                                                </div>
+                                            </li>
+                                            <li class="marketing-point d-flex align-items-start mb-3">
+                                                <span class="point-icon me-3">✓</span>
+                                                <div>
+                                                    <h5 class="mb-1">Seguridad avanzada</h5>
+                                                    <p class="mb-0 text-muted">Copias de seguridad diarias y cifrado para proteger tus datos.</p>
+                                                </div>
+                                            </li>
+                                            <li class="marketing-point d-flex align-items-start">
+                                                <span class="point-icon me-3">✓</span>
+                                                <div>
+                                                    <h5 class="mb-1">Disponibilidad garantizada</h5>
+                                                    <p class="mb-0 text-muted">Infraestructura en la nube con un 99,9% de uptime medido.</p>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </t>
-
-                    <p class="required-hint">Completa los campos resaltados para continuar.</p>
-
-                    <!-- Campo Nombre -->
-                    <div class="mb-4 required-field field-name">
-                        <label for="name">Nombre completo</label>
-                        <input type="text" name="name" id="name" required="required" class="form-control form-control-sm" t-att-value="name or ''"/>
                     </div>
-
-                    <!-- Campo Email -->
-                    <div class="mb-4 required-field field-email">
-                        <label for="email">Correo electrónico</label>
-                        <input type="email" name="email" id="email" required="required" class="form-control form-control-sm" t-att-value="email or ''"/>
-                    </div>
-
-                    <!-- Campo Empresa -->
-                    <div class="mb-3 field-company_name">
-                        <label for="company_name">Empresa (Opcional)</label>
-                        <input type="text" name="company_name" id="company_name" class="form-control form-control-sm" t-att-value="company_name or ''"/>
-                    </div>
-
-                    <div class="mb-3 field-subdomain ">
-                        <label for="subdomain_input">Tu acceso (modificable)</label>
-                        <div class="input-group subdomain-group">
-                            <input type="text" name="subdomain" id="subdomain_input" class="form-control text-end subdomain-input" placeholder="subdominio" t-att-value="subdomain or ''"/>
-                            <span class="input-group-text" id="subdomain_suffix">.factuoo.com</span>
-                        </div>
-                        <!-- Mostrar mensaje de error específico si existe -->
-                        <t t-if="error_subdomain">
-                            <small class="text-danger"><t t-esc="error_subdomain"/></small>
-                        </t>
-                    </div>
-					
-                    <!-- Campo DNI -->
-                    <div class="mb-3 field-dni">
-                        <label for="dni">DNI</label>
-                        <input type="text" name="dni" id="dni" class="form-control form-control-sm" placeholder="00000000A" t-att-value="dni or ''"/>
-                    </div>
-
-                    <!-- Campo Calle -->
-                    <div class="mb-3 field-street">
-                        <label for="street">Calle</label>
-                        <input type="text" name="street" id="street" class="form-control form-control-sm" t-att-value="street or ''"/>
-                    </div>
-
-                    <!-- Campo Dirección 2 -->
-                    <div class="mb-3 field-street2">
-                        <label for="street2">Dirección 2</label>
-                        <input type="text" name="street2" id="street2" class="form-control form-control-sm" t-att-value="street2 or ''"/>
-                    </div>
-					
-                    <!-- Campo Código Postal (con OWL) -->
-                    <div class="mb-3 field-zip_id">
-                        <label for="zip_id">Código Postal</label>
-                        <!-- Aquí se incluye el componente OWL para el autocompletado -->
-                        <!-- <div t-component="ZipAutocomplete" t-on-zip-selected="onZipSelected"/> -->
-                        <input type='text' id='zip_id' name='zip_id' class='form-control form-control-sm' t-att-value="zip_id or ''"/>
-                    </div>
-
-                    <!-- Campo Población -->
-                    <div class="mb-3 field-city">
-                        <label for="city">Población</label>
-                        <input type="text" name="city" id="city" class="form-control form-control-sm" t-att-value="city or ''"/>
-                    </div>
-
-                    <!-- Campo Teléfono -->
-                    <div class="mb-3 field-phone">
-                        <label for="phone">Teléfono</label>
-                        <input type="tel" name="phone" id="phone" class="form-control form-control-sm" t-att-value="phone or ''"/>
-                    </div>
-
-                    <!-- Botón Enviar -->
-                    <div class="text-center oe_login_buttons d-grid pt-3">
-                        <button type="submit" class="btn btn-primary">Continuar al Paso 2</button>
-                    </div>
-                </form>
+                </div>
             </div>
             <!-- Incluir el archivo JavaScript -->
             <!-- <script type="text/javascript" src="/cloud_crm/static/src/js/signup_step1.js"></script> -->
