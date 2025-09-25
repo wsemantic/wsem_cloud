@@ -324,7 +324,10 @@ class CustomSignupController(http.Controller):
         name = signup_data.get('name')
         email = signup_data.get('email')
         subdomain = signup_data.get('subdomain')
-        company_name = signup_data.get('company_name')
+        company_name = (signup_data.get('company_name') or '').strip()
+        if not company_name:
+            # Si el usuario no indicó empresa, usar el nombre del registro
+            company_name = (name or '').strip()
         street = signup_data.get('street')
         street2 = signup_data.get('street2')
         zip_code = signup_data.get('zip')
