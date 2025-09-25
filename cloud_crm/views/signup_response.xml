@@ -1,12 +1,16 @@
 <template id="signup_success_page" name="Signup Success Page">
     <t t-call="website.layout">
         <div class="container">
-            <h1>¡Registro exitoso!</h1>
-            <p>Gracias por registrarte, <t t-esc="name"/>.</p>
-            <p>Tu nueva base de datos ha sido creada con éxito.</p>
+            <t t-set="is_created" t-value="creation_status == 'created'"/>
+            <h1 t-if="is_created">¡Registro exitoso!</h1>
+            <h1 t-else>¡Tu entorno ya está listo!</h1>
+            <p>Gracias por registrarte<t t-if="name">, <t t-esc="name"/></t>.</p>
+            <p t-if="is_created">Tu nueva base de datos ha sido creada con éxito.</p>
+            <p t-else>Detectamos una base de datos existente para tu subdominio y la hemos reutilizado.</p>
             <p>Puedes acceder a tu base de datos en la siguiente URL:</p>
-            <a href="db_url"><t t-esc="db_url"/></a>
-            <p>Se ha enviado un correo a <t t-esc="email"/> con instrucciones para establecer tu contraseña.</p>
+            <a t-att-href="db_url"><t t-esc="db_url"/></a>
+            <p t-if="is_created">Se ha enviado un correo a <t t-esc="email"/> con instrucciones para establecer tu contraseña.</p>
+            <p t-else>Si no recuerdas tu contraseña, puedes restablecerla desde la página de acceso.</p>
         </div>
     </t>
 </template>

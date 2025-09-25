@@ -228,7 +228,7 @@ class CustomSignupController(http.Controller):
             else:
                 # Si no existe, crear un nuevo res.partner
                 try:
-                    self.create_partner_in_db(**partner_vals)
+                    partner = self.create_partner_in_db(**partner_vals)
                 except Exception as e:
                     _logger.exception(
                         "Error al crear el res.partner con email '%s'", email
@@ -250,9 +250,13 @@ class CustomSignupController(http.Controller):
                     })
 
             # Guardar los datos en la sesión
-            request.session['signup_data'] = partner_vals
-            request.session['signup_data']['subdomain'] = subdomain
-            request.session['signup_data']['cloud_url'] = cloud_url
+            session_vals = dict(partner_vals)
+            session_vals.update({
+                'subdomain': subdomain,
+                'cloud_url': cloud_url,
+                'partner_id': partner.id if partner else None,
+            })
+            request.session['signup_data'] = session_vals
 
             # Redirigir al segundo paso
             return request.redirect('/signup_step2')
@@ -276,7 +280,7 @@ class CustomSignupController(http.Controller):
 
             # Clonar la base de datos y crear el usuario
             try:
-                self.create_user_and_db(signup_data, selected_modules)
+                creation_result = self.create_user_and_db(signup_data, selected_modules)
             except Exception:
                 _logger.exception(
                     "Error al crear la base de datos y el usuario para '%s'",
@@ -294,11 +298,15 @@ class CustomSignupController(http.Controller):
 
             # Redirigir a la página de éxito
             subdomain = signup_data.get('subdomain')
-            db_url = f"https://{subdomain}.factuoo.com/odoo/login"
+            creation_result = creation_result or {}
+            db_url = creation_result.get('db_url') or f"https://{subdomain}.factuoo.com/odoo/login"
             return request.render('cloud_crm.signup_success_page', {
                 'email': signup_data.get('email'),
+                'name': signup_data.get('name'),
                 'subdomain': subdomain,
-                'db_url': db_url
+                'db_url': db_url,
+                'creation_status': creation_result.get('status', 'created'),
+                'reuse_reason': creation_result.get('reason'),
             })
 
         else:
@@ -335,18 +343,79 @@ class CustomSignupController(http.Controller):
         state_id = signup_data.get('state_id')
         phone = signup_data.get('phone')
 
+        partner = None
+        partner_id = signup_data.get('partner_id')
+        try:
+            partner_id = int(partner_id)
+        except (TypeError, ValueError):
+            partner_id = False
+        if partner_id:
+            partner = request.env['res.partner'].sudo().browse(partner_id)
+            if not partner.exists():
+                partner = None
+        if not partner and email:
+            partner = request.env['res.partner'].sudo().search([('email', '=', email)], limit=1)
+
+        existing_partner_cloud_url = ''
+        existing_partner_subdomain = ''
+        if partner and partner.cloud_url:
+            existing_partner_cloud_url = partner.cloud_url or ''
+            existing_partner_subdomain = self._extract_subdomain_from_url(existing_partner_cloud_url)
+
         target_db = subdomain  # Usamos el subdominio como nombre de la base de datos
         source_db = 'veri-template'  # Nombre de la base de datos predefinida a clonar
-        
-        # Crear el subdominio en OVH
-        try:
-            self.create_subdomain_in_ovh(subdomain)
-            _logger.info(f"Subdominio '{subdomain}.factuoo.com' creado en OVH")
-        except Exception:
-            _logger.exception(
-                "Error al crear el subdominio '%s.factuoo.com' en OVH", subdomain
+
+        if existing_partner_subdomain:
+            if not subdomain:
+                subdomain = existing_partner_subdomain
+            if existing_partner_subdomain == subdomain:
+                target_db = existing_partner_subdomain
+                db_login_url = f"https://{target_db}.factuoo.com/odoo/login"
+                if db.exp_db_exist(target_db):
+                    _logger.info(
+                        "El partner ya contaba con un entorno en '%s'. Se reutiliza la configuración existente.",
+                        existing_partner_cloud_url,
+                    )
+                    return {
+                        'status': 'reused',
+                        'reason': 'existing_partner',
+                        'db_url': db_login_url,
+                    }
+                _logger.warning(
+                    "El partner tiene asignada la URL '%s' pero la base de datos '%s' no existe. Se volverá a aprovisionar.",
+                    existing_partner_cloud_url,
+                    existing_partner_subdomain,
+                )
+
+        db_login_url = f"https://{subdomain}.factuoo.com/odoo/login"
+
+        if db.exp_db_exist(target_db):
+            _logger.info(
+                "La base de datos '%s' ya existe. Se reutiliza el entorno existente.",
+                target_db,
             )
-            raise
+            return {
+                'status': 'reused',
+                'reason': 'database_exists',
+                'db_url': db_login_url,
+            }
+
+        # Crear el subdominio en OVH
+        should_create_subdomain = not (existing_partner_subdomain and existing_partner_subdomain == subdomain)
+        if should_create_subdomain:
+            try:
+                self.create_subdomain_in_ovh(subdomain)
+                _logger.info(f"Subdominio '{subdomain}.factuoo.com' creado en OVH")
+            except Exception:
+                _logger.exception(
+                    "Error al crear el subdominio '%s.factuoo.com' en OVH", subdomain
+                )
+                raise
+        else:
+            _logger.info(
+                "Se omite la creación del subdominio '%s.factuoo.com' porque ya estaba registrado para el partner.",
+                subdomain,
+            )
 
         _logger.info(f"WSEM Clonando la base de datos '{source_db}' a '{target_db}'")
         time.sleep(10)
@@ -412,6 +481,12 @@ class CustomSignupController(http.Controller):
                 "Error al limpiar el servidor de correo o activar reglas en '%s'", target_db
             )
             raise
+
+        return {
+            'status': 'created',
+            'reason': 'provisioned',
+            'db_url': db_login_url,
+        }
             
     def find_partner_by_email(self, email):
         """
@@ -518,6 +593,8 @@ class CustomSignupController(http.Controller):
         portal_user = portal_wizard.user_ids
         portal_user.email = partner.email
         portal_user.sudo().action_grant_access()
+
+        return partner
 
     def _get_odoo_server_ip(self):
         """Devuelve la IP del servidor Odoo.
