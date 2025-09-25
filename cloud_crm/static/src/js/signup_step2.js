@@ -3,9 +3,10 @@
 import publicWidget from "@web/legacy/js/public/public_widget";
 
 publicWidget.registry.ModuleSelectionStep = publicWidget.Widget.extend({
-    selector: '#signup_step2_form', 
+    selector: '#signup_step2_form',
     start: function () {
         this._bindModuleCheckboxes();
+        this._bindFormSubmission();
         return this._super.apply(this, arguments);
     },
 
@@ -27,5 +28,23 @@ publicWidget.registry.ModuleSelectionStep = publicWidget.Widget.extend({
                 $box.removeClass('selected');
             }
         }
+    },
+
+    _bindFormSubmission: function () {
+        const self = this;
+        this.$el.on('submit', function () {
+            const $submitButton = self.$('button[type="submit"]');
+            $('body').addClass('cursor-wait');
+            $submitButton.prop('disabled', true).addClass('is-processing');
+
+            window.addEventListener(
+                'pageshow',
+                function () {
+                    $('body').removeClass('cursor-wait');
+                    $submitButton.prop('disabled', false).removeClass('is-processing');
+                },
+                { once: true }
+            );
+        });
     },
 });
