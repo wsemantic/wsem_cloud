@@ -143,3 +143,12 @@ label {
 .autocomplete-results li:hover {
     background-color: #f0f0f0;
 }
+
+body.cursor-wait,
+body.cursor-wait * {
+    cursor: progress !important;
+}
+
+button.is-processing {
+    cursor: progress !important;
+}
