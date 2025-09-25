@@ -337,7 +337,14 @@ class CustomSignupController(http.Controller):
 
         target_db = subdomain  # Usamos el subdominio como nombre de la base de datos
         source_db = 'veri-template'  # Nombre de la base de datos predefinida a clonar
-        
+
+        if db.exp_db_exist(target_db):
+            _logger.info(
+                "La base de datos '%s' ya existe. Se reutiliza el entorno existente.",
+                target_db,
+            )
+            return
+
         # Crear el subdominio en OVH
         try:
             self.create_subdomain_in_ovh(subdomain)
