@@ -291,7 +291,6 @@ class CustomSignupController(http.Controller):
             # Obtener los módulos seleccionados
             selected_modules = request.httprequest.form.getlist('modules')
             partner_id = request.httprequest.form.get('partner_id')
-
             partner = self._get_partner_from_identifier(partner_id)
             session_data = request.session.get('signup_data') or {}
 
@@ -306,7 +305,8 @@ class CustomSignupController(http.Controller):
             if partner and partner.exists():
                 signup_data['partner_id'] = partner.id
 
-            if not signup_data:
+            partner = self._get_partner_from_identifier(partner_id)
+            if not partner:
                 return request.redirect('/signup_step1')
 
             request.session['signup_data'] = signup_data
