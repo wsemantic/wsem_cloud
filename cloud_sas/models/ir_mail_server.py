@@ -2,6 +2,9 @@ from odoo import _, fields, models
 
 from .mail_mail import FACTUOO_DOMAIN, FACTUOO_IDENTITY
 
+import logging
+
+_logger = logging.getLogger(__name__)
 
 FACTUOO_SERVER_RESET_FIELDS = {
     "name",

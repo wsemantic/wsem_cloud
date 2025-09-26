@@ -1,5 +1,8 @@
 from odoo import models, api
 
+import logging
+
+_logger = logging.getLogger(__name__)
 
 FACTUOO_DOMAIN = "factuoo.com"
 FACTUOO_IDENTITY = "registro@factuoo.com"
@@ -39,7 +42,9 @@ class MailMail(models.Model):
             updates = {}
 
             sender = (mail.email_from or "").strip()
+            _logger.info(f"WSEM sender email {sender}")
             if sender.lower() != lower_identity:
+                _logger.info(f"WSEM Actualiza email from a {factuoo_identity}")
                 updates["email_from"] = factuoo_identity
 
                 if not (mail.reply_to or "").strip():
