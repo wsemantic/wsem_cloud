@@ -25,5 +25,4 @@
             'cloud_sas/static/src/js/user_menu_item.js',
         ],
     }, 
-
 }

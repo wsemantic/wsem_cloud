@@ -713,12 +713,50 @@ class CustomSignupController(http.Controller):
             'company_type': company_type,
         }
         partner = env['res.partner'].with_context(no_vat_validation=True, lang='es_ES').sudo().create(partner_vals)
-        portal_wizard = request.env['portal.wizard'].sudo().with_context(active_ids=[partner.id]).create({})
-        portal_user = portal_wizard.user_ids
-        portal_user.email = partner.email
-        portal_user.sudo().action_grant_access()
+        self._ensure_portal_user_without_email(partner)
 
         return partner
+
+    def _ensure_portal_user_without_email(self, partner):
+        """Grant portal access to ``partner`` without sending notification emails."""
+        if not partner:
+            return
+
+        env = request.env
+        Users = env['res.users'].sudo()
+        portal_group = env.ref('base.group_portal')
+
+        if not partner.email:
+            _logger.warning(
+                "No se pudo crear el usuario portal para el partner %s porque no tiene correo electrónico.",
+                partner.id,
+            )
+            return
+
+        existing_user = Users.search([('partner_id', '=', partner.id)], limit=1)
+        if existing_user:
+            existing_user.with_context(no_reset_password=True).write({
+                'groups_id': [(4, portal_group.id)],
+            })
+            return
+
+        company = env.company
+        create_vals = {
+            'name': partner.name or partner.email,
+            'login': partner.email,
+            'email': partner.email,
+            'partner_id': partner.id,
+            'lang': partner.lang or 'es_ES',
+            'tz': partner.tz or env.user.tz,
+            'groups_id': [(6, 0, [portal_group.id])],
+        }
+        if company:
+            create_vals.update({
+                'company_id': company.id,
+                'company_ids': [(4, company.id)],
+            })
+
+        Users.with_context(no_reset_password=True).create(create_vals)
 
     def _get_odoo_server_ip(self):
         """Devuelve la IP del servidor Odoo.
