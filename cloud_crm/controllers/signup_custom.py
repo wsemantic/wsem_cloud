@@ -251,6 +251,13 @@ class CustomSignupController(http.Controller):
 
             # Redirigir al segundo paso con la referencia del partner
             if partner and partner.exists():
+                session_vals = dict(partner_vals)
+                session_vals.update({
+                    'subdomain': subdomain,
+                    'cloud_url': cloud_url,
+                    'partner_id': partner.id,
+                })
+                request.session['signup_data'] = session_vals
                 return request.redirect(f'/signup_step2?partner_id={partner.id}')
 
             _logger.error(
@@ -284,12 +291,25 @@ class CustomSignupController(http.Controller):
             # Obtener los módulos seleccionados
             selected_modules = request.httprequest.form.getlist('modules')
             partner_id = request.httprequest.form.get('partner_id')
+            partner = self._get_partner_from_identifier(partner_id)
+            session_data = request.session.get('signup_data') or {}
+
+            if not partner and session_data:
+                partner = self._get_partner_from_identifier(
+                    session_data.get('partner_id') or session_data.get('email')
+                )
+
+            partner_signup_data = self._prepare_signup_data_from_partner(partner) if partner else {}
+            signup_data = self._merge_signup_data(session_data, partner_signup_data)
+
+            if partner and partner.exists():
+                signup_data['partner_id'] = partner.id
 
             partner = self._get_partner_from_identifier(partner_id)
             if not partner:
                 return request.redirect('/signup_step1')
 
-            signup_data = self._prepare_signup_data_from_partner(partner)
+            request.session['signup_data'] = signup_data
 
             # Clonar la base de datos y crear el usuario
             try:
@@ -306,6 +326,9 @@ class CustomSignupController(http.Controller):
                     },
                 )
 
+            # Limpiar los datos de la sesión tras la creación
+            request.session.pop('signup_data', None)
+
             # Redirigir a la página de éxito
             subdomain = signup_data.get('subdomain')
             creation_result = creation_result or {}
@@ -320,11 +343,26 @@ class CustomSignupController(http.Controller):
             })
 
         else:
-            partner = self._get_partner_from_identifier(kwargs.get('partner_id'))
-            if not partner:
+            partner_ref = kwargs.get('partner_id')
+            session_data = request.session.get('signup_data') or {}
+
+            if not partner_ref and session_data:
+                partner_ref = session_data.get('partner_id') or session_data.get('email')
+
+            partner = self._get_partner_from_identifier(partner_ref)
+            partner_signup_data = self._prepare_signup_data_from_partner(partner) if partner else {}
+            signup_data = self._merge_signup_data(session_data, partner_signup_data)
+
+            if partner and partner.exists():
+                signup_data['partner_id'] = partner.id
+
+            if not signup_data:
                 return request.render('cloud_crm.signup_step1', {
                     'error': 'No se encontró la información del registro. Por favor, completa nuevamente el formulario.'
                 })
+
+            request.session['signup_data'] = signup_data
+            partner_id = signup_data.get('partner_id')
 
             # Definir una lista fija de módulos específicos
             modules = [
@@ -340,9 +378,25 @@ class CustomSignupController(http.Controller):
 
             return request.render('cloud_crm.signup_step2', {
                 'modules': modules,
-                'partner_id': partner.id,
+                'partner_id': partner_id,
             })
             # Renderizar el formulario del segundo paso con esta lista fija de módulos
+
+    def _merge_signup_data(self, session_data, partner_data):
+        """Combina los datos del partner con los almacenados en sesión sin perder valores válidos."""
+
+        combined = {}
+        if session_data:
+            combined.update(session_data)
+
+        if partner_data:
+            for key, value in partner_data.items():
+                if value not in (None, '', False):
+                    combined[key] = value
+                elif key not in combined:
+                    combined[key] = value
+
+        return combined
 
     def _get_partner_from_identifier(self, partner_ref):
         """Obtiene un partner a partir de un identificador proporcionado."""
