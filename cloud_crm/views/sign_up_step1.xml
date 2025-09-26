@@ -100,7 +100,10 @@
                                     </form>
                                 </div>
                                 <div class="col-12 col-lg-5 d-none d-lg-flex">
-                                    <div class="signup-marketing-card">
+                                    <div class="signup-marketing-card text-center text-lg-start">
+                                        <div class="mb-4 text-center">
+                                            <img src="/cloud_crm/static/src/img/factuoo_morado.svg" alt="Factuoo" class="img-fluid" style="max-width: 160px;"/>
+                                        </div>
                                         <h4 class="mb-3">Tu nube de confianza</h4>
                                         <p class="text-muted mb-4">Miles de empresas gestionan su facturación con Factuoo. Nos encargamos de la seguridad, la disponibilidad y el soporte experto para que te centres en tu negocio.</p>
                                         <ul class="list-unstyled mb-0">
@@ -126,6 +129,12 @@
                                                 </div>
                                             </li>
                                         </ul>
+                                        <div class="mt-4 pt-2 small text-muted text-center">
+                                            <p class="mb-2">Factuoo es una iniciativa de Semantic Web Software SL</p>
+                                            <a href="https://wsemantic.com" target="_blank" rel="noopener" class="d-inline-flex align-items-center gap-2">
+                                                <img src="/cloud_crm/static/src/img/semantic_logo.png" alt="Semantic Web Software" style="max-width: 120px; height: auto;"/>
+                                            </a>
+                                        </div>										
                                     </div>
                                 </div>
                             </div>
