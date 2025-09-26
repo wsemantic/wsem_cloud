@@ -57,7 +57,7 @@
 
                                             <!-- Campo DNI -->
                                             <div class="mb-3 field-dni">
-                                                <label for="dni">DNI</label>
+                                                <label for="dni">NIF-CIF</label>
                                                 <input type="text" name="dni" id="dni" class="form-control form-control-sm" placeholder="00000000A" t-att-value="dni or ''"/>
                                             </div>
 
