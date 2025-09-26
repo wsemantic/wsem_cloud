@@ -43,7 +43,7 @@ class CustomSignupController(http.Controller):
                         postal_code = zip_record.name
                         city = zip_record.city_id.name
                         state_id = zip_record.city_id.state_id.id
-                        _logger.error(f"WSEM ZIp exists {postal_code}")
+                        _logger.info(f"WSEM ZIp exists {postal_code}")
                     else:
                         _logger.error("WSEM ZIp Not exists")
                         postal_code = ''
