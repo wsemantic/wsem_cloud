@@ -10,7 +10,7 @@
                             <div class="row g-4 justify-content-center signup-step1-columns">
                                 <div class="col-12 col-lg-7">
                                     <div class="text-center">
-                                        <h3 class="signup-step1-title mb-4">Datos de contacto</h3>
+                                        <h3 class="signup-step1-title mb-4">Crear mi nube: Paso 1 de 2</h3>
                                     </div>
                                     <form id="signup_step1_form" method="post" class="signup-step1-form">
                                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
