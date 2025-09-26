@@ -71,7 +71,8 @@ class IrMailServer(models.Model):
         if name in {"factuoo", "fatuoo"}:
             return True
 
-        if (self.from_filter or "").strip().lower() == FACTUOO_DOMAIN:
+        from_filter = (self.from_filter or "").strip().lower()
+        if from_filter and "factuoo" in from_filter:
             return True
 
         factuoo_identity = FACTUOO_IDENTITY.lower()
