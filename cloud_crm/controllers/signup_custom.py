@@ -249,17 +249,34 @@ class CustomSignupController(http.Controller):
                         'subdomain': subdomain,
                     })
 
-            # Guardar los datos en la sesión
-            session_vals = dict(partner_vals)
-            session_vals.update({
-                'subdomain': subdomain,
-                'cloud_url': cloud_url,
-                'partner_id': partner.id if partner else None,
-            })
-            request.session['signup_data'] = session_vals
+            # Redirigir al segundo paso con la referencia del partner
+            if partner and partner.exists():
+                session_vals = dict(partner_vals)
+                session_vals.update({
+                    'subdomain': subdomain,
+                    'cloud_url': cloud_url,
+                    'partner_id': partner.id,
+                })
+                request.session['signup_data'] = session_vals
+                return request.redirect(f'/signup_step2?partner_id={partner.id}')
 
-            # Redirigir al segundo paso
-            return request.redirect('/signup_step2')
+            _logger.error(
+                "No se pudo determinar el partner tras procesar el formulario de registro"
+            )
+            return request.render('cloud_crm.signup_step1', {
+                'error': 'No se pudo guardar la información de registro. Por favor, inténtalo de nuevo.',
+                'name': name,
+                'email': email,
+                'company_name': company_name,
+                'dni': dni,
+                'street': street,
+                'street2': street2,
+                'zip_id': zip_id,
+                'zip': postal_code,
+                'city': city,
+                'phone': phone,
+                'subdomain': subdomain,
+            })
 
         else:
             # Renderizar el formulario del primer paso
@@ -273,10 +290,26 @@ class CustomSignupController(http.Controller):
         if request.httprequest.method == 'POST':
             # Obtener los módulos seleccionados
             selected_modules = request.httprequest.form.getlist('modules')
-            signup_data = request.session.get('signup_data')
+            partner_id = request.httprequest.form.get('partner_id')
+
+            partner = self._get_partner_from_identifier(partner_id)
+            session_data = request.session.get('signup_data') or {}
+
+            if not partner and session_data:
+                partner = self._get_partner_from_identifier(
+                    session_data.get('partner_id') or session_data.get('email')
+                )
+
+            partner_signup_data = self._prepare_signup_data_from_partner(partner) if partner else {}
+            signup_data = self._merge_signup_data(session_data, partner_signup_data)
+
+            if partner and partner.exists():
+                signup_data['partner_id'] = partner.id
 
             if not signup_data:
                 return request.redirect('/signup_step1')
+
+            request.session['signup_data'] = signup_data
 
             # Clonar la base de datos y crear el usuario
             try:
@@ -293,7 +326,7 @@ class CustomSignupController(http.Controller):
                     },
                 )
 
-            # Limpiar la sesión
+            # Limpiar los datos de la sesión tras la creación
             request.session.pop('signup_data', None)
 
             # Redirigir a la página de éxito
@@ -310,19 +343,110 @@ class CustomSignupController(http.Controller):
             })
 
         else:
+            partner_ref = kwargs.get('partner_id')
+            session_data = request.session.get('signup_data') or {}
+
+            if not partner_ref and session_data:
+                partner_ref = session_data.get('partner_id') or session_data.get('email')
+
+            partner = self._get_partner_from_identifier(partner_ref)
+            partner_signup_data = self._prepare_signup_data_from_partner(partner) if partner else {}
+            signup_data = self._merge_signup_data(session_data, partner_signup_data)
+
+            if partner and partner.exists():
+                signup_data['partner_id'] = partner.id
+
+            if not signup_data:
+                return request.render('cloud_crm.signup_step1', {
+                    'error': 'No se encontró la información del registro. Por favor, completa nuevamente el formulario.'
+                })
+
+            request.session['signup_data'] = signup_data
+            partner_id = signup_data.get('partner_id')
+
             # Definir una lista fija de módulos específicos
             modules = [
                 {'name': 'Inventario', 'technical_name': 'stock', 'icon': '/cloud_crm/static/src/img/stock.svg'},
                 {'name': 'Proyectos', 'technical_name': 'project', 'icon': '/cloud_crm/static/src/img/project.svg'},
                 {'name': 'Fabricación', 'technical_name': 'mrp', 'icon': '/cloud_crm/static/src/img/mrp.svg'},
-                {'name': 'CRM/Oportunidades Cliente', 'technical_name': 'crm', 'icon': '/cloud_crm/static/src/img/crm.svg'},                  
-                {'name': 'Email Marketing', 'technical_name': 'mass_mailing', 'icon': '/cloud_crm/static/src/img/mass_mailing.svg'},            
-                {'name': 'Sitio WEB', 'technical_name': 'website', 'icon': '/cloud_crm/static/src/img/website.svg'},  
-                {'name': 'eCommerce', 'technical_name': 'website_sale', 'icon': '/cloud_crm/static/src/img/website_sale.svg'},  
+                {'name': 'CRM/Oportunidades Cliente', 'technical_name': 'crm', 'icon': '/cloud_crm/static/src/img/crm.svg'},
+
+                {'name': 'Email Marketing', 'technical_name': 'mass_mailing', 'icon': '/cloud_crm/static/src/img/mass_mailing.svg'},
+                {'name': 'Sitio WEB', 'technical_name': 'website', 'icon': '/cloud_crm/static/src/img/website.svg'},
+                {'name': 'eCommerce', 'technical_name': 'website_sale', 'icon': '/cloud_crm/static/src/img/website_sale.svg'},
             ]
 
-            return request.render('cloud_crm.signup_step2', {'modules': modules})
+            return request.render('cloud_crm.signup_step2', {
+                'modules': modules,
+                'partner_id': partner_id,
+            })
             # Renderizar el formulario del segundo paso con esta lista fija de módulos
+
+    def _merge_signup_data(self, session_data, partner_data):
+        """Combina los datos del partner con los almacenados en sesión sin perder valores válidos."""
+
+        combined = {}
+        if session_data:
+            combined.update(session_data)
+
+        if partner_data:
+            for key, value in partner_data.items():
+                if value not in (None, '', False):
+                    combined[key] = value
+                elif key not in combined:
+                    combined[key] = value
+
+        return combined
+
+    def _get_partner_from_identifier(self, partner_ref):
+        """Obtiene un partner a partir de un identificador proporcionado."""
+
+        partner_env = request.env['res.partner'].sudo()
+
+        try:
+            partner_id = int(partner_ref)
+        except (TypeError, ValueError):
+            partner_id = False
+
+        if partner_id:
+            partner = partner_env.browse(partner_id)
+            if partner.exists():
+                return partner
+
+        if partner_ref and isinstance(partner_ref, str):
+            partner = partner_env.search([('email', '=', partner_ref.strip().lower())], limit=1)
+            if partner:
+                return partner
+
+        return False
+
+    def _prepare_signup_data_from_partner(self, partner):
+        """Construye el diccionario de datos de registro a partir de un partner."""
+
+        if not partner:
+            return {}
+
+        partner = partner.sudo()
+        subdomain = self._extract_subdomain_from_url(partner.cloud_url)
+        if not subdomain:
+            subdomain = self._generate_subdomain(partner.name, partner.email)
+        cloud_url = partner.cloud_url or (f"{subdomain}.factuoo.com" if subdomain else '')
+
+        return {
+            'partner_id': partner.id,
+            'name': partner.name,
+            'email': partner.email,
+            'company_name': (getattr(partner, 'company_name', False) or partner.name or ''),
+            'vat': partner.vat,
+            'street': partner.street,
+            'street2': partner.street2,
+            'zip': partner.zip,
+            'city': partner.city,
+            'state_id': partner.state_id.id if partner.state_id else None,
+            'phone': partner.phone,
+            'cloud_url': cloud_url,
+            'subdomain': subdomain,
+        }
 
     def create_user_and_db(self, signup_data, selected_modules):
         """
