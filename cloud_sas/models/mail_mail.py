@@ -62,12 +62,8 @@ class MailMail(models.Model):
 
         servers = self.env["ir.mail_server"].sudo().search([
             ("active", "=", True),
-            ("from_filter", "!=", False),
         ])
-        return any(
-            (server.from_filter or "").strip().lower() == FACTUOO_DOMAIN
-            for server in servers
-        )
+        return any(server._cloud_sas_has_factuoo_trace() for server in servers)
 
     @staticmethod
     def _cloud_sas_get_reply_to(mail):
