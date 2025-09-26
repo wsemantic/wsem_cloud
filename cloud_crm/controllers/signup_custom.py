@@ -482,6 +482,7 @@ class CustomSignupController(http.Controller):
 
         existing_partner_cloud_url = ''
         existing_partner_subdomain = ''
+        needs_subdomain_recreation = False
         if partner and partner.cloud_url:
             existing_partner_cloud_url = partner.cloud_url or ''
             existing_partner_subdomain = self._extract_subdomain_from_url(existing_partner_cloud_url)
@@ -510,6 +511,7 @@ class CustomSignupController(http.Controller):
                     existing_partner_cloud_url,
                     existing_partner_subdomain,
                 )
+                needs_subdomain_recreation = True
 
         db_login_url = f"https://{subdomain}.factuoo.com/odoo/login"
 
@@ -525,11 +527,18 @@ class CustomSignupController(http.Controller):
             }
 
         # Crear el subdominio en OVH
-        should_create_subdomain = not (existing_partner_subdomain and existing_partner_subdomain == subdomain)
+        should_create_subdomain = needs_subdomain_recreation or not (
+            existing_partner_subdomain and existing_partner_subdomain == subdomain
+        )
         if should_create_subdomain:
             try:
                 self.create_subdomain_in_ovh(subdomain)
-                _logger.info(f"Subdominio '{subdomain}.factuoo.com' creado en OVH")
+                action_msg = (
+                    "recreado"
+                    if needs_subdomain_recreation and existing_partner_subdomain == subdomain
+                    else "creado"
+                )
+                _logger.info(f"Subdominio '{subdomain}.factuoo.com' {action_msg} en OVH")
             except Exception:
                 _logger.exception(
                     "Error al crear el subdominio '%s.factuoo.com' en OVH", subdomain
