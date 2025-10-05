@@ -13,8 +13,9 @@
     'license': "AGPL-3",
     
     'data': [
-        # 'security/ir.model.access.csv',      
+        # 'security/ir.model.access.csv',
         'data/user_external_id.xml',
+        'data/hide_record_rules_menu.xml',
         'security/groups.xml',
         'security/ir_rules.xml',
         'views/views.xml',
