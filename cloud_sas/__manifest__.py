@@ -17,7 +17,7 @@
         'security/groups.xml',
         'security/ir_rules.xml',
         'data/user_external_id.xml',
-        #'data/hide_record_rules_menu.xml',        
+        'data/hide_record_rules_menu.xml',        
         'views/views.xml',
 
     ],
