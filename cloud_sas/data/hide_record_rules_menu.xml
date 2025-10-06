@@ -1,5 +1,5 @@
 <odoo>
-    <data>
+    <data><!-- no funciona, pero tampoco es necesario ya que no se ve el menu tecnico-->
         <record id="base.menu_ir_rule" model="ir.ui.menu">
             <field name="groups_id" eval="[(4, ref('cloud_sas.factuoo_admin'))]"/>
         </record>
