@@ -10,13 +10,13 @@ class ResCompany(models.Model):
     def create(self, vals_list):
         if not self.env.is_superuser():
             raise AccessError(
-                _("Creating companies is disabled because the database is configured for a single company.")
+                _("No esta permitida la creacion multiempresa en este plan")
             )
         return super().create(vals_list)
 
     def unlink(self):
         if not self.env.is_superuser():
             raise AccessError(
-                _("Deleting companies is disabled because the database is configured for a single company.")
+                _("No esta permitida la eliminación multiempresa en este plan")
             )
         return super().unlink()
