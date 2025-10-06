@@ -8,6 +8,7 @@
 
                 <form t-att-action="request.httprequest.path" method="post" id="signup_step2_form">
                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <input type="hidden" name="partner_id" t-att-value="partner_id"/>
 
                     <div class="row step2-module-row">
                         <t t-foreach="modules" t-as="module">
