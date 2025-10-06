@@ -1,5 +1,5 @@
 <odoo>
-    <data noupdate="1">
+    <data>
         <record id="factuoo_admin" model="res.groups">
             <field name="name">Acceso al Módulo</field>
             <field name="category_id" ref="base.module_category_hidden"/>
